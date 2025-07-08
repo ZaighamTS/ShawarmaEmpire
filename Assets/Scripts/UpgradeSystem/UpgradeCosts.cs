@@ -27,6 +27,7 @@ public enum ZoneType
 public record UpgradeConfig(int basePrice, float purchaseMultiplier, float upgradeMultiplier);
 public record CapacityConfig(int baseCapacity, float capacityMultiplier);
 public record ZoneConfig(int baseValue, float demandMultiplier);
+public record PerstigeConfig(float incomePercentageMultipler,float speedPercentageMultiplier, float upgradeCostPerstigeReduction,float goldenShawarmaSpawnRate);
 
 public static class UpgradeCosts
 {
@@ -90,5 +91,9 @@ public static class UpgradeCosts
         float basePrice = 100f;
         float multiplier = .2f;
         return basePrice / (1 + upgradeLevel * multiplier);
+    }
+    public static int GetChefStars(float totalEarnings)
+    {
+        return Mathf.FloorToInt(Mathf.Log10(totalEarnings / 100000));
     }
 }
