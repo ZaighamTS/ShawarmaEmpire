@@ -9,6 +9,7 @@ public class DeliveryVan : MonoBehaviour
     public Transform[] wheels; // Assign 4 wheels in Inspector
     public float wheelRotationSpeed = 360f; // degrees per second
 
+    internal float deliveryCapacity;
     private Vector3 targetPosition;
     private bool isExiting = false;
 

@@ -1,19 +1,33 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.Port;
 
-public class DeliveryVanSpawner : MonoBehaviour
+public class DeliveryVanSpawner : MonoBehaviour, ISaveable
 {
+    PlayerProgress playerProgress;
+    public string SaveKey => "delivery_van";
     public GameObject vanPrefab;
     public Transform spawnPoint;
     public Transform deliveryPoint;
     public Transform Exit_point;
-    public float spawnInterval = 10f;
+
+
+    private float spawnInterval = 10f;
+    private float deliveryCapacity;
+    private int currentLevel;
+    private bool isDirty = false;
 
     private void Start()
     {
+        playerProgress = PlayerProgress.Instance;
+        SaveLoadManager.saveLoadManagerInstance.Register(this);
         StartCoroutine(SpawnVanLoop());
     }
-
+    void OnDestroy()
+    {
+        SaveLoadManager.saveLoadManagerInstance.Unregister(this);
+    }
     IEnumerator SpawnVanLoop()
     {
         while (true)
@@ -22,7 +36,22 @@ public class DeliveryVanSpawner : MonoBehaviour
             yield return new WaitForSeconds(spawnInterval);
         }
     }
-
+    internal void UpgradeVan()
+    {
+        float upgradeCost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentLevel);
+        if (upgradeCost <= playerProgress.PlayerCash)
+        {
+            playerProgress.PlayerCash -= upgradeCost;
+            currentLevel++;
+            deliveryCapacity = UpgradeCosts.GetDeliveryCapacity(CapacityType.Delivery, currentLevel);
+            spawnInterval = UpgradeCosts.GetDeliveryInterval(currentLevel);
+            isDirty = true;
+        }
+        else
+        {
+            //Open Store
+        }
+    }
     void SpawnVan()
     {
         GameObject van = Instantiate(vanPrefab, spawnPoint.position, spawnPoint.rotation);
@@ -31,4 +60,39 @@ public class DeliveryVanSpawner : MonoBehaviour
         deliveryVan.exitOffset = Exit_point;
         deliveryVan.MoveTo(deliveryPoint.position);
     }
+    #region Save/Load
+    public bool IsDirty => isDirty;
+    public object CaptureState()
+    {
+        return new DeliveryVanData
+        {
+            spawnInterval = spawnInterval,
+            currentLevel = currentLevel,
+            deliveryCapacity = deliveryCapacity,
+        };
+    }
+    public void RestoreState(object state)
+    {
+        if (state is not DeliveryVanData data)
+            return;
+        spawnInterval = data.spawnInterval;
+        deliveryCapacity = data.deliveryCapacity;
+        currentLevel = data.currentLevel;
+        isDirty = false;
+    }
+    public void SetInitialData()
+    {
+
+    }
+    public void ClearDirty()
+    {
+        isDirty = false;
+    }
+    #endregion
+}
+public class DeliveryVanData
+{
+    public float spawnInterval;
+    public float deliveryCapacity;
+    public int currentLevel;
 }

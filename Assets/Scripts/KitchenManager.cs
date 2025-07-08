@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 
-public class KitchenManager : MonoBehaviour,ISaveable
+public class KitchenManager : MonoBehaviour
 {
-    public string SaveKey => "xyz";
-    private bool isDirty = false;
     public GameObject[] Kitchens; // Assign 4 Kitchena GameObjects (only 1 active at start)
-   
+
     //WarehouseData CurrentWareHouseData;
-    int currentLitchenCount;
+    int currentKitchenCount;
     int CurrentKitchenId;
     public static KitchenManager Instance;
     private List<GameObject> placedKitchens = new List<GameObject>();
@@ -19,7 +19,6 @@ public class KitchenManager : MonoBehaviour,ISaveable
     public Transform KitchenListParent; // ScrollView Content to hold buttons
     public GameObject KitchenItemPrefab; // UI item showing warehouse info
     public Button addKitchenButton;
-    private int kitchenLevel = 0;
 
     private void Awake()
     {
@@ -30,19 +29,19 @@ public class KitchenManager : MonoBehaviour,ISaveable
     }
     void Start()
     {
-        currentLitchenCount = 0;
+        currentKitchenCount = 0;
         //Invoke("DelayOnStart",1);
-        DelayOnStart();
+        DelayOnStart().Forget();
 
 
     }
-    public void DelayOnStart()
+    public async UniTask DelayOnStart()
     {
-        
+        await UniTask.NextFrame();
         for (int i = 0; i < Kitchens.Length; i++)
         {
-           
-          //  if (Kitchens[i].GetComponent<Kitchen>().ScriptableKitchenData.KitchenIsPurchased)
+
+            //  if (Kitchens[i].GetComponent<Kitchen>().ScriptableKitchenData.KitchenIsPurchased)
             {
                 PlaceNewKitchen();
                 UpdateUI();
@@ -51,32 +50,36 @@ public class KitchenManager : MonoBehaviour,ISaveable
     }
     public void PlaceNewKitchen()
     {
-       
-        GameObject Kitchen = Kitchens[currentLitchenCount];
-        Kitchen.SetActive(true);
-       // Kitchen.transform.GetChild(Kitchen.GetComponent<Kitchen>().CurrentUpdate).gameObject.SetActive(true);
+
+        GameObject kitchenObj = Kitchens[currentKitchenCount];
+        kitchenObj.SetActive(true);
+        // Kitchen.transform.GetChild(Kitchen.GetComponent<Kitchen>().CurrentUpdate).gameObject.SetActive(true);
         //  ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().Capacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentWarehouseCount]);
 
-        Kitchen.name = "Kitchen" + (currentLitchenCount + 1);// For changing gameobject name to see in hierarchy (optional)
-    
+        kitchenObj.name = "Kitchen" + (currentKitchenCount + 1);// For changing gameobject name to see in hierarchy (optional)
+
         //Kitchen.GetComponent<Kitchen>().ScriptableKitchenData.SetUpdateDetails(Kitchen.name, 0);
         //Kitchen.GetComponent<Kitchen>().ScriptableKitchenData.SetHouseIsPurchased();
-        placedKitchens.Add(Kitchen);
-        currentLitchenCount++;
+        placedKitchens.Add(kitchenObj);
+        currentKitchenCount++;
+        if (kitchenObj.TryGetComponent(out Kitchen kitchen))
+        {
+            kitchen.AssignId(currentKitchenCount + 1);
+        }
     }
 
     public void BuyNewKitchen()
-    { 
-        
-    
+    {
+
+
     }
 
     public void AddWarehouseButtonClicked()
     {
 
         PlaceNewKitchen();
-         UpdateUI();
-        
+        UpdateUI();
+
     }
     void UpdateUI()
     {
@@ -89,18 +92,19 @@ public class KitchenManager : MonoBehaviour,ISaveable
         {
             GameObject item = Instantiate(KitchenItemPrefab, KitchenListParent);
             Kitchen K = placedKitchens[i].GetComponent<Kitchen>();
-            item.GetComponentInChildren<Text>().text = K.KitchenName;
+            item.GetComponentInChildren<Text>().text = K.kitchenName;
 
             int index = i; // avoid closure issue
-            item.transform.Find("UpdateButton").GetComponent<Button>().onClick.AddListener(() => {
-            K.UpdateKitchen(); // call your update logic here
+            item.transform.Find("UpdateButton").GetComponent<Button>().onClick.AddListener(() =>
+            {
+                K.UpdateKitchen(); // call your update logic here
             });
         }
 
         // Add Kitchen button visibility
         addKitchenButton.gameObject.SetActive(placedKitchens.Count < Kitchens.Length);
     }
-   
+
 
     public void ShowUpgradePanel(Warehouse warehouse)
     {
@@ -113,38 +117,5 @@ public class KitchenManager : MonoBehaviour,ISaveable
         KitchenPanel.SetActive(false);
     }
 
-
-    #region MyRegion
-    public bool IsDirty => isDirty;
-    public object CaptureState()
-    {
-        return new Kitchen_Data
-        {
-            kitchenLevel = kitchenLevel
-        };
-    }
-    public void RestoreState(object state)
-    {
-        if (state is not Kitchen_Data data)
-            return;
-        kitchenLevel = data.kitchenLevel;
-        isDirty = false;
-
-    }
-    public void SetInitialData()
-    {
-
-    }
-    public void ClearDirty()
-    {
-        isDirty = false;
-    }
-
-
-    #endregion
-
 }
-public class Kitchen_Data
-{
-    public int kitchenLevel;
-}
+

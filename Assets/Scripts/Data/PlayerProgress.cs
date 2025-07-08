@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class PlayerProgress : ISaveable
 {
-    public static PlayerProgress Instance;
+    private static PlayerProgress instance;
+    public static PlayerProgress Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new PlayerProgress();
+            }
+            return instance;
+        }
+    }
     public string SaveKey => "player_progress";
     PlayerProgress()
     {
 
     }
-    private int playerCash;
+    private float playerCash;
     private bool isDirty;
 
-    public int PlayerCash
+    public float PlayerCash
     {
         get => playerCash;
         set

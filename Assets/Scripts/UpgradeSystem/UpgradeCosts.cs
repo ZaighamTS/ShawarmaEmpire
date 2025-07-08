@@ -11,7 +11,8 @@ namespace System.Runtime.CompilerServices
 public enum UpgradeType
 {
     Storage,
-    DeliveryVan
+    DeliveryVan,
+    Kitchen
 }
 public enum CapacityType
 {
@@ -27,7 +28,7 @@ public enum ZoneType
 public record UpgradeConfig(int basePrice, float purchaseMultiplier, float upgradeMultiplier);
 public record CapacityConfig(int baseCapacity, float capacityMultiplier);
 public record ZoneConfig(int baseValue, float demandMultiplier);
-public record PerstigeConfig(float incomePercentageMultipler,float speedPercentageMultiplier, float upgradeCostPerstigeReduction,float goldenShawarmaSpawnRate);
+public record PerstigeConfig(float incomePercentageMultipler, float speedPercentageMultiplier, float upgradeCostPerstigeReduction, float goldenShawarmaSpawnRate);
 
 public static class UpgradeCosts
 {
@@ -37,7 +38,8 @@ public static class UpgradeCosts
     private static readonly Dictionary<UpgradeType, UpgradeConfig> priceMap = new()
     {
         {UpgradeType.Storage,new(100,1.5f,1.5f) },
-        {UpgradeType.DeliveryVan, new(100,1.5f,1.5f) }
+        {UpgradeType.DeliveryVan, new(100,1.5f,1.5f) },
+        {UpgradeType.Kitchen,new (200,1.2f,1.3f) }
     };
     /// <summary>
     /// Capacity MAp
