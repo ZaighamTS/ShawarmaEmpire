@@ -42,10 +42,10 @@ public class WarehouseManager : MonoBehaviour
         
         for (int i = 0; i < warehouses.Length; i++)
         {
-            Debug.Log("qqqqqq");
+           
             if (warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.HouseIsPurchased)
             {
-                Debug.Log("www");
+              
                 PlaceNewWarehouse();
                 UpdateUI();
             }
@@ -53,7 +53,7 @@ public class WarehouseManager : MonoBehaviour
     }
     public void PlaceNewWarehouse()
     {
-        Debug.Log("oooo");
+       
         GameObject WareHouse = warehouses[currentWarehouseCount];
         WareHouse.SetActive(true);
         WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().CurrentUpdate).gameObject.SetActive(true);
