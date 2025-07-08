@@ -6,6 +6,7 @@ public class DeliveryVanSpawner : MonoBehaviour
     public GameObject vanPrefab;
     public Transform spawnPoint;
     public Transform deliveryPoint;
+    public Transform Exit_point;
     public float spawnInterval = 10f;
 
     private void Start()
@@ -27,6 +28,7 @@ public class DeliveryVanSpawner : MonoBehaviour
         GameObject van = Instantiate(vanPrefab, spawnPoint.position, spawnPoint.rotation);
         van.transform.SetParent(transform);
         DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();
+        deliveryVan.exitOffset = Exit_point;
         deliveryVan.MoveTo(deliveryPoint.position);
     }
 }

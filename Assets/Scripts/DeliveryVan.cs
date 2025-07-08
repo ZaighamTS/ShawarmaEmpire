@@ -5,7 +5,7 @@ public class DeliveryVan : MonoBehaviour
 {
     public float speed = 5f;
     public float waitTimeAtPoint = 3f;
-    public Vector3 exitOffset = new Vector3(10f, 0, 0);
+    public Transform exitOffset;
     public Transform[] wheels; // Assign 4 wheels in Inspector
     public float wheelRotationSpeed = 360f; // degrees per second
 
@@ -34,7 +34,7 @@ public class DeliveryVan : MonoBehaviour
         else
         {
             yield return new WaitForSeconds(waitTimeAtPoint);
-            targetPosition = transform.position + exitOffset;
+            targetPosition = exitOffset.position;
             isExiting = true;
             StartCoroutine(MoveVan()); // Move again toward exit
         }

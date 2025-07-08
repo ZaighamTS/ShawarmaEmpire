@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Warehouse 2
   m_EditorClassIdentifier: 
   WarehouseName: warehouse2
-  HouseIsPurchased: 0
+  HouseIsPurchased: 1
   updates:
   - UpdateId: 0
     Capacity: 100
