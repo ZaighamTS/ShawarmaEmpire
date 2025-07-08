@@ -2,8 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class KitchenManager : MonoBehaviour
+public class KitchenManager : MonoBehaviour,ISaveable
 {
+    public string SaveKey => "xyz";
+    private bool isDirty = false;
     public GameObject[] Kitchens; // Assign 4 Kitchena GameObjects (only 1 active at start)
    
     //WarehouseData CurrentWareHouseData;
@@ -17,7 +19,7 @@ public class KitchenManager : MonoBehaviour
     public Transform KitchenListParent; // ScrollView Content to hold buttons
     public GameObject KitchenItemPrefab; // UI item showing warehouse info
     public Button addKitchenButton;
-
+    private int kitchenLevel = 0;
 
     private void Awake()
     {
@@ -40,7 +42,7 @@ public class KitchenManager : MonoBehaviour
         for (int i = 0; i < Kitchens.Length; i++)
         {
            
-            if (Kitchens[i].GetComponent<Kitchen>().ScriptableKitchenData.KitchenIsPurchased)
+          //  if (Kitchens[i].GetComponent<Kitchen>().ScriptableKitchenData.KitchenIsPurchased)
             {
                 PlaceNewKitchen();
                 UpdateUI();
@@ -57,8 +59,8 @@ public class KitchenManager : MonoBehaviour
 
         Kitchen.name = "Kitchen" + (currentLitchenCount + 1);// For changing gameobject name to see in hierarchy (optional)
     
-        Kitchen.GetComponent<Kitchen>().ScriptableKitchenData.SetUpdateDetails(Kitchen.name, 0);
-        Kitchen.GetComponent<Kitchen>().ScriptableKitchenData.SetHouseIsPurchased();
+        //Kitchen.GetComponent<Kitchen>().ScriptableKitchenData.SetUpdateDetails(Kitchen.name, 0);
+        //Kitchen.GetComponent<Kitchen>().ScriptableKitchenData.SetHouseIsPurchased();
         placedKitchens.Add(Kitchen);
         currentLitchenCount++;
     }
@@ -110,4 +112,39 @@ public class KitchenManager : MonoBehaviour
     {
         KitchenPanel.SetActive(false);
     }
+
+
+    #region MyRegion
+    public bool IsDirty => isDirty;
+    public object CaptureState()
+    {
+        return new Kitchen_Data
+        {
+            kitchenLevel = kitchenLevel
+        };
+    }
+    public void RestoreState(object state)
+    {
+        if (state is not Kitchen_Data data)
+            return;
+        kitchenLevel = data.kitchenLevel;
+        isDirty = false;
+
+    }
+    public void SetInitialData()
+    {
+
+    }
+    public void ClearDirty()
+    {
+        isDirty = false;
+    }
+
+
+    #endregion
+
+}
+public class Kitchen_Data
+{
+    public int kitchenLevel;
 }

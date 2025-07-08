@@ -4,9 +4,11 @@ using System.Collections.Generic;
 
 public class WarehouseManager : MonoBehaviour
 {
+  
+
     public GameObject[] warehouses; // Assign 4 warehouse GameObjects (only 1 active at start)
     public GameObject[] Tracks;
-    
+
     //WarehouseData CurrentWareHouseData;
     int currentWarehouseCount;
     int CurrentWarehouseId;
@@ -18,10 +20,12 @@ public class WarehouseManager : MonoBehaviour
     public Transform warehouseListParent; // ScrollView Content to hold buttons
     public GameObject warehouseItemPrefab; // UI item showing warehouse info
     public Button addWarehouseButton;
-    
+
     [Header("Belt Settings")]
     public Material BeltMat;
     public Vector2 scrollSpeed = new Vector2(0, 1f);
+
+
     private void Awake()
     {
         if (Instance == null)
@@ -31,21 +35,27 @@ public class WarehouseManager : MonoBehaviour
     }
     void Start()
     {
+        float storageUpgradeCost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, 0);
+        Debug.Log(storageUpgradeCost);
         currentWarehouseCount = 0;
         //Invoke("DelayOnStart",1);
         DelayOnStart();
 
 
     }
+    public void Dummy()
+    {
+
+    }
     public void DelayOnStart()
     {
-        
+
         for (int i = 0; i < warehouses.Length; i++)
         {
-           
+
             if (warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.HouseIsPurchased)
             {
-              
+
                 PlaceNewWarehouse();
                 UpdateUI();
             }
@@ -53,7 +63,7 @@ public class WarehouseManager : MonoBehaviour
     }
     public void PlaceNewWarehouse()
     {
-       
+
         GameObject WareHouse = warehouses[currentWarehouseCount];
         WareHouse.SetActive(true);
         WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().CurrentUpdate).gameObject.SetActive(true);
@@ -68,9 +78,9 @@ public class WarehouseManager : MonoBehaviour
     }
 
     public void BuyNewWarehouse()
-    { 
-        
-    
+    {
+
+
     }
 
     public void AddWarehouseButtonClicked()
@@ -95,7 +105,8 @@ public class WarehouseManager : MonoBehaviour
             item.GetComponentInChildren<Text>().text = wh.warehouseName;
 
             int index = i; // avoid closure issue
-            item.transform.Find("UpdateButton").GetComponent<Button>().onClick.AddListener(() => {
+            item.transform.Find("UpdateButton").GetComponent<Button>().onClick.AddListener(() =>
+            {
                 wh.UpdateWarehouse(); // call your update logic here
             });
         }
@@ -105,7 +116,7 @@ public class WarehouseManager : MonoBehaviour
     }
     private void Update()
     {
-        
+
 
         Vector2 offset = BeltMat.mainTextureOffset;
         offset += scrollSpeed * Time.deltaTime;
@@ -122,4 +133,8 @@ public class WarehouseManager : MonoBehaviour
     {
         panel.SetActive(false);
     }
+
+
+   
+
 }
