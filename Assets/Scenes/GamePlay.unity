@@ -31248,7 +31248,7 @@ MonoBehaviour:
   vanPrefab: {fileID: 96678022825217815, guid: e458279a783ca00459503f9a91469daf, type: 3}
   spawnPoint: {fileID: 1553852600}
   deliveryPoint: {fileID: 127392249}
-  Exit_point: {fileID: 1015535367}
+  Exit_point: {fileID: 0}
   spawnInterval: 20
 --- !u!4 &1731464365
 Transform:

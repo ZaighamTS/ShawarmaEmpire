@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerProgress : ISaveable
 {
     public static PlayerProgress Instance;
-    public string SaveKey => "";
+    public string SaveKey => "player_progress";
     PlayerProgress()
     {
 
@@ -13,7 +13,7 @@ public class PlayerProgress : ISaveable
     private int playerCash;
     private bool isDirty;
 
-    public int PLayerCash
+    public int PlayerCash
     {
         get => playerCash;
         set
@@ -25,18 +25,23 @@ public class PlayerProgress : ISaveable
     #region Save/Load
     public object CaptureState()
     {
-        return null;
+        return new PlayerProgress
+        {
+            PlayerCash = PlayerCash,
+        };
     }
 
     public void RestoreState(object state)
     {
-        if (state is not  PlayerProgressData data)
+        if (state is not PlayerProgressData data)
             return;
+        playerCash = data.playerCash;
+        isDirty = false;
     }
 
     public void SetInitialData()
     {
-        //Assign initial values if anything goes wrong
+        playerCash = 0;
     }
 
     public bool IsDirty => isDirty;
@@ -49,5 +54,5 @@ public class PlayerProgress : ISaveable
 }
 public class PlayerProgressData
 {
-
+    public int playerCash;
 }
