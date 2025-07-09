@@ -14,17 +14,44 @@ public class UIManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
-
-    public void UpdateUI()
+    private void OnEnable()
     {
-        if (coinsText != null)
-            coinsText.text = $"Coins: ${CurrencyManager.Instance.Coins:N0}";
+        ShawarmaSpawner.onShawarmaCreated += UpdateUI;
+    }
+    private void OnDisable()
+    {
+        ShawarmaSpawner.onShawarmaCreated -= UpdateUI;
+    }
+    public void UpdateUI(UIUpdateType updateType, float value = 0)
+    {
+        switch (updateType)
+        {
+            case UIUpdateType.Cash:
+                {
+                    if (coinsText != null)
+                        coinsText.text = $"Coins: ${CurrencyManager.Instance.Coins:N0}";
+                    break;
+                }
+            case UIUpdateType.Storage:
+                {
+                    if (storageText != null)
+                        storageText.text = $"Storage: {StorageManager.Instance.GetStoredShawarmas()} / {StorageManager.Instance.GetStorageCapacity()}";
+                    break;
+                }
+            case UIUpdateType.Multiplier:
+                {
+                    if (multiplierText != null && ShawarmaProductionSystem.Instance != null)
+                        multiplierText.text = $"Multiplier: {ShawarmaProductionSystem.Instance.GetMultiplier():0.0}x";
+                    break;
+                }
+            default:
+                {
+                    print($"No Handler For UpdateType {updateType}");
+                    break;
+                }
+        }
 
-        if (storageText != null)
-            storageText.text = $"Storage: {StorageManager.Instance.GetStoredShawarmas()} / {StorageManager.Instance.GetStorageCapacity()}";
 
-        if (multiplierText != null && ShawarmaProductionSystem.Instance != null)
-            multiplierText.text = $"Multiplier: {ShawarmaProductionSystem.Instance.GetMultiplier():0.0}x";
     }
     void SaveProgress()
     {
@@ -51,4 +78,10 @@ public class UIManager : MonoBehaviour
         //    deliveryPoints[i].currentShawarmas = DataBase.GetDeliveryPointCount(i);
         //}
     }
+}
+public enum UIUpdateType
+{
+    Cash,
+    Storage,
+    Multiplier
 }

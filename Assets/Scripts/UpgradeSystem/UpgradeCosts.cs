@@ -28,6 +28,7 @@ public enum ZoneType
 public record UpgradeConfig(int basePrice, float purchaseMultiplier, float upgradeMultiplier);
 public record CapacityConfig(int baseCapacity, float capacityMultiplier);
 public record ZoneConfig(int baseValue, float demandMultiplier);
+
 public record PerstigeConfig(float incomePercentageMultipler, float speedPercentageMultiplier, float upgradeCostPerstigeReduction, float goldenShawarmaSpawnRate);
 
 public static class UpgradeCosts

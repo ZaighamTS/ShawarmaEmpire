@@ -16,7 +16,7 @@ public class CurrencyManager : MonoBehaviour
     public void AddCoins(double amount)
     {
         Coins += amount;
-        UIManager.Instance?.UpdateUI();
+        //UIManager.Instance?.UpdateUI();
     }
 
     public bool SpendCoins(double amount)
@@ -24,7 +24,7 @@ public class CurrencyManager : MonoBehaviour
         if (Coins >= amount)
         {
             Coins -= amount;
-            UIManager.Instance?.UpdateUI();
+            //UIManager.Instance?.UpdateUI();
             return true;
         }
         return false;
@@ -33,7 +33,7 @@ public class CurrencyManager : MonoBehaviour
     public void ResetCoins()
     {
         Coins = 0;
-        UIManager.Instance?.UpdateUI();
+        //UIManager.Instance?.UpdateUI();
     }
 
 

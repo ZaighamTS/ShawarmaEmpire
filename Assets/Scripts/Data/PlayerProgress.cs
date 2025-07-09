@@ -22,6 +22,7 @@ public class PlayerProgress : ISaveable
 
     }
     private float playerCash;
+    private int chefStars;
     private bool isDirty;
 
     public float PlayerCash
@@ -30,7 +31,25 @@ public class PlayerProgress : ISaveable
         set
         {
             playerCash = value;
+            CheckChefStars();
             isDirty = true;
+        }
+    }
+    public int ChefStars
+    {
+        get => chefStars;
+        set
+        {
+            chefStars = value;
+            isDirty = true;
+        }
+    }
+    private void CheckChefStars()
+    {
+        var newStars = UpgradeCosts.GetChefStars(playerCash);
+        if (newStars > chefStars)
+        {
+            ChefStars = newStars;
         }
     }
     #region Save/Load
@@ -38,7 +57,8 @@ public class PlayerProgress : ISaveable
     {
         return new PlayerProgress
         {
-            PlayerCash = PlayerCash,
+            playerCash = playerCash,
+            chefStars = chefStars
         };
     }
 
@@ -47,6 +67,7 @@ public class PlayerProgress : ISaveable
         if (state is not PlayerProgressData data)
             return;
         playerCash = data.playerCash;
+        chefStars = data.chefStars;
         isDirty = false;
     }
 
@@ -66,4 +87,5 @@ public class PlayerProgress : ISaveable
 public class PlayerProgressData
 {
     public int playerCash;
+    public int chefStars;
 }

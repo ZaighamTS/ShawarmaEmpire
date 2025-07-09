@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using System.Linq;
 [System.Serializable]
 
 public class StorageUnit
 {
-    public int level = 0;
-
+    private int level = 0;
+    private int currentCapacity;
     // Adjustable per level in Inspector
     public float[] upgradeCosts;
     public int[] capacityPerLevelList;
@@ -55,28 +56,30 @@ public class StorageManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
-
-    public void StoreShawarma()
+    private void OnEnable()
+    {
+        ShawarmaSpawner.onStoreShawarma += StoreShawarma;
+    }
+    private void OnDisable()
+    {
+        ShawarmaSpawner.onStoreShawarma -= StoreShawarma;
+    }
+    public void StoreShawarma(int value)
     {
         if (currentShawarmas < GetStorageCapacity())
         {
-            currentShawarmas++;
-            UIManager.Instance?.UpdateUI();
+            currentShawarmas += value;
         }
     }
 
     public void ClearStorage()
     {
         currentShawarmas = 0;
-        UIManager.Instance?.UpdateUI();
     }
 
     public int GetStorageCapacity()
     {
-        int total = 0;
-        foreach (var unit in storageUnits)
-            total += unit.GetCapacity();
-        return total;
+        return storageUnits.Sum(unit => unit.GetCapacity()); ;
     }
 
     public int GetStoredShawarmas()
@@ -97,10 +100,7 @@ public class StorageManager : MonoBehaviour
         if (CurrencyManager.Instance.SpendCoins(cost))
         {
             unit.Upgrade();
-            UIManager.Instance?.UpdateUI();
+            //UIManager.Instance?.UpdateUI();
         }
     }
-
-
-
 }

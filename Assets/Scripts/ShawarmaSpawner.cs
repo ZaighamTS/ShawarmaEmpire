@@ -2,18 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Linq;
+using System;
+using Random = UnityEngine.Random;
 public class ShawarmaSpawner : MonoBehaviour
 {
-    
-    public ObjectPool objectPool; 
+
+    public static event Action<UIUpdateType, float> onShawarmaCreated;
+    public static event Action<int> onStoreShawarma;
+    PlayerProgress playerProgress;
+
+    public ObjectPool objectPool;
     [SerializeField]
-    public List<Target> _Targets = new List<Target>();
-    public bool CanGenShawarma=true;
+    public List<Target> targets = new List<Target>();
+    public bool CanGenShawarma = true;
     public static ShawarmaSpawner Instance;
     private Coroutine genRoutine;
-    [Range(0,1)]public float Delay;
+    [Range(0, 1)] public float Delay;
     public SliderController sliderController;
-    public WarehouseManager _WareHouseManager;
+    public WarehouseManager wareHouseManager;
+    [Header("Upgardes/Qulifiers")]
+    private int qualityBonus = 1;
+    private float generationBonus = .05f;
     private void Awake()
     {
         if (Instance == null)
@@ -21,17 +31,21 @@ public class ShawarmaSpawner : MonoBehaviour
             Instance = this;
         }
     }
+    private void Start()
+    {
+        playerProgress = PlayerProgress.Instance;
+    }
     public void CheckBeltMat()
     {
-        for (int i = 0; i < _Targets.Count; i++)
+        for (int i = 0; i < targets.Count; i++)
         {
-            if (!_Targets[i].HasSpace())
+            if (!targets[i].HasSpace())
             {
-                _WareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(false);
+                wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(false);
             }
             else
             {
-                _WareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(true);
+                wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(true);
             }
         }
     }
@@ -80,51 +94,55 @@ public class ShawarmaSpawner : MonoBehaviour
     public void OnTapButtonPressed()
     {
         ShawarmaGenFun();
-     
     }
     public void ShawarmaGenFun()
     {
-        if (CanGenShawarma&& sliderController.slider.value> sliderController.decreaseSpeed)
+        if (CanGenShawarma && sliderController.slider.value > sliderController.decreaseSpeed)
         {
             sliderController?.DecreaseSliderOnTap();
             Target currentTarget = GetAvailableTarget();
             GameObject obj = objectPool.GetPooledObject();
-            obj.transform.GetComponent<Shawarma>().SetTarget(currentTarget.targetPoint);
+            var shawarma = obj.transform.GetComponent<Shawarma>();
+            shawarma.SetTarget(currentTarget.targetPoint);
             currentTarget.AddObject();
             currentTarget.WareHouseMainObject.GetComponent<Warehouse>().OnShwarmaGen();
             obj.SetActive(true);
             //Below Logic to check avaiblity to accept shawarma in all warerhouse
-            int n = 0;
-            foreach (Target t in _Targets)
-            {
-                if (t.HasSpace())
-                {
-                    n++;
-                    break;
-                }
-            }
-            if (n == 0)
+            //int n = 0;
+            if (!targets.Any(t => t.HasSpace()))
             {
                 CanGenShawarma = false;
             }
-
-            //CheckBeltMat();
+            var shawarmaType = shawarma.shawarmaType;
+            var shawarmaValue = UpgradeCosts.GetShawarmaValue(qualityBonus);
+            var generationReward = shawarmaValue * generationBonus;
+            var shawarmaCount = 1;
+            //Add TapMultiplier Here,
+            onShawarmaCreated?.Invoke(UIUpdateType.Cash, generationReward);
+            onShawarmaCreated?.Invoke(UIUpdateType.Storage, shawarmaCount);
+            onStoreShawarma?.Invoke(1/**(Tap Multiplier)*/);
+            UpdateEarning(generationReward);
         }
+    }
+
+    private void UpdateEarning(float value)
+    {
+        playerProgress.PlayerCash += value;
+
     }
     private Target GetAvailableTarget()
     {
         List<Target> availableTargets = new List<Target>();
-
-        foreach (Target t in _Targets)
+        foreach (Target t in targets)
         {
-           if (t.HasSpace())
-           {
+            if (t.HasSpace())
+            {
                 availableTargets.Add(t);
-           }
-           if (!t.HasSpace())
-           {
+            }
+            if (!t.HasSpace())
+            {
                 t.CanEnter = false;     //Sets indiviuals status of target if there capacity is full
-           }        
+            }
         }
         if (availableTargets.Count == 0)
         {
@@ -134,10 +152,10 @@ public class ShawarmaSpawner : MonoBehaviour
         return availableTargets[randomIndex];
     }
 
-    public void AddNewTarget(int index, int capacity, Transform targetPosition,GameObject WarehouseObject)
+    public void AddNewTarget(int index, int capacity, Transform targetPosition, GameObject WarehouseObject)
     {
         CanGenShawarma = true;
-        _Targets.Add(new Target(index, capacity, targetPosition, WarehouseObject));
+        targets.Add(new Target(index, capacity, targetPosition, WarehouseObject));
     }
 
 }
@@ -149,8 +167,8 @@ public class Target
     public int Capacity;
     public int CurrentLoad;
     public Transform targetPoint;
-    public bool CanEnter=true;
-    public Target(int index,int capacity, Transform point,GameObject wareHouse)
+    public bool CanEnter = true;
+    public Target(int index, int capacity, Transform point, GameObject wareHouse)
     {
         Capacity = capacity;
         targetPoint = point;
@@ -174,9 +192,9 @@ public class Target
         if (CurrentLoad >= Capacity)
         {
             CanEnter = false;
-        }       
+        }
     }
-   
+
 }
 //foreach (Target t in _Targets)
 //{
@@ -187,3 +205,11 @@ public class Target
 //    }
 //}
 //return null;
+
+/// <summary>
+/// Will be used Coomon Arg for Updaes Once Finalized
+/// </summary>
+public class ShawarmaUpdate
+{
+
+}

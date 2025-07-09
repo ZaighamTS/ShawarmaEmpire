@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class Shawarma : MonoBehaviour
 {
-
+    internal ShawrmaType shawarmaType;
     public Transform target;
     private Vector3 InitialPos;
     private NavMeshAgent agent;
@@ -16,9 +16,9 @@ public class Shawarma : MonoBehaviour
     }
     private void OnStart()
     {
-       // target = GameObject.Find("TargetPoint").transform;
+        // target = GameObject.Find("TargetPoint").transform;
         agent = GetComponent<NavMeshAgent>();
-      //  Debug.Log("rrrrr   " + agent);
+        //  Debug.Log("rrrrr   " + agent);
         if (target != null)
         {
             agent.SetDestination(target.position);
@@ -28,9 +28,9 @@ public class Shawarma : MonoBehaviour
     public void SetTarget(Transform _Target)
     {
         target = _Target;
-       
-        //  Debug.Log("iii   "+target);
-        Invoke("OnStart",0.1f);
+        //Select Randomly on percentage chance of golden shawrma probability
+        shawarmaType = ShawrmaType.Regular;
+        Invoke("OnStart", 0.1f);
     }
 
     void Update()
@@ -38,15 +38,21 @@ public class Shawarma : MonoBehaviour
         // Optional: Continuously update destination if the target moves
         if (OnStartMove)
         {
-           // Debug.Log(agent.remainingDistance);
+            // Debug.Log(agent.remainingDistance);
             if (agent.remainingDistance < 2.1f)
             {
                 OnStartMove = false;
                 transform.position = InitialPos;
                 gameObject.SetActive(false);
-               
+
             }
-           // agent.SetDestination(target.position);
+            // agent.SetDestination(target.position);
         }
     }
+}
+public enum ShawrmaType
+{
+    Regular,
+    Rear,
+    Golden
 }

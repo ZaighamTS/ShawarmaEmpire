@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+
     public static GameManager Instance;
 
     public double money = 0;

@@ -58,16 +58,16 @@ public class ShawarmaProductionSystem : MonoBehaviour
         }
 
         // 👇 Add this for live UI feedback
-        UIManager.Instance?.UpdateUI();
+        //UIManager.Instance?.UpdateUI();
     }
 
     public void TapToCook()
     {
         if (StorageManager.Instance.GetStoredShawarmas() < StorageManager.Instance.GetStorageCapacity())
         {
-            StorageManager.Instance.StoreShawarma(); // Adds 1 shawarma
-            CurrencyManager.Instance.AddCoins(10);    // Adds $10 per shawarma
-            UIManager.Instance?.UpdateUI();          // ✅ Make sure to refresh UI after tap
+            //StorageManager.Instance.StoreShawarma(); // Adds 1 shawarma
+            //CurrencyManager.Instance.AddCoins(10);    // Adds $10 per shawarma
+            //UIManager.Instance?.UpdateUI();          // ✅ Make sure to refresh UI after tap
         }
 
         float timeSinceLastTap = Time.time - lastTapTime;
@@ -96,8 +96,8 @@ public class ShawarmaProductionSystem : MonoBehaviour
         double cashEarned = value * tapMultiplier;
 
         CurrencyManager.Instance.AddCoins(cashEarned);
-        StorageManager.Instance.StoreShawarma(); // Update centralized storage system
-        UIManager.Instance?.UpdateUI();          // 🔄 Realtime UI
+        //StorageManager.Instance.StoreShawarma(); // Update centralized storage system
+        //UIManager.Instance?.UpdateUI();          //  Realtime UI
 
         // Level Up Logic
         if (shawarmaProducedTotal >= targetShawarmaForNextLevel)
