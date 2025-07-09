@@ -3,139 +3,137 @@ using UnityEngine.EventSystems;
 
 public class CameraSwipeController : MonoBehaviour
 {
-    public Camera mainCamera;
-    public float swipeSpeed = 0.1f;
-    public Vector2 xLimits = new Vector2(-10f, 10f);
-    public Vector2 yLimits = new Vector2(-5f, 5f); // Adjust as needed
-    public float elasticFactor = 0.2f;
+    [Header("Camera Settings")]
+    public GameObject mainCamera;
+    public float swipeSpeed = 0.2f;
     public float bounceBackSpeed = 5f;
 
-    private Vector2 lastTouchPosition;
+    [Header("Movement Limits")]
+    public Vector2 xLimits = new Vector2(-10f, 10f);
+    public Vector2 zLimits = new Vector2(-10f, 10f);
+    public float elasticMargin = 1.5f;
+
+    private Vector2 lastInputPosition;
     private bool isDragging = false;
     private bool needsBounceBack = false;
-    private bool isHorizontalSwipe = false;
-    private bool swipeDirectionDetermined = false;
 
     void Update()
     {
-        bool inputActive = false;
+        HandleInput();
+        if (!isDragging && needsBounceBack)
+            BounceBack();
+    }
 
-        if (Input.touchCount == 1)
-        {
-            Touch touch = Input.GetTouch(0);
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject(touch.fingerId))
-                return;
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                lastTouchPosition = touch.position;
-                isDragging = true;
-                swipeDirectionDetermined = false;
-                inputActive = true;
-            }
-            else if (touch.phase == TouchPhase.Moved && isDragging)
-            {
-                Vector2 delta = touch.position - lastTouchPosition;
-
-                if (!swipeDirectionDetermined && delta.magnitude > 5f)
-                {
-                    isHorizontalSwipe = Mathf.Abs(delta.x) > Mathf.Abs(delta.y);
-                    swipeDirectionDetermined = true;
-                }
-
-                MoveCamera(delta, true);
-                lastTouchPosition = touch.position;
-                inputActive = true;
-            }
-            else if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
-            {
-                isDragging = false;
-                needsBounceBack = true;
-            }
-        }
+    private void HandleInput()
+    {
+        Vector2 inputPosition = Vector2.zero;
+        bool isTouch = false;
+        bool inputBegan = false;
+        bool inputMoved = false;
+        bool inputEnded = false;
 
 #if UNITY_EDITOR || UNITY_STANDALONE
         if (Input.GetMouseButtonDown(0))
         {
-            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-                return;
-
-            lastTouchPosition = Input.mousePosition;
-            isDragging = true;
-            swipeDirectionDetermined = false;
-            inputActive = true;
+            if (IsPointerOverUI()) return;
+            inputPosition = Input.mousePosition;
+            inputBegan = true;
         }
-        else if (Input.GetMouseButton(0) && isDragging)
+        else if (Input.GetMouseButton(0))
         {
-            Vector2 delta = (Vector2)Input.mousePosition - lastTouchPosition;
-
-            if (!swipeDirectionDetermined && delta.magnitude > 5f)
-            {
-                isHorizontalSwipe = Mathf.Abs(delta.x) > Mathf.Abs(delta.y);
-                swipeDirectionDetermined = true;
-            }
-
-            MoveCamera(delta, true);
-            lastTouchPosition = Input.mousePosition;
-            inputActive = true;
+            if (IsPointerOverUI()) return;
+            inputPosition = Input.mousePosition;
+            inputMoved = true;
         }
         else if (Input.GetMouseButtonUp(0))
+        {
+            inputEnded = true;
+        }
+#else
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (IsPointerOverUI(touch.fingerId)) return;
+
+            inputPosition = touch.position;
+            isTouch = true;
+
+            switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    inputBegan = true;
+                    break;
+                case TouchPhase.Moved:
+                    inputMoved = true;
+                    break;
+                case TouchPhase.Ended:
+                case TouchPhase.Canceled:
+                    inputEnded = true;
+                    break;
+            }
+        }
+#endif
+
+        if (inputBegan)
+        {
+            lastInputPosition = inputPosition;
+            isDragging = true;
+            needsBounceBack = false;
+        }
+        else if (inputMoved && isDragging)
+        {
+            Vector2 delta = inputPosition - lastInputPosition;
+            MoveCamera(delta);
+            lastInputPosition = inputPosition;
+        }
+        else if (inputEnded)
         {
             isDragging = false;
             needsBounceBack = true;
         }
-#endif
-
-        if (!inputActive && needsBounceBack)
-        {
-            BounceBack();
-        }
     }
 
-    void MoveCamera(Vector2 delta, bool allowElastic)
+    private void MoveCamera(Vector2 delta)
     {
-        Vector3 move = Vector3.zero;
+        // Get camera's right and forward directions (ignore vertical component)
+        Vector3 camRight = mainCamera.transform.right;
+        Vector3 camForward = Vector3.Cross(camRight, Vector3.up); // ensures planar forward
 
-        if (swipeDirectionDetermined)
-        {
-            if (isHorizontalSwipe)
-            {
-                move = new Vector3(delta.x, 0f, 0f) * swipeSpeed * Time.deltaTime;
-            }
-            else
-            {
-                move = new Vector3(0f, -delta.y, 0f) * swipeSpeed * Time.deltaTime; // invert Y
-            }
-        }
+        // Calculate movement relative to camera's orientation
+        Vector3 move = (-delta.x * camRight + -delta.y * camForward) * swipeSpeed * Time.deltaTime;
 
         Vector3 newPos = mainCamera.transform.position + move;
 
-        if (!allowElastic)
-        {
-            newPos.x = Mathf.Clamp(newPos.x, xLimits.x, xLimits.y);
-            newPos.y = Mathf.Clamp(newPos.y, yLimits.x, yLimits.y);
-        }
-        else
-        {
-            newPos.x = Mathf.Clamp(newPos.x, xLimits.x - elasticFactor, xLimits.y + elasticFactor);
-            newPos.y = Mathf.Clamp(newPos.y, yLimits.x - elasticFactor, yLimits.y + elasticFactor);
-        }
+        // Clamp with elastic margin
+        newPos.x = Mathf.Clamp(newPos.x, xLimits.x - elasticMargin, xLimits.y + elasticMargin);
+        newPos.z = Mathf.Clamp(newPos.z, zLimits.x - elasticMargin, zLimits.y + elasticMargin);
 
         mainCamera.transform.position = newPos;
     }
-    void BounceBack()
+
+    private void BounceBack()
     {
         Vector3 pos = mainCamera.transform.position;
         float clampedX = Mathf.Clamp(pos.x, xLimits.x, xLimits.y);
-        float clampedY = Mathf.Clamp(pos.y, yLimits.x, yLimits.y);
+        float clampedZ = Mathf.Clamp(pos.z, zLimits.x, zLimits.y);
+        Vector3 target = new Vector3(clampedX, pos.y, clampedZ);
 
-        Vector3 target = new Vector3(clampedX, clampedY, pos.z);
         mainCamera.transform.position = Vector3.Lerp(pos, target, Time.deltaTime * bounceBackSpeed);
 
-        if (Vector3.Distance(mainCamera.transform.position, target) < 0.01f)
+        if (Vector3.Distance(pos, target) < 0.01f)
         {
             mainCamera.transform.position = target;
             needsBounceBack = false;
         }
+    }
+
+    private bool IsPointerOverUI(int fingerId = -1)
+    {
+        if (EventSystem.current == null) return false;
+#if UNITY_EDITOR || UNITY_STANDALONE
+        return EventSystem.current.IsPointerOverGameObject();
+#else
+        return EventSystem.current.IsPointerOverGameObject(fingerId);
+#endif
     }
 }
