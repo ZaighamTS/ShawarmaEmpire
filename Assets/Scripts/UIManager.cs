@@ -35,7 +35,7 @@ public class UIManager : MonoBehaviour
             case UIUpdateType.Storage:
                 {
                     if (storageText != null)
-                        storageText.text = $"Storage: {StorageManager.Instance.GetStoredShawarmas()} / {StorageManager.Instance.GetStorageCapacity()}";
+                        storageText.text = $"Storage: {StorageManager.storageManagerInstance.GetStoredShawarmas()} / {StorageManager.storageManagerInstance.GetStorageCapacity()}";
                     break;
                 }
             case UIUpdateType.Multiplier:
@@ -53,30 +53,24 @@ public class UIManager : MonoBehaviour
 
 
     }
-    void SaveProgress()
+    void OnUserClickUpgrade(int type)
     {
-        //DataBase.PlayerCash = playerCash;
-        //DataBase.TotalShawarmas += 1;
-
-        //for (int i = 0; i < deliveryPoints.Length; i++)
-        //{
-        //    DataBase.SetDeliveryPointLevel(i, deliveryPoints[i].upgradeLevel);
-        //    DataBase.SetDeliveryPointCount(i, deliveryPoints[i].currentShawarmas);
-        //}
-
-        //DataBase.Save();
-    }
-
-    void LoadProgress()
-    {
-        //playerCash = DataBase.PlayerCash;
-
-        //for (int i = 0; i < deliveryPoints.Length; i++)
-        //{
-        //    deliveryPoints[i].upgradeLevel = DataBase.GetDeliveryPointLevel(i);
-        //    deliveryPoints[i].capacity = deliveryPoints[i].capacityPerLevel[deliveryPoints[i].upgradeLevel];
-        //    deliveryPoints[i].currentShawarmas = DataBase.GetDeliveryPointCount(i);
-        //}
+        UpgradeType upgradeType = (UpgradeType)type;
+        switch (upgradeType)
+        {
+            case UpgradeType.Kitchen:
+                {
+                    break;
+                }
+            case UpgradeType.Storage:
+                {
+                    break;
+                }
+            case UpgradeType.DeliveryVan:
+                {
+                    break;
+                }
+        }
     }
 }
 public enum UIUpdateType

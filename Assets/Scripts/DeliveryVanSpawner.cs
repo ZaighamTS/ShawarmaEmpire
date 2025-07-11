@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.Port;
@@ -58,6 +59,7 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
         van.transform.SetParent(transform);
         DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();
         deliveryVan.exitOffset = Exit_point;
+        //Pass Unit To Van To Deduct At Delivery
         deliveryVan.MoveTo(deliveryPoint.position);
     }
     #region Save/Load

@@ -24,14 +24,22 @@ public class PlayerProgress : ISaveable
     private float playerCash;
     private int chefStars;
     private bool isDirty;
-
+    private float totalEarnings;
     public float PlayerCash
     {
         get => playerCash;
         set
         {
             playerCash = value;
-            CheckChefStars();
+            isDirty = true;
+        }
+    }
+    public float TotalEarnings
+    {
+        get => totalEarnings;
+        set
+        {
+            totalEarnings = value;
             isDirty = true;
         }
     }
@@ -42,14 +50,6 @@ public class PlayerProgress : ISaveable
         {
             chefStars = value;
             isDirty = true;
-        }
-    }
-    private void CheckChefStars()
-    {
-        var newStars = UpgradeCosts.GetChefStars(playerCash);
-        if (newStars > chefStars)
-        {
-            ChefStars = newStars;
         }
     }
     #region Save/Load

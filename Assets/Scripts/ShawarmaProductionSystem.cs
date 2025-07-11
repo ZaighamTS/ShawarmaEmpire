@@ -63,7 +63,7 @@ public class ShawarmaProductionSystem : MonoBehaviour
 
     public void TapToCook()
     {
-        if (StorageManager.Instance.GetStoredShawarmas() < StorageManager.Instance.GetStorageCapacity())
+        if (StorageManager.storageManagerInstance.GetStoredShawarmas() < StorageManager.storageManagerInstance.GetStorageCapacity())
         {
             //StorageManager.Instance.StoreShawarma(); // Adds 1 shawarma
             //CurrencyManager.Instance.AddCoins(10);    // Adds $10 per shawarma

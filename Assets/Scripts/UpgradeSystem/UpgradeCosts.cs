@@ -25,11 +25,12 @@ public enum ZoneType
     Y,
     Z
 }
-public record UpgradeConfig(int basePrice, float purchaseMultiplier, float upgradeMultiplier);
+public record UpgradeConfig(float basePrice, float purchaseMultiplier, float upgradeMultiplier);
 public record CapacityConfig(int baseCapacity, float capacityMultiplier);
 public record ZoneConfig(int baseValue, float demandMultiplier);
 
-public record PerstigeConfig(float incomePercentageMultipler, float speedPercentageMultiplier, float upgradeCostPerstigeReduction, float goldenShawarmaSpawnRate);
+public record PrestigeConfig(float incomePercentageMultipler, float speedPercentageMultiplier, float upgradeCostPerstigeReduction, float goldenShawarmaSpawnRate);
+
 
 public static class UpgradeCosts
 {
@@ -58,12 +59,17 @@ public static class UpgradeCosts
         {ZoneType.X,new(100,1.3f) },
         {ZoneType.Y,new(100,1.2f) }
     };
+    public static readonly PrestigeConfig prestigeConfig = new(5f, 2f, -1f, 1f);
+
+    public static float shwarmaBaseValue = 200;
+    public static float cookRateBaseValue = 200;
 
     public static float GetUpgradeCost(UpgradeType itemType, int level)
     {
         if (!priceMap.TryGetValue(itemType, out var config))
             throw new ArgumentException($"Unknown Item Type : {itemType}");
-        return config.basePrice * Mathf.Pow(level, config.upgradeMultiplier);
+        float costReduction = GetPerstigeCostReduction(PlayerProgress.Instance.ChefStars);
+        return (config.basePrice - costReduction) * Mathf.Pow(level, config.upgradeMultiplier);
     }
 
     public static float GetDeliveryCapacity(CapacityType capacityType, int level)
@@ -81,13 +87,14 @@ public static class UpgradeCosts
 
     public static float GetShawarmaValue(int qualityBonus)
     {
-        float baseValue = 200;
-        return baseValue * (1 + qualityBonus);
+
+        float extraValue = GetPerstigeExtraIncome(PlayerProgress.Instance.ChefStars);
+        return (shwarmaBaseValue + extraValue) * (1 + qualityBonus);
     }
     public static float GetCookRate(float tapRate, float tapPower, float auoChefBonus)
     {
-        float baseValue = 200;
-        return baseValue + (tapPower * tapRate) + auoChefBonus;
+        float extraValue = GetPrestigeExtraCookRate(PlayerProgress.Instance.ChefStars);
+        return (cookRateBaseValue + extraValue) + (tapPower * tapRate) + auoChefBonus;
     }
     public static float GetDeliveryInterval(int upgradeLevel)
     {
@@ -98,5 +105,18 @@ public static class UpgradeCosts
     public static int GetChefStars(float totalEarnings)
     {
         return Mathf.FloorToInt(Mathf.Log10(totalEarnings / 100000));
+    }
+    static float GetPerstigeExtraIncome(int level)
+    {
+        return level * .05f * shwarmaBaseValue;
+    }
+    static float GetPerstigeCostReduction(int level)
+    {
+        return level * .01f * shwarmaBaseValue;
+    }
+    static float GetPrestigeExtraCookRate(int level)
+    {
+        return level * .02f * shwarmaBaseValue;
+
     }
 }

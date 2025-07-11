@@ -14,13 +14,13 @@ public class UpgradeManager : MonoBehaviour
 
     public void BuyUpgrade()
     {
-        if (GameManager.Instance.money >= upgradeCost)
-        {
-            GameManager.Instance.money -= upgradeCost;
-            incomeMultiplier += 1;
-            upgradeCost *= 2;
-            UpdateUI();
-        }
+        //if (GameManager.gameManagerInstance.money >= upgradeCost)
+        //{
+        //    GameManager.gameManagerInstance.money -= upgradeCost;
+        //    incomeMultiplier += 1;
+        //    upgradeCost *= 2;
+        //    UpdateUI();
+        //}
     }
 
     public void UpdateUI()

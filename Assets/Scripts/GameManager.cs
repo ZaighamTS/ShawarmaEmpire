@@ -1,39 +1,54 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    PlayerProgress playerProgress;
+    public static GameManager gameManagerInstance;
 
-    public static GameManager Instance;
-
-    public double money = 0;
-   
-
+    private float chefStars;
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        LoadData();
+        if (gameManagerInstance == null)
+            gameManagerInstance = this;
     }
-
+    private void Start()
+    {
+        playerProgress = PlayerProgress.Instance;
+    }
     //private void Update()
     //{
     //    moneyText.text = "$" + money.ToString("F0");
     //}
-
-    public void AddMoney(double amount)
+    internal void AddCash(float value)
     {
-        money += amount;
+        playerProgress.PlayerCash += value;
+        playerProgress.TotalEarnings += value;
+        //Passs Total Earning Of All TIme
+        CheckChefStars(playerProgress.TotalEarnings);
+    }
+    internal bool SpendCash(float Value)
+    {
+        if (Value <= playerProgress.PlayerCash)
+        {
+            playerProgress.PlayerCash -= Value;
+            return true;
+        }
+        return false;
     }
 
-    public void SaveData()
+    private void CheckChefStars(float playerCash)
     {
-        PlayerPrefs.SetString("Money", money.ToString());
-        PlayerPrefs.Save();
+        var newStars = UpgradeCosts.GetChefStars(playerCash);
+        if (newStars > chefStars)
+        {
+            playerProgress.ChefStars = newStars;
+            ResetPlayerStats();
+        }
     }
-
-    public void LoadData()
+    private void ResetPlayerStats()
     {
-        if (PlayerPrefs.HasKey("Money"))
-            double.TryParse(PlayerPrefs.GetString("Money"), out money);
+        playerProgress.PlayerCash = 0;
     }
 }

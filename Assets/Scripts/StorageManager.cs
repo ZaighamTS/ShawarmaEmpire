@@ -6,55 +6,65 @@ using System.Linq;
 
 public class StorageUnit
 {
-    private int level = 0;
+    private int crrentLevel = 0;
     private int currentCapacity;
+    [SerializeField]
+    private int maxUpgradeLevel;
     // Adjustable per level in Inspector
     public float[] upgradeCosts;
     public int[] capacityPerLevelList;
 
     public int GetCapacity()
     {
-        if (capacityPerLevelList != null && level < capacityPerLevelList.Length)
-            return capacityPerLevelList[level];
-        else if (capacityPerLevelList != null && capacityPerLevelList.Length > 0)
-            return capacityPerLevelList[capacityPerLevelList.Length - 1];
-        else
-            return 500; // fallback default
+        //if (capacityPerLevelList != null && level < capacityPerLevelList.Length)
+        //    return capacityPerLevelList[level];
+        //else if (capacityPerLevelList != null && capacityPerLevelList.Length > 0)
+        //    return capacityPerLevelList[capacityPerLevelList.Length - 1];
+        //else
+        //    return 500; // fallback default
+        return currentCapacity;
     }
 
     public float GetUpgradeCost()
     {
-        if (upgradeCosts != null && level < upgradeCosts.Length)
-            return upgradeCosts[level];
-        else if (upgradeCosts != null && upgradeCosts.Length > 0)
-            return upgradeCosts[upgradeCosts.Length - 1];
-        else
-            return 100f; // fallback default
+        //if (upgradeCosts != null && level < upgradeCosts.Length)
+        //    return upgradeCosts[level];
+        //else if (upgradeCosts != null && upgradeCosts.Length > 0)
+        //    return upgradeCosts[upgradeCosts.Length - 1];
+        //else
+        //    return 100f; // fallback default
+        return UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, crrentLevel);
     }
 
     public bool CanUpgrade()
     {
-        return level < upgradeCosts.Length && level < capacityPerLevelList.Length;
+        return crrentLevel < maxUpgradeLevel && crrentLevel < capacityPerLevelList.Length;
     }
 
     public void Upgrade()
     {
-        level++;
+        crrentLevel++;
     }
 }
 
 // --- STORAGE MANAGER ---
 public class StorageManager : MonoBehaviour
 {
-    public static StorageManager Instance;
+    public static StorageManager storageManagerInstance;
 
     public List<StorageUnit> storageUnits = new List<StorageUnit>();
     public int currentShawarmas = 0;
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (storageManagerInstance == null)
+        {
+            storageManagerInstance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
     private void OnEnable()
     {
@@ -71,7 +81,13 @@ public class StorageManager : MonoBehaviour
             currentShawarmas += value;
         }
     }
-
+    internal void DeliverShawarma(int value)
+    {
+        if (value >= GetStorageCapacity())
+        {
+            currentShawarmas -= value;
+        }
+    }
     public void ClearStorage()
     {
         currentShawarmas = 0;
@@ -94,13 +110,10 @@ public class StorageManager : MonoBehaviour
         StorageUnit unit = storageUnits[index];
 
         if (!unit.CanUpgrade()) return;
-
         float cost = unit.GetUpgradeCost();
-
-        if (CurrencyManager.Instance.SpendCoins(cost))
+        if (GameManager.gameManagerInstance.SpendCash(cost))
         {
             unit.Upgrade();
-            //UIManager.Instance?.UpdateUI();
         }
     }
 }

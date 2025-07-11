@@ -21,9 +21,11 @@ public class ShawarmaSpawner : MonoBehaviour
     [Range(0, 1)] public float Delay;
     public SliderController sliderController;
     public WarehouseManager wareHouseManager;
+
     [Header("Upgardes/Qulifiers")]
     private int qualityBonus = 1;
     private float generationBonus = .05f;
+
     private void Awake()
     {
         if (Instance == null)
@@ -121,15 +123,10 @@ public class ShawarmaSpawner : MonoBehaviour
             onShawarmaCreated?.Invoke(UIUpdateType.Cash, generationReward);
             onShawarmaCreated?.Invoke(UIUpdateType.Storage, shawarmaCount);
             onStoreShawarma?.Invoke(1/**(Tap Multiplier)*/);
-            UpdateEarning(generationReward);
+            GameManager.gameManagerInstance.AddCash(generationReward);
         }
     }
 
-    private void UpdateEarning(float value)
-    {
-        playerProgress.PlayerCash += value;
-
-    }
     private Target GetAvailableTarget()
     {
         List<Target> availableTargets = new List<Target>();
