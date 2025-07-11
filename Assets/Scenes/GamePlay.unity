@@ -831,7 +831,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.000015278929, y: 119.69}
+  m_AnchoredPosition: {x: -0.000015278929, y: 119.6875}
   m_SizeDelta: {x: 1080, y: 239.37}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &44169500
@@ -3303,6 +3303,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 170121365}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &170851917
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 170851918}
+  m_Layer: 0
+  m_Name: Initiate Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &170851918
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170851917}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.031, y: 0, z: 0.738}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1500403946}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &176368039
 GameObject:
   m_ObjectHideFlags: 0
@@ -5065,6 +5096,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: c30eca33cd24517488d804eec74a16ff, type: 3}
   m_PrefabInstance: {fileID: 274028855}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &274111276
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 274111277}
+  m_Layer: 0
+  m_Name: Exit Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &274111277
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 274111276}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.031, y: 0, z: -0.553}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1500403946}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &280114921
 GameObject:
   m_ObjectHideFlags: 0
@@ -6514,7 +6576,7 @@ MonoBehaviour:
   CanGenShawarma: 1
   Delay: 0.2
   sliderController: {fileID: 116202204}
-  _WareHouseManager: {fileID: 1992097629}
+  wareHouseManager: {fileID: 0}
 --- !u!4 &337634051
 Transform:
   m_ObjectHideFlags: 0
@@ -18916,6 +18978,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_Envr_Nature_Tree_Large_Dead_02
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 244dd70978133b94dabd80585bc69180, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -27657,7 +27723,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.002243042, y: 580.4104}
+  m_AnchoredPosition: {x: -0.002243042, y: 580.41406}
   m_SizeDelta: {x: 720.29004, y: 161.62878}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1414975669
@@ -29198,6 +29264,112 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: bb8c33b11644f1f4d9f130dd1b716715, type: 3}
   m_PrefabInstance: {fileID: 1495302366}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1500403945
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1500403946}
+  - component: {fileID: 1500403947}
+  - component: {fileID: 1500403949}
+  - component: {fileID: 1500403948}
+  m_Layer: 0
+  m_Name: Dummy Catering
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1500403946
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500403945}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.13052624, z: 0, w: 0.9914449}
+  m_LocalPosition: {x: -20.4, y: 7.6, z: -6.1}
+  m_LocalScale: {x: 720, y: 720, z: 720}
+  m_ConstrainProportionsScale: 1
+  m_Children:
+  - {fileID: 170851918}
+  - {fileID: 1740458590}
+  - {fileID: 274111277}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -15, z: 0}
+--- !u!114 &1500403947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500403945}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc336b799331062499a5878b0a4b4cc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cateringVehicles:
+  - {fileID: 5998705069147292812, guid: 7e25c04cc710fe342a07f1595703d71d, type: 3}
+  - {fileID: 7565394858735520339, guid: fc204871702b7d940ba3d6a40485bddf, type: 3}
+  vehicleSpeed: 1
+  instantiatePoint: {fileID: 170851918}
+  pickUpPoint: {fileID: 1740458590}
+  exitPoint: {fileID: 274111277}
+--- !u!23 &1500403948
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500403945}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 228dcca776d9a8d43a2e7df8347555a7, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1500403949
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1500403945}
+  m_Mesh: {fileID: -5495902117074765545, guid: 0da3cbafe473c3a4ebfaee7fbadf26e1, type: 3}
 --- !u!1 &1500793519
 GameObject:
   m_ObjectHideFlags: 0
@@ -30346,7 +30518,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -0.002243042, y: 580.4104}
+  m_AnchoredPosition: {x: -0.002243042, y: 580.41406}
   m_SizeDelta: {x: 720.29004, y: 161.62878}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1548703336
@@ -31874,7 +32046,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d1e0f45d7496cd468d22ffc53b311d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  money: 0
 --- !u!4 &1631740664
 Transform:
   m_ObjectHideFlags: 0
@@ -33710,6 +33881,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1735630560}
   m_Mesh: {fileID: 6954991387275928642, guid: 05bf99088d11dbe46aa43e410e7d5aef, type: 3}
+--- !u!1 &1740458589
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1740458590}
+  m_Layer: 0
+  m_Name: Pickup Point
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1740458590
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1740458589}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.031, y: 0, z: -0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1500403946}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1742276311
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -33858,6 +34060,10 @@ PrefabInstance:
     - target: {fileID: 6551278971015524488, guid: f4507966a88623e4f833e51f1251bfce, type: 3}
       propertyPath: m_Name
       value: SM_Props_Interior_SuperMarket_Item_Food_Cookie_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6551278971015524488, guid: f4507966a88623e4f833e51f1251bfce, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -43883,7 +44089,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   storageUnits:
-  - level: 0
+  - maxUpgradeLevel: 0
     upgradeCosts:
     - 0
     - 150
@@ -43892,7 +44098,7 @@ MonoBehaviour:
     - 1200
     - 2400
     capacityPerLevelList: f4010000ee020000e8030000e2040000dc050000d0070000
-  - level: 1
+  - maxUpgradeLevel: 0
     upgradeCosts:
     - 0
     - 150
@@ -43901,7 +44107,7 @@ MonoBehaviour:
     - 1200
     - 2400
     capacityPerLevelList: f4010000ee020000e8030000e2040000dc050000d0070000
-  - level: 2
+  - maxUpgradeLevel: 0
     upgradeCosts:
     - 0
     - 150
@@ -43910,7 +44116,7 @@ MonoBehaviour:
     - 1200
     - 2400
     capacityPerLevelList: f4010000ee020000e8030000e2040000dc050000d0070000
-  - level: 3
+  - maxUpgradeLevel: 0
     upgradeCosts:
     - 0
     - 150
@@ -43919,7 +44125,7 @@ MonoBehaviour:
     - 1200
     - 2400
     capacityPerLevelList: f4010000000000000000000000000000dc050000d0070000
-  - level: 4
+  - maxUpgradeLevel: 0
     upgradeCosts:
     - 0
     - 150
@@ -43928,7 +44134,7 @@ MonoBehaviour:
     - 1200
     - 2400
     capacityPerLevelList: f4010000ee020000e8030000e2040000dc050000d0070000
-  - level: 5
+  - maxUpgradeLevel: 0
     upgradeCosts:
     - 0
     - 150
@@ -46744,3 +46950,4 @@ SceneRoots:
   - {fileID: 71256946}
   - {fileID: 993151200}
   - {fileID: 1063893558}
+  - {fileID: 1500403946}

@@ -1,5 +1,7 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.Experimental.GraphView.Port;
@@ -23,11 +25,16 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     {
         playerProgress = PlayerProgress.Instance;
         SaveLoadManager.saveLoadManagerInstance.Register(this);
-        StartCoroutine(SpawnVanLoop());
+        StartSpawning().Forget();
     }
     void OnDestroy()
     {
         SaveLoadManager.saveLoadManagerInstance.Unregister(this);
+    }
+    async UniTask StartSpawning()
+    {
+        await UniTask.WaitUntil(() => StorageManager.storageManagerInstance != null);
+        StartCoroutine(SpawnVanLoop());
     }
     IEnumerator SpawnVanLoop()
     {
