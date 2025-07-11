@@ -29,7 +29,10 @@ public class UIManager : MonoBehaviour
             case UIUpdateType.Cash:
                 {
                     if (coinsText != null)
-                        coinsText.text = $"Coins: ${CurrencyManager.Instance.Coins:N0}";
+                    {
+                        coinsText.text = $"Coins: ${GameManager.gameManagerInstance.GetCurrentCash():N0}";
+                    }
+                       
                     break;
                 }
             case UIUpdateType.Storage:

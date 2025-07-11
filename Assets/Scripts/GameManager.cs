@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
     {
         playerProgress = PlayerProgress.Instance;
     }
+    internal float GetCurrentCash()
+    {
+        return playerProgress.PlayerCash;
+    }
     //private void Update()
     //{
     //    moneyText.text = "$" + money.ToString("F0");
