@@ -89,11 +89,17 @@ public static class UpgradeCosts
     {
 
         float extraValue = GetPerstigeExtraIncome(PlayerProgress.Instance.ChefStars);
+
+        float breadValue = GetBreadUpgradeValue(1);
+        float chickenValue = GetChickenUpgradeValue(1);
+        float sauceValue = GetSauceUpgradeValue(1);
+
         return (shwarmaBaseValue + extraValue) * (1 + qualityBonus);
     }
     public static float GetCookRate(float tapRate, float tapPower, float auoChefBonus)
     {
         float extraValue = GetPrestigeExtraCookRate(PlayerProgress.Instance.ChefStars);
+        float machineRate = GetMachineUpgradeCookRate(1);
         return (cookRateBaseValue + extraValue) + (tapPower * tapRate) + auoChefBonus;
     }
     public static float GetDeliveryInterval(int upgradeLevel)
@@ -106,6 +112,12 @@ public static class UpgradeCosts
     {
         return Mathf.FloorToInt(Mathf.Log10(totalEarnings / 100000));
     }
+    public static float GetTotalSalaries(int officeLevel)
+    {
+        return 1;
+    }
+
+
     static float GetPerstigeExtraIncome(int level)
     {
         return level * .05f * shwarmaBaseValue;
@@ -119,4 +131,25 @@ public static class UpgradeCosts
         return level * .02f * shwarmaBaseValue;
 
     }
+
+    #region Raw Material Upgrades
+    static float GetBreadUpgradeValue(int upgradeLevel)
+    {
+        return 0;
+    }
+    static float GetChickenUpgradeValue(int upgradeLevel)
+    {
+        return 0;
+    }
+    static float GetSauceUpgradeValue(int upgradeLevel)
+    {
+        return 0;
+    }
+    #endregion
+    #region Cooking Machines Upgrade
+    static float GetMachineUpgradeCookRate(int level)
+    {
+        return 0;
+    }
+    #endregion
 }
