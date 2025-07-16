@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
+
 
 public class WarehouseManager : MonoBehaviour
 {
@@ -10,11 +10,10 @@ public class WarehouseManager : MonoBehaviour
     public GameObject[] warehouses; // Assign 4 warehouse GameObjects (only 1 active at start)
     public GameObject[] Tracks;
     public GameObject[] Positions;
-    //WarehouseData CurrentWareHouseData;
     int currentWarehouseCount;
-
+   
     public static WarehouseManager Instance;
-    private List<GameObject> placedWarehouses = new List<GameObject>();
+    public List<GameObject> placedWarehouses = new List<GameObject>();
     [SerializeField] int CurrentCash; // Temporary cash
     int currentSelectedObject;
     int requiredCostToUpgrade;
@@ -35,18 +34,33 @@ public class WarehouseManager : MonoBehaviour
         {
             Instance = this;
         }
+        ActionPerformedOneTime();
+    }
+    public void ActionPerformedOneTime()
+    {
+        const string oneTimeKey = "OneTime";
+
+        if (PlayerPrefs.GetInt(oneTimeKey) != 1)
+        {
+            PlayerPrefs.SetInt(oneTimeKey, 1);
+
+            string purchaseKey = warehouses[0].GetComponent<Warehouse>().warehouseName + "Purchased";
+            PlayerPrefs.SetInt(purchaseKey, 1);
+        }
+        
     }
     void Start()
     {
        
-        DelayOnStart();
+        Invoke("DelayOnStart",0.11f);
     }
    
     public void DelayOnStart()
     {
+        
         for (int i = 0; i < warehouses.Length; i++)
         {
-            if (warehouses[i].GetComponent<Warehouse>().HouseIsPurchased)
+            if (PlayerPrefs.GetInt(warehouses[i].GetComponent<Warehouse>().warehouseName+ "Purchased") ==1)
             {
                 currentSelectedObject = i;
                 PlaceNewWarehouse();

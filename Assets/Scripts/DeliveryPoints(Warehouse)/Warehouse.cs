@@ -1,8 +1,7 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
+
 using UnityEngine;
-using UnityEngine.EventSystems;
-using static UnityEditor.Experimental.GraphView.Port;
+
 
 public class Warehouse : MonoBehaviour, ISaveable
 {
@@ -13,11 +12,11 @@ public class Warehouse : MonoBehaviour, ISaveable
     public int CurrentLoad;
     public string warehouseName;
     public int CurrentUpdate;
-   
+    private int currentLevel;
     [Header("This Class References")]
     private bool isDirty = false;
     public string SaveKey => "warehouse" + id;
-
+    public Transform DeliveryPosition;
     public bool HouseIsPurchased;
     [SerializeField] public List<UpdateDetails> updates = new List<UpdateDetails>();
     
@@ -38,17 +37,15 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     public void SetHouseIsPurchased()
     {
-        PlayerPrefs.SetInt(warehouseName,1);
+        PlayerPrefs.SetInt(warehouseName+"Purchased",1);
         HouseIsPurchased = true;
     }
 
 
     private void Awake()
     {
-        
-        CurrentUpdate = GetUpdateDetails(warehouseName);   
-        Capacity = updates[CurrentUpdate].Capacity;
-        if (PlayerPrefs.GetInt(warehouseName) == 1)
+        Debug.Log("check");
+        if (PlayerPrefs.GetInt(warehouseName+ "Purchased") == 1)
         {
             HouseIsPurchased = true;
         }
@@ -56,14 +53,17 @@ public class Warehouse : MonoBehaviour, ISaveable
         {
             HouseIsPurchased = false;
         }
+        CurrentUpdate = GetUpdateDetails(warehouseName);   
+        Capacity = updates[CurrentUpdate].Capacity;
+       
     }
     private void Start()
     {
       //  if (!HouseIsPurchased)
-        {
+        
            
             
-        }
+        
         SaveLoadManager.saveLoadManagerInstance.Register(this);
     }
     private void OnDestroy()
@@ -132,7 +132,8 @@ public class Warehouse : MonoBehaviour, ISaveable
         Capacity = data.capacity;
         CurrentLoad = data.currentLoad;
         warehouseName = data.warehouseName;
-        CurrentUpdate = data.currentUpdate;  
+        CurrentUpdate = data.currentUpdate; 
+        currentLevel = data.currentLevel;
         isDirty = false;
     }
     public void SetInitialData()
@@ -154,7 +155,8 @@ public class WarehouseDataNew
     public int currentLoad;
     public string warehouseName;
     public int currentUpdate;
-  
+    public int currentLevel;
+
 }
 [System.Serializable]
 public class UpdateDetails

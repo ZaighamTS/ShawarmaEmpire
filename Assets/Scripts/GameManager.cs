@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         playerProgress = PlayerProgress.Instance;
+        ExtraBuildingsPlacement placement = FindObjectOfType<ExtraBuildingsPlacement>();
+        placement.CurrentLevel = 1;
     }
     internal float GetCurrentCash()
     {

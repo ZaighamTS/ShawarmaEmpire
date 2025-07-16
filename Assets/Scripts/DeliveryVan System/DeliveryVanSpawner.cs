@@ -1,10 +1,9 @@
 using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
+
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.Port;
+
 
 public class DeliveryVanSpawner : MonoBehaviour, ISaveable
 {
@@ -16,7 +15,7 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     public Transform Exit_point;
 
 
-    private float spawnInterval = 10f;
+    private float spawnInterval = 5f;
     private float deliveryCapacity;
     private int currentLevel;
     private bool isDirty = false;
@@ -66,8 +65,18 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
         van.transform.SetParent(transform);
         DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();
         deliveryVan.exitOffset = Exit_point;
+        if(WarehouseManager.Instance.placedWarehouses.Count>0)
+        {
+            int RandomNumber = Random.Range(0, WarehouseManager.Instance.placedWarehouses.Count);
+            Debug.Log("" + WarehouseManager.Instance.placedWarehouses.Count);
+            
+            // deliveryVan.MoveTo(WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.localPosition);
+            deliveryPoint.position = WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.position;
+
+        }
         //Pass Unit To Van To Deduct At Delivery
         deliveryVan.MoveTo(deliveryPoint.position);
+
     }
     #region Save/Load
     public bool IsDirty => isDirty;
