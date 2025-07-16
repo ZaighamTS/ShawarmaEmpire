@@ -17,7 +17,7 @@ MonoBehaviour:
   updates:
   - UpdateId: 0
     Capacity: 100
-    Cost: 1000
+    Cost: 100
   - UpdateId: 1
     Capacity: 200
     Cost: 2000

@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Warehouse 3
   m_EditorClassIdentifier: 
   WarehouseName: warehouse3
-  HouseIsPurchased: 0
+  HouseIsPurchased: 1
   updates:
   - UpdateId: 0
     Capacity: 100
-    Cost: 1000
+    Cost: 100
   - UpdateId: 1
     Capacity: 200
     Cost: 2000

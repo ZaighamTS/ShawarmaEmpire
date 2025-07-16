@@ -17,7 +17,7 @@ public class CateringManager : MonoBehaviour
     }
     IEnumerator StartDilivering()
     {
-        yield return new WaitForSeconds(30 /*Initial Warm Up*/);
+        yield return new WaitForSeconds(10 /*Initial Warm Up*/);
         while (true)
         {
             yield return CaterShwarma();
