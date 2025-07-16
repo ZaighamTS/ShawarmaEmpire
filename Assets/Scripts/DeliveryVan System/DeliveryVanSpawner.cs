@@ -15,7 +15,7 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     public Transform Exit_point;
 
 
-    private float spawnInterval = 5f;
+    private float spawnInterval = 10f;
     private float deliveryCapacity;
     private int currentLevel;
     private bool isDirty = false;

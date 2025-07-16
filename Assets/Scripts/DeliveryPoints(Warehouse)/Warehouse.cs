@@ -44,7 +44,7 @@ public class Warehouse : MonoBehaviour, ISaveable
 
     private void Awake()
     {
-        Debug.Log("check");
+      //  Debug.Log("check");
         if (PlayerPrefs.GetInt(warehouseName+ "Purchased") == 1)
         {
             HouseIsPurchased = true;
@@ -164,5 +164,6 @@ public class UpdateDetails
     public int UpdateId;
     public int Capacity;
     public int Cost;
+    public Sprite Icon;
 
 }

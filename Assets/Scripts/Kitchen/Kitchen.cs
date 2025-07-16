@@ -4,26 +4,32 @@ using UnityEngine;
 
 public class Kitchen : MonoBehaviour, ISaveable
 {
-    // public KitchenData ScriptableKitchenData;
+  
     PlayerProgress playerProgress;
     private int id;
     private int capacity;
-    private int kitchenLevel = 0;
-    private int currentLoad;
-    internal string kitchenName;
-    private int currentUpdate;
-
+    private int kitchenLevel = 0; 
+    internal string kitchenName;  
+    public int CurrentUpdate;
+    public bool KitchenIsPurchased;
+    public Transform DeliveryPosition;
     [Header("This Class References")]
     private bool isDirty = false;
     public string SaveKey => "kitchen" + id;
 
-
+     public List<KitchenUpdateDetails> updates = new List<KitchenUpdateDetails>();
     private void Awake()
     {
-        //KitchenName = ScriptableKitchenData.KitchenName;
-        //CurrentUpdate = ScriptableKitchenData.GetUpdateDetails(KitchenName);
-
-        //Capacity = ScriptableKitchenData.updates[CurrentUpdate].Capacity;
+        if (PlayerPrefs.GetInt(kitchenName + "Purchased") == 1)
+        {
+            KitchenIsPurchased = true;
+        }
+        else
+        {
+            KitchenIsPurchased = false;
+        }
+        CurrentUpdate = GetUpdateDetails(kitchenName);
+        capacity = updates[CurrentUpdate].Capacity;
     }
     private void Start()
     {
@@ -36,44 +42,53 @@ public class Kitchen : MonoBehaviour, ISaveable
     }
     internal void AssignId(int newId)
     {
+       
         if (id == -1)
         {
             id = newId;
         }
     }
+    public int GetUpdateDetails(string KitchenName)
+    {
+        return PlayerPrefs.GetInt(KitchenName);
+    }
+    public void SetUpdateDetails(string KitchenName, int value)
+    {
+        if (PlayerPrefs.GetInt(KitchenName) >= updates.Count)
+            return;
+        PlayerPrefs.SetInt(KitchenName, value);
+    }
+
+    public int GetCurrentCapacity(string KitchenName)
+    {
+        return updates[GetUpdateDetails(KitchenName)].Capacity;
+    }
+    public void SetKitchenIsPurchased()
+    {
+        PlayerPrefs.SetInt(kitchenName + "Purchased", 1);
+        KitchenIsPurchased = true;
+    }
 
     public void UpdateKitchen()
     {
-        float updateCost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, kitchenLevel);
-        if (updateCost <= playerProgress.PlayerCash)
+        int CurrentUpdateId = GetUpdateDetails(kitchenName);
+        if (CurrentUpdateId < updates.Count - 1)
         {
-            playerProgress.PlayerCash -= updateCost;
-            kitchenLevel++;
-            isDirty = true;
+            for (int i = 0; i < 3; i++)
+            {
+                transform.GetChild(i).gameObject.SetActive(false);
+            }
+            SetUpdateDetails(kitchenName, CurrentUpdateId + 1);
+            CurrentUpdate = GetUpdateDetails(kitchenName);
+
+            transform.GetChild(CurrentUpdateId + 1).gameObject.SetActive(true);
+            KitchenManager.Instance.UpdateKitchenUI(id);
         }
-        else
-        {
-            //Open Store
-        }
-        //int CurrentUpdateId = ScriptableKitchenData.GetUpdateDetails(KitchenName);
-        //if (CurrentUpdateId < ScriptableKitchenData.updates.Count - 1)
-        //{
-        //    for (int i = 0; i < 5; i++)
-        //    {
-        //        transform.GetChild(i).gameObject.SetActive(false);
-        //    }
-        //    ScriptableKitchenData.SetUpdateDetails(KitchenName, CurrentUpdateId + 1);
-        //    CurrentUpdate = ScriptableKitchenData.GetUpdateDetails(KitchenName);
-
-        //    transform.GetChild(CurrentUpdateId + 1).gameObject.SetActive(true);
-
-        //}
-
     }
 
     public void OnShwarmaGen()
     {
-        currentLoad++;
+        //currentLoad++;
     }
 
     #region Save/Load
@@ -84,10 +99,9 @@ public class Kitchen : MonoBehaviour, ISaveable
         {
             id = id,
             capacity = capacity,
-            kitchenLevel = kitchenLevel,
-            currentLoad = currentLoad,
+            kitchenLevel = kitchenLevel,  
             kitchenName = kitchenName,
-            currentUpdate = currentUpdate
+            currentUpdate = CurrentUpdate
         };
     }
     public void RestoreState(object state)
@@ -97,10 +111,8 @@ public class Kitchen : MonoBehaviour, ISaveable
         id = data.id;
         capacity = data.capacity;
         kitchenLevel = data.kitchenLevel;
-        currentLoad = data.currentLoad;
         kitchenName = data.kitchenName;
-        currentUpdate = data.currentUpdate;
-
+        CurrentUpdate = data.currentUpdate;
         isDirty = false;
     }
     public void SetInitialData()
@@ -111,8 +123,6 @@ public class Kitchen : MonoBehaviour, ISaveable
     {
         isDirty = false;
     }
-
-
     #endregion
 }
 public class KitchenData
@@ -120,7 +130,14 @@ public class KitchenData
     public int id;
     public int capacity;
     public int kitchenLevel = 0;
-    public int currentLoad;
     public string kitchenName;
     public int currentUpdate;
+}
+[System.Serializable]
+public class KitchenUpdateDetails
+{
+    public int UpdateId;
+    public int Capacity;
+    public int Cost;
+
 }

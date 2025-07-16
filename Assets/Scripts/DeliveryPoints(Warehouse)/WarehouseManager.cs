@@ -6,12 +6,10 @@ using UnityEngine.UI;
 
 public class WarehouseManager : MonoBehaviour
 {
-
     public GameObject[] warehouses; // Assign 4 warehouse GameObjects (only 1 active at start)
     public GameObject[] Tracks;
     public GameObject[] Positions;
     int currentWarehouseCount;
-   
     public static WarehouseManager Instance;
     public List<GameObject> placedWarehouses = new List<GameObject>();
     [SerializeField] int CurrentCash; // Temporary cash
@@ -21,8 +19,6 @@ public class WarehouseManager : MonoBehaviour
     [Header("Belt Settings")]
     public Material BeltMat;
     public Vector2 scrollSpeed = new Vector2(0, 1f);
-
-
     [Header("UI References")]
     public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
@@ -52,7 +48,7 @@ public class WarehouseManager : MonoBehaviour
     void Start()
     {
        
-        Invoke("DelayOnStart",0.11f);
+        Invoke("DelayOnStart",0.1f);
     }
    
     public void DelayOnStart()
@@ -76,8 +72,7 @@ public class WarehouseManager : MonoBehaviour
         WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().CurrentUpdate).gameObject.SetActive(true);
         ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().Capacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         Tracks[currentWarehouseCount].SetActive(true);
-        WareHouse.name = "Warehouse" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-        WareHouse.GetComponent<Warehouse>().SetUpdateDetails(WareHouse.name, 0);
+        WareHouse.name = "warehouse" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
         WareHouse.GetComponent<Warehouse>().SetHouseIsPurchased();
         placedWarehouses.Add(WareHouse);
         currentWarehouseCount++;
@@ -105,12 +100,13 @@ public class WarehouseManager : MonoBehaviour
 
         for (int i = 0; i < buidlNewPointParent.childCount; i++)
         {
-           // Debug.Log(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName + " "+ CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i));
             bool isPurchased = warehouses[i].GetComponent<Warehouse>().HouseIsPurchased /*&& CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i)*/;
             Transform point = buidlNewPointParent.GetChild(i);
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-           
+            string n = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().GetUpdateDetails(warehouses[i].GetComponent<Warehouse>().warehouseName)].Icon.name;
+            Debug.Log(n);
+            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().GetUpdateDetails(warehouses[i].GetComponent<Warehouse>().warehouseName)].Icon;
         }
     }
     public void UpdateWarehoueUI(int n)
@@ -126,7 +122,7 @@ public class WarehouseManager : MonoBehaviour
 
         if ((WarehouseCurrentupdate + 1) < 5 && CheckCanUpgrade(selectedWarehouse.warehouseName, currentSelectedObject))
         {
-            Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
+           // Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
             buildDeliveryPointParent.transform.GetChild(selectedWarehouse.GetUpdateDetails(selectedWarehouse.warehouseName) + 1).GetChild(0).GetChild(4).gameObject.SetActive(false);
             buildDeliveryPointParent.transform.GetChild(selectedWarehouse.GetUpdateDetails(selectedWarehouse.
                warehouseName) + 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();              
@@ -136,20 +132,11 @@ public class WarehouseManager : MonoBehaviour
                    selectedWarehouse.UpdateWarehouse();
                 });
         }
-    }
-
-    
+    }  
     private void Update()
     {
-
         Vector2 offset = BeltMat.mainTextureOffset;
         offset += scrollSpeed * Time.deltaTime;
         BeltMat.mainTextureOffset = offset;
     }
-
-
-    
-
-   
-
 }

@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour
                 {
                     if (coinsText != null)
                     {
-                        coinsText.text = $"${GameManager.gameManagerInstance.GetCurrentCash():N0}";
+                        coinsText.text = $"{GameManager.gameManagerInstance.GetCurrentCash():N0}";
                     }
                        
                     break;
