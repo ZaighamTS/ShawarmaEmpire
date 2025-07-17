@@ -139,5 +139,6 @@ public class KitchenUpdateDetails
     public int UpdateId;
     public int Capacity;
     public int Cost;
+    public Sprite Icon;
 
 }
