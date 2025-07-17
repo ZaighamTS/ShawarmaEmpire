@@ -80,6 +80,7 @@ public class WarehouseManager : MonoBehaviour
     }
     public void AddWarehouseButtonClicked(int n)
     {
+        SoundManager.Instance.PlayButtonClick();
         currentSelectedObject = n;
         if (placedWarehouses.Count < warehouses.Length)
         {
@@ -132,6 +133,7 @@ public class WarehouseManager : MonoBehaviour
                    selectedWarehouse.UpdateWarehouse();
                 });
         }
+        SoundManager.Instance.PlayButtonClick();
     }  
     private void Update()
     {

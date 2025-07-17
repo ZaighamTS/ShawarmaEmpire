@@ -17,7 +17,7 @@
 //    [Header("UI References")]
 //    public Transform buidlNewPointParent;
 //    public Transform buildDeliveryPointParent;
-   
+
 
 //    private void Awake()
 //    {
@@ -120,14 +120,14 @@
 //        //kitchenObj.SetActive(true); add vehicle in van production
 //        vehicleObject.transform.GetChild(vehicleObject.GetComponent<Kitchen>().CurrentUpdate).gameObject.SetActive(true);
 //        //ShawarmaSpawner.Instance.AddNewTarget(kitchenObj.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().Capacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
-//        kitchenObj.name = "kitchen" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-//        kitchenObj.GetComponent<Kitchen>().SetKitchenIsPurchased();
-//        placedKitchens.Add(kitchenObj);
-//        currentKitchenCount++;
+//        vehicleObject.name = "kitchen" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
+//        vehicleObject.GetComponent<Kitchen>().SetKitchenIsPurchased();
+//        placedVehicles.Add(vehicleObject);
+//        currentVehicleCount++;
 
-//        if (kitchenObj.TryGetComponent(out Kitchen kitchen))
+//        if (vehicleObject.TryGetComponent(out Vehicle vehicle))
 //        {
-//            kitchen.AssignId(currentKitchenCount + 1);
+//            vehicle.AssignId(currentVehicleCount + 1);
 //        }
 //    }
 //}

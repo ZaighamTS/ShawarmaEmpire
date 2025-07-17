@@ -91,6 +91,7 @@ public class Warehouse : MonoBehaviour, ISaveable
 
             transform.GetChild(CurrentUpdateId + 1).gameObject.SetActive(true);
             WarehouseManager.Instance.UpdateWarehoueUI(id);
+            SoundManager.Instance.PlayButtonClick();
         }
 
     }
