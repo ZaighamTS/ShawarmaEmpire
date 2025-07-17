@@ -11,6 +11,7 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip buttonClickClip;
     [SerializeField] private AudioClip cashCollectClip;
     [SerializeField] private AudioClip upgradeClip;
+    [SerializeField] private AudioClip shawarmaClip;
 
     private void Awake()
     {
@@ -42,7 +43,10 @@ public class SoundManager : MonoBehaviour
     {
         PlaySound(upgradeClip);
     }
-
+    public void PlayShwaramaClick()
+    {
+        PlaySound(shawarmaClip);
+    }
    
     private void PlaySound(AudioClip clip)
     {

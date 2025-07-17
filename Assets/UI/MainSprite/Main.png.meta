@@ -1353,6 +1353,174 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Main_58
+      rect:
+        serializedVersion: 2
+        x: 1270
+        y: 3339
+        width: 57
+        height: 57
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e2c68b35f12d4294d946e60aeeeb15dc
+      internalID: 119674982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_59
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 3617
+        width: 51
+        height: 72
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1a811ac42eaba2c44b18d860b9df86ea
+      internalID: 1441513680
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_60
+      rect:
+        serializedVersion: 2
+        x: 1673
+        y: 3618
+        width: 72
+        height: 71
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b441748871f8aa54a9221d7d2ad32757
+      internalID: -622074152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_61
+      rect:
+        serializedVersion: 2
+        x: 1821
+        y: 3628
+        width: 72
+        height: 50
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 05730e2cd54cde544874f91b25153d3e
+      internalID: 936781275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_62
+      rect:
+        serializedVersion: 2
+        x: 1965
+        y: 2207
+        width: 599
+        height: 576
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb480ad7577b2da4f8d0107118a306aa
+      internalID: -466284509
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_63
+      rect:
+        serializedVersion: 2
+        x: 1968
+        y: 1833
+        width: 1317
+        height: 280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f7371dc34ef5a0409e7b7ac30c7819e
+      internalID: 1991750976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_64
+      rect:
+        serializedVersion: 2
+        x: 1965
+        y: 2966
+        width: 834
+        height: 100
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d914a5a98e7a5364cb4925f59da822c1
+      internalID: -381856844
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Main_65
+      rect:
+        serializedVersion: 2
+        x: 1980
+        y: 2855
+        width: 804
+        height: 68
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b71c10d4dfae0948bc50d8ebe109fec
+      internalID: -893423432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -1418,7 +1586,15 @@ TextureImporter:
       Main_55: -1284121951
       Main_56: -71206542
       Main_57: -1719470716
+      Main_58: 119674982
+      Main_59: 1441513680
       Main_6: -2116377193
+      Main_60: -622074152
+      Main_61: 936781275
+      Main_62: -466284509
+      Main_63: 1991750976
+      Main_64: -381856844
+      Main_65: -893423432
       Main_7: 1862805955
       Main_8: 1419514785
       Main_9: 1337028833

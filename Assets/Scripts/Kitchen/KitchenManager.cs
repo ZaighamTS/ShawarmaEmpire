@@ -81,6 +81,7 @@ public class KitchenManager : MonoBehaviour
     }
     public void AddKitchenButtonClicked(int n)
     {
+        SoundManager.Instance.PlayButtonClick();
         currentSelectedObject = n;
         if (placedKitchens.Count < Kitchens.Length)
         {
@@ -110,6 +111,7 @@ public class KitchenManager : MonoBehaviour
                     selectedKitchen.UpdateKitchen();
                 });
         }
+        SoundManager.Instance.PlayButtonClick();
     }
     public void PlaceNewKitchen()
     {

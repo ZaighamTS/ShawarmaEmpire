@@ -5,17 +5,17 @@ using System.Linq;
 using UnityEngine;
 
 
-public class DeliveryVanSpawner : MonoBehaviour, ISaveable
+public class DeliveryVanSpawnerNew : MonoBehaviour, ISaveable
 {
     PlayerProgress playerProgress;
     public string SaveKey => "delivery_van";
-    public GameObject vanPrefab;
+    public GameObject[] vanPrefab;
     public Transform spawnPoint;
     public Transform deliveryPoint;
     public Transform Exit_point;
 
 
-    private float spawnInterval = 10f;
+    [SerializeField]private float spawnInterval = 10f;
     private float deliveryCapacity;
     private int currentLevel;
     private bool isDirty = false;
@@ -61,19 +61,20 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     }
     void SpawnVan()
     {
-        GameObject van = Instantiate(vanPrefab, spawnPoint.position, spawnPoint.rotation);
+        int n=Random.Range(0, vanPrefab.Length);
+        GameObject van = Instantiate(vanPrefab[n], spawnPoint.position, spawnPoint.rotation);
         van.transform.SetParent(transform);
         DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();
         deliveryVan.exitOffset = Exit_point;
-        if(WarehouseManager.Instance.placedWarehouses.Count>0)
-        {
-            int RandomNumber = Random.Range(0, WarehouseManager.Instance.placedWarehouses.Count);
-            Debug.Log("" + WarehouseManager.Instance.placedWarehouses.Count);
+        //if(WarehouseManager.Instance.placedWarehouses.Count>0)
+        //{
+        //    int RandomNumber = Random.Range(0, WarehouseManager.Instance.placedWarehouses.Count);
+        //    Debug.Log("" + WarehouseManager.Instance.placedWarehouses.Count);
             
-            // deliveryVan.MoveTo(WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.localPosition);
-            deliveryPoint.position = WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.position;
+        //    // deliveryVan.MoveTo(WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.localPosition);
+        //    deliveryPoint.position = WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.position;
 
-        }
+        //}
         //Pass Unit To Van To Deduct At Delivery
         deliveryVan.MoveTo(deliveryPoint.position);
 
