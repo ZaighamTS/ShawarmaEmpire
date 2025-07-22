@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
+//[DefaultExecutionOrder(2)]
 
 public class WarehouseManager : MonoBehaviour
 {
@@ -22,7 +22,7 @@ public class WarehouseManager : MonoBehaviour
     [Header("UI References")]
     public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
-    
+
 
     private void Awake()
     {
@@ -39,24 +39,25 @@ public class WarehouseManager : MonoBehaviour
         if (PlayerPrefs.GetInt(oneTimeKey) != 1)
         {
             PlayerPrefs.SetInt(oneTimeKey, 1);
-
+          //  warehouses[0].GetComponent<Warehouse>().currentUpdate = 2;
             string purchaseKey = warehouses[0].GetComponent<Warehouse>().warehouseName + "Purchased";
             PlayerPrefs.SetInt(purchaseKey, 1);
         }
-        
+
     }
     void Start()
     {
-       
-        Invoke("DelayOnStart",0.1f);
+
+         Invoke("DelayOnStart", 1.1f);
+       // DelayOnStart();
     }
-   
+
     public void DelayOnStart()
     {
-        
+
         for (int i = 0; i < warehouses.Length; i++)
         {
-            if (PlayerPrefs.GetInt(warehouses[i].GetComponent<Warehouse>().warehouseName+ "Purchased") ==1)
+            if (PlayerPrefs.GetInt(warehouses[i].GetComponent<Warehouse>().warehouseName + "Purchased") == 1)
             {
                 currentSelectedObject = i;
                 PlaceNewWarehouse();
@@ -69,32 +70,37 @@ public class WarehouseManager : MonoBehaviour
         GameObject WareHouse = warehouses[currentSelectedObject];
         WareHouse.SetActive(true);
         WareHouse.transform.position = Positions[currentWarehouseCount].transform.position;
-        WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().CurrentUpdate).gameObject.SetActive(true);
-        ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().Capacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
+        WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().currentUpdate-1).gameObject.SetActive(true);
+        ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         Tracks[currentWarehouseCount].SetActive(true);
         WareHouse.name = "warehouse" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
         WareHouse.GetComponent<Warehouse>().SetHouseIsPurchased();
         placedWarehouses.Add(WareHouse);
         currentWarehouseCount++;
-       
+      //  WareHouse.GetComponent<Warehouse>().AssignId(currentWarehouseCount);
     }
     public void AddWarehouseButtonClicked(int n)
     {
         SoundManager.Instance.PlayButtonClick();
         currentSelectedObject = n;
-        if (placedWarehouses.Count < warehouses.Length)
+        if (placedWarehouses.Count < warehouses.Length && warehouses[currentSelectedObject].GetComponent<Warehouse>().cost < CurrentCash)
         {
             PlaceNewWarehouse();
             UpdateBuildNewWarehouseUI();
         }
+        else
+        {
+            UIManager.Instance.lowCashPromt.SetActive(true);
+            Debug.Log("Low CAsh");
+        }
     }
-    public bool CheckCanUpgrade(string name, int i)
-    {
-        var warehouse = warehouses[i].GetComponent<Warehouse>();
-        int index = warehouse.GetUpdateDetails(name);
-        canUpgrade = warehouse.updates[index+1].Cost <= CurrentCash;
-        return canUpgrade;
-    }
+    //public bool CheckCanUpgrade(string name, int i)
+    //{
+    //    var warehouse = warehouses[i].GetComponent<Warehouse>();
+    //    int index = warehouse.GetUpdateDetails(name);
+    //    canUpgrade = warehouse.cost <= CurrentCash;
+    //    return canUpgrade;
+    //}
 
     public void UpdateBuildNewWarehouseUI()
     {
@@ -105,36 +111,39 @@ public class WarehouseManager : MonoBehaviour
             Transform point = buidlNewPointParent.GetChild(i);
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-            string n = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().GetUpdateDetails(warehouses[i].GetComponent<Warehouse>().warehouseName)].Icon.name;
-            Debug.Log(n);
-            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().GetUpdateDetails(warehouses[i].GetComponent<Warehouse>().warehouseName)].Icon;
+          //  string n = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().GetUpdateDetails(warehouses[i].GetComponent<Warehouse>().warehouseName)].Icon.name;
+          //  Debug.Log(n);
+            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().currentUpdate-1].Icon;
         }
+    }
+    public void UpdateIcon(int warehosueNumber)
+    {
+        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].Icon;
     }
     public void UpdateWarehoueUI(int n)
     {
-       
+
         currentSelectedObject = n;
+        Debug.Log("currentSelectedObject "+ currentSelectedObject);
         for (int i = 0; i < buildDeliveryPointParent.childCount; i++)
         {
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(4).gameObject.SetActive(true);
         }
         Warehouse selectedWarehouse = warehouses[currentSelectedObject].GetComponent<Warehouse>();
-        int WarehouseCurrentupdate = selectedWarehouse.GetUpdateDetails(warehouses[currentSelectedObject].GetComponent<Warehouse>().warehouseName);
+        int WarehouseCurrentupdate = selectedWarehouse.currentUpdate;
 
-        if ((WarehouseCurrentupdate + 1) < 5 && CheckCanUpgrade(selectedWarehouse.warehouseName, currentSelectedObject))
+        if ((WarehouseCurrentupdate) < 5 && selectedWarehouse.cost<CurrentCash)
         {
-           // Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.GetUpdateDetails(selectedWarehouse.warehouseName) + 1).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.GetUpdateDetails(selectedWarehouse.
-               warehouseName) + 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();              
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.GetUpdateDetails(selectedWarehouse.
-                warehouseName) + 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            // Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
                 {
-                   selectedWarehouse.UpdateWarehouse();
+                    selectedWarehouse.UpdateWarehouse();
                 });
         }
         SoundManager.Instance.PlayButtonClick();
-    }  
+    }
     private void Update()
     {
         Vector2 offset = BeltMat.mainTextureOffset;

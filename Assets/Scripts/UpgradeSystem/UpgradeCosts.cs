@@ -46,7 +46,7 @@ public static class UpgradeCosts
     /// <summary>
     /// Capacity MAp
     /// </summary>
-    private static readonly Dictionary<CapacityType, CapacityConfig> capacityMap = new()
+    internal static readonly Dictionary<CapacityType, CapacityConfig> capacityMap = new()
     {
         {CapacityType.Storage,new(100,1.4f) },
         {CapacityType.Delivery,new(100,1.3f) }

@@ -1,13 +1,18 @@
+using Cysharp.Threading.Tasks;
 using System;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
-
+[DefaultExecutionOrder(50)]
 public class GameManager : MonoBehaviour
 {
     PlayerProgress playerProgress;
     public static GameManager gameManagerInstance;
 
     private float chefStars;
+    [SerializeField] private int maxSubscribersCount = 7;
+    [SerializeField] private int subscribersCount = 0;
+
     private void Awake()
     {
         if (gameManagerInstance == null)
@@ -18,6 +23,15 @@ public class GameManager : MonoBehaviour
         playerProgress = PlayerProgress.Instance;
         ExtraBuildingsPlacement placement = FindObjectOfType<ExtraBuildingsPlacement>();
         placement.CurrentLevel = 1;
+    }
+    internal async UniTask RecordPersistentRegistrations()
+    {
+        subscribersCount++;
+        if (subscribersCount == maxSubscribersCount)
+        {
+            await UniTask.NextFrame();
+            SaveLoadManager.saveLoadManagerInstance.LoadGame();
+        }
     }
     internal float GetCurrentCash()
     {
@@ -56,5 +70,9 @@ public class GameManager : MonoBehaviour
     private void ResetPlayerStats()
     {
         playerProgress.PlayerCash = 0;
+    }
+    private void OnApplicationQuit()
+    {
+        SaveLoadManager.saveLoadManagerInstance.SaveGame();
     }
 }

@@ -1,3 +1,5 @@
+using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -5,66 +7,66 @@ using UnityEngine;
 
 public class Warehouse : MonoBehaviour, ISaveable
 {
-   
+    public static event Action<UIUpdateType, float> onWarehouseUpgraded;
+    public string SaveKey => "warehouse" + id;
+    public int currentCapacity;
+    public int currentLoad;
+    public int currentUpdate;
+    public int cost;
     public Transform TargetPosition;
-    public int id;    
-    public int Capacity;
-    public int CurrentLoad;
+    public int id;
     public string warehouseName;
-    public int CurrentUpdate;
-    private int currentLevel;
+    // private int currentLevel;
     [Header("This Class References")]
     private bool isDirty = false;
-    public string SaveKey => "warehouse" + id;
     public Transform DeliveryPosition;
     public bool HouseIsPurchased;
     [SerializeField] public List<UpdateDetails> updates = new List<UpdateDetails>();
-    
-    public int GetUpdateDetails(string HouseName)
-    {
-        return PlayerPrefs.GetInt(HouseName);
-    }
-    public void SetUpdateDetails(string HouseName, int value)
-    {
-        if (PlayerPrefs.GetInt(HouseName) >= updates.Count)
-            return;
-        PlayerPrefs.SetInt(HouseName, value);
-    }
 
-    public int GetCurrentCapacity(string HouseName)
-    {
-        return updates[GetUpdateDetails(HouseName)].Capacity;
-    }
+    //public int GetUpdateDetails(string HouseName)
+    //{
+    //    return PlayerPrefs.GetInt(HouseName);
+    //}
+    //public void SetUpdateDetails(string HouseName, int value)
+    //{
+    //    if (PlayerPrefs.GetInt(HouseName) >= updates.Count)
+    //        return;
+    //    PlayerPrefs.SetInt(HouseName, value);
+    //}
+
+    //public int GetCurrentCapacity(string HouseName)
+    //{
+    //    return updates[GetUpdateDetails(HouseName)].Capacity;
+    //}
     public void SetHouseIsPurchased()
     {
-        PlayerPrefs.SetInt(warehouseName+"Purchased",1);
+        PlayerPrefs.SetInt(warehouseName + "Purchased", 1);
         HouseIsPurchased = true;
     }
 
 
     private void Awake()
     {
-      //  Debug.Log("check");
-        if (PlayerPrefs.GetInt(warehouseName+ "Purchased") == 1)
-        {
-            HouseIsPurchased = true;
-        }
-        else
-        {
-            HouseIsPurchased = false;
-        }
-        CurrentUpdate = GetUpdateDetails(warehouseName);   
-        Capacity = updates[CurrentUpdate].Capacity;
-       
+        //  Debug.Log("check");
+        //if (PlayerPrefs.GetInt(warehouseName + "Purchased") == 1)
+        //{
+        //    HouseIsPurchased = true;
+        //}
+        //else
+        //{
+        //    HouseIsPurchased = false;
+        //}
+        //currentUpdate = GetUpdateDetails(warehouseName);
+        //currentCapacity = updates[currentUpdate].Capacity;
+
+
+
     }
     private void Start()
     {
-      //  if (!HouseIsPurchased)
-        
-           
-            
-        
         SaveLoadManager.saveLoadManagerInstance.Register(this);
+        GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
+        Debug.Log("CP " + currentCapacity);
     }
     private void OnDestroy()
     {
@@ -79,21 +81,45 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     public void UpdateWarehouse()
     {
-        int CurrentUpdateId = GetUpdateDetails(warehouseName);
-        if (CurrentUpdateId < updates.Count-1)
+        //int CurrentUpdateId = GetUpdateDetails(warehouseName);
+        //if (CurrentUpdateId < updates.Count - 1)
+        //{
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        transform.GetChild(i).gameObject.SetActive(false);
+        //    }
+        //    SetUpdateDetails(warehouseName, CurrentUpdateId + 1);
+        //    currentUpdate = GetUpdateDetails(warehouseName);
+
+        //    transform.GetChild(CurrentUpdateId + 1).gameObject.SetActive(true);
+        //    WarehouseManager.Instance.UpdateWarehoueUI(id);
+        //    SoundManager.Instance.PlayButtonClick();
+        //}
+
+        float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+        Debug.Log("cost "+ cost);
+        if (cost <= PlayerProgress.Instance.PlayerCash)
         {
             for (int i = 0; i < 5; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
-            SetUpdateDetails(warehouseName, CurrentUpdateId + 1);
-            CurrentUpdate = GetUpdateDetails(warehouseName);
-
-            transform.GetChild(CurrentUpdateId + 1).gameObject.SetActive(true);
+            currentUpdate++;
+            transform.GetChild(currentUpdate -1).gameObject.SetActive(true);
             WarehouseManager.Instance.UpdateWarehoueUI(id);
+            WarehouseManager.Instance.UpdateIcon(id);
             SoundManager.Instance.PlayButtonClick();
+            onWarehouseUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+           
+            isDirty = true;
         }
-
+        else
+        {
+            ////Open SHop or so
+            //Debug.Log("Cost "+cost);
+            //Debug.Log("Low Cash");
+            UIManager.Instance.lowCashPromt.SetActive(true);
+        }
     }
     private void OnMouseDown()
     {
@@ -108,7 +134,8 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     public void OnShwarmaGen()
     {
-        CurrentLoad++;
+        currentLoad++;
+        isDirty = true;
     }
 
 
@@ -116,30 +143,38 @@ public class Warehouse : MonoBehaviour, ISaveable
     public bool IsDirty => isDirty;
     public object CaptureState()
     {
+        Debug.Log("CaptureState");
         return new WarehouseDataNew
         {
             id = id,
-            capacity = Capacity,
-            currentLoad = CurrentLoad,
-            warehouseName = warehouseName,
-            currentUpdate = CurrentUpdate,
+            capacity = currentCapacity,
+            currentLoad = currentLoad,
+            cost = cost,
+            currentUpdate = currentUpdate,
         };
+      
     }
     public void RestoreState(object state)
     {
         if (state is not WarehouseDataNew data)
             return;
         id = data.id;
-        Capacity = data.capacity;
-        CurrentLoad = data.currentLoad;
-        warehouseName = data.warehouseName;
-        CurrentUpdate = data.currentUpdate; 
-        currentLevel = data.currentLevel;
+        currentCapacity = data.capacity;
+        currentLoad = data.currentLoad;
+        currentUpdate = data.currentUpdate;
+        cost = data.cost;
+        //currentLevel = data.currentLevel;
         isDirty = false;
+        Debug.Log("RestoreState");
     }
     public void SetInitialData()
     {
-
+        currentUpdate = 1;
+        currentCapacity = UpgradeCosts.capacityMap[CapacityType.Storage].baseCapacity;
+        cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+        currentLoad = 0;
+        isDirty = true;
+        Debug.Log("SetInitialData");
     }
     public void ClearDirty()
     {
@@ -154,17 +189,14 @@ public class WarehouseDataNew
     public int id;
     public int capacity;
     public int currentLoad;
-    public string warehouseName;
     public int currentUpdate;
-    public int currentLevel;
+    public int cost;
+   
 
 }
 [System.Serializable]
 public class UpdateDetails
 {
     public int UpdateId;
-    public int Capacity;
-    public int Cost;
     public Sprite Icon;
-
 }

@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 using System.Linq;
 using System;
 using Random = UnityEngine.Random;
+[DefaultExecutionOrder(10)]
 public class ShawarmaSpawner : MonoBehaviour
 {
 

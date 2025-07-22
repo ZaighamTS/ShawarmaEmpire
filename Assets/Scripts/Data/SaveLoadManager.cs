@@ -58,14 +58,18 @@ public class SaveLoadManager : MonoBehaviour
         {
             return;
         }
+        string json = File.ReadAllText(SavePath);
+        saveData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json, jsonSettings);
         foreach (ISaveable saveable in saveables)
         {
+            print("key" + saveable.SaveKey);
             if (saveData.TryGetValue(saveable.SaveKey, out var state))
             {
                 saveable.RestoreState(state);
             }
             else
             {
+                Debug.Log("Else " + saveable.SaveKey);
                 saveable.SetInitialData();
             }
         }

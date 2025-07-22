@@ -8,7 +8,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text coinsText;
     public TMP_Text storageText;
     public TMP_Text multiplierText;
-
+    public GameObject lowCashPromt;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -22,6 +22,7 @@ public class UIManager : MonoBehaviour
     {
         ShawarmaSpawner.onShawarmaCreated -= UpdateUI;
     }
+    
     public void UpdateUI(UIUpdateType updateType, float value = 0)
     {
         switch (updateType)
