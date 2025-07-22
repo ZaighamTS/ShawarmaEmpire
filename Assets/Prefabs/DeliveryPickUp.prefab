@@ -57,10 +57,10 @@ MonoBehaviour:
   waitTimeAtPoint: 3
   exitOffset: {fileID: 0}
   wheels:
-  - {fileID: 845254894841799876}
-  - {fileID: 2104425794862474161}
-  - {fileID: 2434147905979226023}
-  - {fileID: 6305810072318632366}
+  - {fileID: 7339521982801442475}
+  - {fileID: 6654122618931122331}
+  - {fileID: 3383827118414698887}
+  - {fileID: 5842547439904192164}
   wheelRotationSpeed: 360
   detectionDistance: 5
   vanLayerMask:
@@ -1352,6 +1352,26 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce973943d746adc498a9ee5470870602, type: 3}
+--- !u!4 &3383827118414698887 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6531375599894777105, guid: ce973943d746adc498a9ee5470870602, type: 3}
+  m_PrefabInstance: {fileID: 8381725938216391830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5842547439904192164 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2685617229429187122, guid: ce973943d746adc498a9ee5470870602, type: 3}
+  m_PrefabInstance: {fileID: 8381725938216391830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6654122618931122331 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2885098794991010829, guid: ce973943d746adc498a9ee5470870602, type: 3}
+  m_PrefabInstance: {fileID: 8381725938216391830}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7339521982801442475 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1264076694862176829, guid: ce973943d746adc498a9ee5470870602, type: 3}
+  m_PrefabInstance: {fileID: 8381725938216391830}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8633027588686521377 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 261054361560314039, guid: ce973943d746adc498a9ee5470870602, type: 3}

@@ -10,9 +10,11 @@ public class NPCMovement : MonoBehaviour
 
     private int currentIndex = 0;
     public Animator animator;
+    Transform emoji;
 
     private void Start()
     {
+        emoji = transform.GetChild(1);
       //  animator = GetComponent<Animator>();
         StartCoroutine(MoveInLoop());
     }
@@ -27,6 +29,7 @@ public class NPCMovement : MonoBehaviour
             yield return StartCoroutine(RotateTowards(target.position));
 
             animator.SetBool("isWalking", true);
+            emoji.gameObject.SetActive(false);
 
             // Move toward the target
             while (Vector3.Distance(transform.position, target.position) > 0.1f)
@@ -36,6 +39,7 @@ public class NPCMovement : MonoBehaviour
             }
 
             animator.SetBool("isWalking", false);
+            emoji.gameObject.SetActive(true);
 
             // Wait at the waypoint
             yield return new WaitForSeconds(waitTime);

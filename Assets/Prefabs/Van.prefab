@@ -56,10 +56,10 @@ MonoBehaviour:
   waitTimeAtPoint: 3
   exitOffset: {fileID: 0}
   wheels:
-  - {fileID: 845254894841799876}
-  - {fileID: 2104425794862474161}
-  - {fileID: 2434147905979226023}
-  - {fileID: 6305810072318632366}
+  - {fileID: 4590876500767829542}
+  - {fileID: 1602510589699045588}
+  - {fileID: 5405020048540997027}
+  - {fileID: 7647739441905219647}
   wheelRotationSpeed: 360
   detectionDistance: 5
   vanLayerMask:
@@ -1260,11 +1260,35 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dilivery-van (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
+--- !u!4 &1602510589699045588 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -324938149649591883, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
+  m_PrefabInstance: {fileID: 7872525921431447905}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4590876500767829542 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3245189568780204217, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
+  m_PrefabInstance: {fileID: 7872525921431447905}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5405020048540997027 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -6466419723388093246, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
+  m_PrefabInstance: {fileID: 7872525921431447905}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7647739441905219647 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8691122519488802466, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
+  m_PrefabInstance: {fileID: 7872525921431447905}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7695083722311503498 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ba0e0ae1815d2ee4b93388c61939094e, type: 3}
