@@ -27,8 +27,11 @@ public class NPCMovement : MonoBehaviour
 
           
             yield return StartCoroutine(RotateTowards(target.position));
-
-            animator.SetBool("isWalking", true);
+            if (animator)
+            {
+                animator.SetBool("isWalking", true);
+            }
+           
             emoji.gameObject.SetActive(false);
 
             // Move toward the target
@@ -37,8 +40,8 @@ public class NPCMovement : MonoBehaviour
                 transform.position = Vector3.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
                 yield return null;
             }
-
-            animator.SetBool("isWalking", false);
+            if (animator)
+                animator.SetBool("isWalking", false);
             emoji.gameObject.SetActive(true);
 
             // Wait at the waypoint

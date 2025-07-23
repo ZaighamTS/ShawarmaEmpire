@@ -14,10 +14,10 @@ public class EagleCircularSwoop : MonoBehaviour
 
     void Start()
     {
-        if (centerPoint != null)
-            baseHeight = centerPoint.position.y + 10f; // Base flying height above center
-        else
-            baseHeight = transform.position.y;
+        //if (centerPoint != null)
+           baseHeight = centerPoint.position.y; // Base flying height above center
+        //else
+            //baseHeight = transform.position.y;
     }
 
     void Update()
@@ -38,7 +38,7 @@ public class EagleCircularSwoop : MonoBehaviour
         // Move eagle to new position
         Vector3 previousPosition = transform.position;
         transform.position = newPosition;
-
+        
         // Optional: Face movement direction
         if (faceDirection)
         {
@@ -47,4 +47,22 @@ public class EagleCircularSwoop : MonoBehaviour
                 transform.forward = direction;
         }
     }
+    //private void OnDrawGizmos()
+    //{
+    //    if (centerPoint == null) return;
+
+    //    Gizmos.color = Color.yellow;
+    //    int segments = 100;
+    //    float angleStep = 2 * Mathf.PI / segments;
+    //    Vector3 prevPoint = centerPoint.position + new Vector3(radius, 0, 0);
+
+    //    for (int i = 1; i <= segments; i++)
+    //    {
+    //        float angle = i * angleStep;
+    //        Vector3 newPoint = centerPoint.position + new Vector3(Mathf.Cos(angle) * radius, 0, Mathf.Sin(angle) * radius);
+    //        Gizmos.DrawLine(prevPoint, newPoint);
+    //        prevPoint = newPoint;
+    //    }
+    //}
+
 }
