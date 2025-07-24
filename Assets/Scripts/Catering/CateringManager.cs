@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 public class CateringManager : MonoBehaviour
 {
     public static CateringManager Instance;
-    public GameObject[] Caterings; // Assign Kitchena GameObjects (only 1 active at start)
+    public GameObject[] Caterings; 
     int currentCateringCount;
     int currentSelectedObject;
     [SerializeField] int CurrentCash; // Temporary cash
@@ -24,9 +24,9 @@ public class CateringManager : MonoBehaviour
         ActionPerformedOneTime();
     }
     void Start()
-    {  
+    {
         //Invoke("DelayOnStart",1);
-        DelayOnStart().Forget();
+        Invoke("DelayOnStart", 1.1f);
     }
     public void ActionPerformedOneTime()
     {
@@ -39,9 +39,9 @@ public class CateringManager : MonoBehaviour
             PlayerPrefs.SetInt(purchaseKey, 1);
         }
     }
-    public async UniTask DelayOnStart()
+    public void DelayOnStart()
     {
-        await UniTask.NextFrame();
+        
         for (int i = 0; i < Caterings.Length; i++)
         {
             if (PlayerPrefs.GetInt(Caterings[i].GetComponent<Catering>().CateringName + "Purchased") == 1)
@@ -60,6 +60,7 @@ public class CateringManager : MonoBehaviour
             Transform point = buidlNewPointParent.GetChild(i);
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
+            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 1].Icon;
         }
     }
     public void UpdateIcon(int CateringNumber)
@@ -87,7 +88,7 @@ public class CateringManager : MonoBehaviour
         Catering selectedCatering = Caterings[currentSelectedObject].GetComponent<Catering>();
         int CateringCurrentupdate = selectedCatering.currentUpdate;
 
-        if ((CateringCurrentupdate) < 3 && selectedCatering.cost < CurrentCash)
+        if ((CateringCurrentupdate) < selectedCatering.updates.Count && selectedCatering.cost < CurrentCash)
         {
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();

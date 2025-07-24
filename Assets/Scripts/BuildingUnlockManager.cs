@@ -1,19 +1,12 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
-public class BuildingUnlockManager : MonoBehaviour
+using Cysharp.Threading.Tasks;
+public class BuildingUnlockManager : MonoBehaviour, ISaveable
 {
-    [System.Serializable]
-    public class Building
-    {
-        public string name;
-        public Sprite icon;
-        public int cost;
-        public bool isPurchased;
-        public GameObject BuildingObject;
-    }
+   
 
     public List<Building> buildings;
    
@@ -22,20 +15,34 @@ public class BuildingUnlockManager : MonoBehaviour
 
     private List<Transform> buildingButtons = new List<Transform>();
     private int playerCash;
-
+    private bool isDirty = false;
+    public string SaveKey => "building";
+    public static event Action<UIUpdateType, float> onBuildingUpgraded;
+    public int currentUpdate;
+    public int cost;
     void Start()
     {
-        playerCash = GameDataManager.GetCash();
+        SaveLoadManager.saveLoadManagerInstance.Register(this);
+        GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
+        Invoke("DelayOnStart", 1.1f);
+    }
+   
+    private void OnDestroy()
+    {
+        SaveLoadManager.saveLoadManagerInstance.Unregister(this);
+    }
+    public void DelayOnStart()
+    {
+        playerCash = 1000;
         LoadPurchaseStatus();
         GenerateBuildingUI();
         UpdateUI();
     }
-
     void LoadPurchaseStatus()
     {
         for (int i = 0; i < buildings.Count; i++)
         {
-            buildings[i].isPurchased = GameDataManager.IsBuildingPurchased(i);
+            buildings[i].isPurchased = IsBuildingPurchased(i);
         }
     }
 
@@ -44,15 +51,11 @@ public class BuildingUnlockManager : MonoBehaviour
         for (int i = 0; i < buildings.Count; i++)
         {
             Building b = buildings[i];
-          //  GameObject btnObj = Instantiate(buildingButtonPrefab, buildingListParent);
             Transform btn = buildingListParent.GetChild(i);
-
             Image iconImage = btn.transform.GetChild(0).GetChild(0).GetComponent<Image>();
             Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
-
             iconImage.sprite = b.icon;
             costText.text = b.cost.ToString();
-           // b.BuildingObject.SetActive(b.isPurchased);
             int index = i;
             btn.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(() => TryUnlockBuilding(index));
             buildingButtons.Add(btn);
@@ -69,10 +72,9 @@ public class BuildingUnlockManager : MonoBehaviour
         if (playerCash >= b.cost)
         {
             playerCash -= b.cost;
-            GameDataManager.SetCash(playerCash);
+            SetCash(playerCash);
             buildings[index].isPurchased = true;
-            GameDataManager.SaveBuildingPurchase(index, true);
-            GameDataManager.SaveAll();
+            SaveBuildingPurchase(index, true);
             UpdateUI();
         }
         else
@@ -101,5 +103,72 @@ public class BuildingUnlockManager : MonoBehaviour
         }
     }
 
-   
+
+    public float GetCash()
+    {
+        return PlayerProgress.Instance.PlayerCash;
+    }
+
+    public void SetCash(int amount)
+    {
+        PlayerProgress.Instance.PlayerCash -= amount;
+    }
+
+    public bool IsBuildingPurchased(int index)
+    {
+        return PlayerPrefs.GetInt("building_purchased_" + index, 0) == 1;
+    }
+
+    public void SaveBuildingPurchase(int index, bool state)
+    {
+        PlayerPrefs.SetInt("building_purchased_" + index, state ? 1 : 0);
+    }
+
+    #region Save/Load
+    public bool IsDirty => isDirty;
+    public object CaptureState()
+    {
+        return new BuildingsData
+        {    
+            currentUpdate = currentUpdate,
+            cost = cost
+        };
+    }
+    public void RestoreState(object state)
+    {
+        if (state is not BuildingsData data)
+            return;
+       
+        currentUpdate = data.currentUpdate;
+        cost = data.cost;
+        isDirty = false;
+    }
+    public void SetInitialData()
+    {
+        currentUpdate = 1;
+        cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
+        isDirty = true;
+
+    }
+    public void ClearDirty()
+    {
+        isDirty = false;
+    }
+    #endregion
+    
+}
+[System.Serializable]
+public class Building
+{
+    public string name;
+    public Sprite icon;
+    public int cost;
+    public bool isPurchased;
+    public GameObject BuildingObject;
+}
+public class BuildingsData
+{
+    public int id;
+    public int currentUpdate;
+    public int cost;
 }

@@ -24,9 +24,9 @@ public class KitchenManager : MonoBehaviour
         ActionPerformedOneTime();
     }
     void Start()
-    {  
+    {
         //Invoke("DelayOnStart",1);
-        DelayOnStart().Forget();
+        Invoke("DelayOnStart", 1.1f);
     }
     public void ActionPerformedOneTime()
     {
@@ -39,9 +39,11 @@ public class KitchenManager : MonoBehaviour
             PlayerPrefs.SetInt(purchaseKey, 1);
         }
     }
-    public async UniTask DelayOnStart()
+
+    //  public async UniTask DelayOnStart()
+    public void DelayOnStart()
     {
-        await UniTask.NextFrame();
+        //await UniTask.NextFrame();
         for (int i = 0; i < Kitchens.Length; i++)
         {
             if (PlayerPrefs.GetInt(Kitchens[i].GetComponent<Kitchen>().kitchenName + "Purchased") == 1)
@@ -60,6 +62,7 @@ public class KitchenManager : MonoBehaviour
             Transform point = buidlNewPointParent.GetChild(i);
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
+            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 1].Icon;
         }
     }
     public void UpdateIcon(int KitchenNumber)
@@ -87,7 +90,7 @@ public class KitchenManager : MonoBehaviour
         Kitchen selectedKitchen = Kitchens[currentSelectedObject].GetComponent<Kitchen>();
         int KitchenCurrentupdate = selectedKitchen.currentUpdate;
 
-        if ((KitchenCurrentupdate) < 3 && selectedKitchen.cost < CurrentCash)
+        if ((KitchenCurrentupdate) < selectedKitchen.updates.Count && selectedKitchen.cost < CurrentCash)
         {
             buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
             buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();

@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-//[DefaultExecutionOrder(2)]
-
 public class WarehouseManager : MonoBehaviour
 {
-    public GameObject[] warehouses; // Assign 4 warehouse GameObjects (only 1 active at start)
+    public GameObject[] warehouses; 
     public GameObject[] Tracks;
     public GameObject[] Positions;
     int currentWarehouseCount;
@@ -47,9 +45,7 @@ public class WarehouseManager : MonoBehaviour
     }
     void Start()
     {
-
          Invoke("DelayOnStart", 1.1f);
-       // DelayOnStart();
     }
 
     public void DelayOnStart()
@@ -94,25 +90,15 @@ public class WarehouseManager : MonoBehaviour
             Debug.Log("Low CAsh");
         }
     }
-    //public bool CheckCanUpgrade(string name, int i)
-    //{
-    //    var warehouse = warehouses[i].GetComponent<Warehouse>();
-    //    int index = warehouse.GetUpdateDetails(name);
-    //    canUpgrade = warehouse.cost <= CurrentCash;
-    //    return canUpgrade;
-    //}
-
+ 
     public void UpdateBuildNewWarehouseUI()
     {
-
         for (int i = 0; i < buidlNewPointParent.childCount; i++)
         {
             bool isPurchased = warehouses[i].GetComponent<Warehouse>().HouseIsPurchased /*&& CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i)*/;
             Transform point = buidlNewPointParent.GetChild(i);
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-          //  string n = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().GetUpdateDetails(warehouses[i].GetComponent<Warehouse>().warehouseName)].Icon.name;
-          //  Debug.Log(n);
             point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().currentUpdate-1].Icon;
         }
     }
@@ -132,7 +118,7 @@ public class WarehouseManager : MonoBehaviour
         Warehouse selectedWarehouse = warehouses[currentSelectedObject].GetComponent<Warehouse>();
         int WarehouseCurrentupdate = selectedWarehouse.currentUpdate;
 
-        if ((WarehouseCurrentupdate) < 5 && selectedWarehouse.cost<CurrentCash)
+        if ((WarehouseCurrentupdate) < selectedWarehouse.updates.Count && selectedWarehouse.cost<CurrentCash)
         {
             // Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
             buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(4).gameObject.SetActive(false);

@@ -92,7 +92,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     public object CaptureState()
     {
         Debug.Log("CaptureState");
-        return new WarehouseDataNew
+        return new WarehouseData
         {
             id = id,
             capacity = currentCapacity,
@@ -104,7 +104,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     public void RestoreState(object state)
     {
-        if (state is not WarehouseDataNew data)
+        if (state is not WarehouseData data)
             return;
         id = data.id;
         currentCapacity = data.capacity;
@@ -127,7 +127,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     #endregion
 }
-public class WarehouseDataNew
+public class WarehouseData
 {
     public int id;
     public int capacity;
