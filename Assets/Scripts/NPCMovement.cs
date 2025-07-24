@@ -14,7 +14,11 @@ public class NPCMovement : MonoBehaviour
 
     private void Start()
     {
-        emoji = transform.GetChild(1);
+        if (transform.GetChild(1))
+        {
+            emoji = transform.GetChild(1);
+        }
+       
       //  animator = GetComponent<Animator>();
         StartCoroutine(MoveInLoop());
     }

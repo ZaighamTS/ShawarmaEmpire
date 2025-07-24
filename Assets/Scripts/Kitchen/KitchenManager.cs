@@ -11,7 +11,6 @@ public class KitchenManager : MonoBehaviour
     int currentKitchenCount;
     int currentSelectedObject;
     [SerializeField] int CurrentCash; // Temporary cash
-    bool canUpgrade;
     private List<GameObject> placedKitchens = new List<GameObject>();
     [Header("UI References")]
     public Transform buidlNewPointParent;
@@ -28,8 +27,6 @@ public class KitchenManager : MonoBehaviour
     {  
         //Invoke("DelayOnStart",1);
         DelayOnStart().Forget();
-
-
     }
     public void ActionPerformedOneTime()
     {
@@ -38,11 +35,9 @@ public class KitchenManager : MonoBehaviour
         if (PlayerPrefs.GetInt(oneTimeKey) != 1)
         {
             PlayerPrefs.SetInt(oneTimeKey, 1);
-
             string purchaseKey = Kitchens[0].GetComponent<Kitchen>().kitchenName + "Purchased";
             PlayerPrefs.SetInt(purchaseKey, 1);
         }
-
     }
     public async UniTask DelayOnStart()
     {
@@ -57,27 +52,19 @@ public class KitchenManager : MonoBehaviour
             }
         }
     }
-  
     public void UpdateBuildNewKitchenUI()
     {
-
         for (int i = 0; i < buidlNewPointParent.childCount; i++)
         {
-           ;
             bool isPurchased = Kitchens[i].GetComponent<Kitchen>().KitchenIsPurchased /*&& CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i)*/;
             Transform point = buidlNewPointParent.GetChild(i);
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-
         }
     }
-    public bool CheckCanUpgrade(string name, int i)
+    public void UpdateIcon(int KitchenNumber)
     {
-        var kitchen = Kitchens[i].GetComponent<Kitchen>();
-        int index = kitchen.GetUpdateDetails(name);
-      //  Debug.Log("Index "+index);
-        canUpgrade = kitchen.updates[index+1].Cost <= CurrentCash;
-        return canUpgrade;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 1].Icon;
     }
     public void AddKitchenButtonClicked(int n)
     {
@@ -92,49 +79,36 @@ public class KitchenManager : MonoBehaviour
     public void UpdateKitchenUI(int n)
     {
         currentSelectedObject = n;
+        Debug.Log("currentSelectedObject " + currentSelectedObject);
         for (int i = 0; i < buildDeliveryPointParent.childCount; i++)
         {
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(4).gameObject.SetActive(true);
         }
         Kitchen selectedKitchen = Kitchens[currentSelectedObject].GetComponent<Kitchen>();
-        int KitchenCurrentupdate = selectedKitchen.GetUpdateDetails(Kitchens[currentSelectedObject].GetComponent<Kitchen>().kitchenName);
+        int KitchenCurrentupdate = selectedKitchen.currentUpdate;
 
-        if ((KitchenCurrentupdate + 1) < 3 && CheckCanUpgrade(selectedKitchen.kitchenName, currentSelectedObject))
+        if ((KitchenCurrentupdate) < 3 && selectedKitchen.cost < CurrentCash)
         {
-            //Debug.Log(selectedKitchen.kitchenName + " " + currentSelectedObject + " " + canUpgrade);
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.GetUpdateDetails(selectedKitchen.kitchenName) + 1).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.GetUpdateDetails(selectedKitchen.
-               kitchenName) + 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.GetUpdateDetails(selectedKitchen.
-                kitchenName) + 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    selectedKitchen.UpdateKitchen();
-                });
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                selectedKitchen.UpdateKitchen();
+            });
         }
         SoundManager.Instance.PlayButtonClick();
     }
     public void PlaceNewKitchen()
     {
         GameObject kitchenObj = Kitchens[currentSelectedObject];
-        kitchenObj.SetActive(true);
-        kitchenObj.transform.GetChild(kitchenObj.GetComponent<Kitchen>().CurrentUpdate).gameObject.SetActive(true);
-        //ShawarmaSpawner.Instance.AddNewTarget(kitchenObj.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().Capacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
-        kitchenObj.name = "kitchen" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
+        kitchenObj.SetActive(true); 
+        kitchenObj.transform.GetChild(kitchenObj.GetComponent<Kitchen>().currentUpdate - 1).gameObject.SetActive(true);
+        //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
+        kitchenObj.name = "Kitchen" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
         kitchenObj.GetComponent<Kitchen>().SetKitchenIsPurchased();
         placedKitchens.Add(kitchenObj);
         currentKitchenCount++;
 
-        if (kitchenObj.TryGetComponent(out Kitchen kitchen))
-        {
-            kitchen.AssignId(currentKitchenCount + 1);
-        }
     }
-
-    public void BuyNewKitchen()
-    {
-
-
-    }
-
 }
 

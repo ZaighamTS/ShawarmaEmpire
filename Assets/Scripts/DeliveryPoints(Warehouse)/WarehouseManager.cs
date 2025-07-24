@@ -83,7 +83,7 @@ public class WarehouseManager : MonoBehaviour
     {
         SoundManager.Instance.PlayButtonClick();
         currentSelectedObject = n;
-        if (placedWarehouses.Count < warehouses.Length && warehouses[currentSelectedObject].GetComponent<Warehouse>().cost < CurrentCash)
+        if (placedWarehouses.Count < warehouses.Length && warehouses[currentSelectedObject].GetComponent<Warehouse>().cost < PlayerProgress.Instance.PlayerCash)
         {
             PlaceNewWarehouse();
             UpdateBuildNewWarehouseUI();

@@ -23,50 +23,16 @@ public class Warehouse : MonoBehaviour, ISaveable
     public bool HouseIsPurchased;
     [SerializeField] public List<UpdateDetails> updates = new List<UpdateDetails>();
 
-    //public int GetUpdateDetails(string HouseName)
-    //{
-    //    return PlayerPrefs.GetInt(HouseName);
-    //}
-    //public void SetUpdateDetails(string HouseName, int value)
-    //{
-    //    if (PlayerPrefs.GetInt(HouseName) >= updates.Count)
-    //        return;
-    //    PlayerPrefs.SetInt(HouseName, value);
-    //}
-
-    //public int GetCurrentCapacity(string HouseName)
-    //{
-    //    return updates[GetUpdateDetails(HouseName)].Capacity;
-    //}
     public void SetHouseIsPurchased()
     {
         PlayerPrefs.SetInt(warehouseName + "Purchased", 1);
         HouseIsPurchased = true;
     }
 
-
-    private void Awake()
-    {
-        //  Debug.Log("check");
-        //if (PlayerPrefs.GetInt(warehouseName + "Purchased") == 1)
-        //{
-        //    HouseIsPurchased = true;
-        //}
-        //else
-        //{
-        //    HouseIsPurchased = false;
-        //}
-        //currentUpdate = GetUpdateDetails(warehouseName);
-        //currentCapacity = updates[currentUpdate].Capacity;
-
-
-
-    }
     private void Start()
     {
         SaveLoadManager.saveLoadManagerInstance.Register(this);
         GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
-        Debug.Log("CP " + currentCapacity);
     }
     private void OnDestroy()
     {
@@ -81,26 +47,11 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     public void UpdateWarehouse()
     {
-        //int CurrentUpdateId = GetUpdateDetails(warehouseName);
-        //if (CurrentUpdateId < updates.Count - 1)
-        //{
-        //    for (int i = 0; i < 5; i++)
-        //    {
-        //        transform.GetChild(i).gameObject.SetActive(false);
-        //    }
-        //    SetUpdateDetails(warehouseName, CurrentUpdateId + 1);
-        //    currentUpdate = GetUpdateDetails(warehouseName);
-
-        //    transform.GetChild(CurrentUpdateId + 1).gameObject.SetActive(true);
-        //    WarehouseManager.Instance.UpdateWarehoueUI(id);
-        //    SoundManager.Instance.PlayButtonClick();
-        //}
-
         float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
         Debug.Log("cost "+ cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < updates.Count; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
@@ -114,10 +65,7 @@ public class Warehouse : MonoBehaviour, ISaveable
             isDirty = true;
         }
         else
-        {
-            ////Open SHop or so
-            //Debug.Log("Cost "+cost);
-            //Debug.Log("Low Cash");
+        {    
             UIManager.Instance.lowCashPromt.SetActive(true);
         }
     }
@@ -163,9 +111,7 @@ public class Warehouse : MonoBehaviour, ISaveable
         currentLoad = data.currentLoad;
         currentUpdate = data.currentUpdate;
         cost = data.cost;
-        //currentLevel = data.currentLevel;
         isDirty = false;
-        Debug.Log("RestoreState");
     }
     public void SetInitialData()
     {
@@ -174,14 +120,11 @@ public class Warehouse : MonoBehaviour, ISaveable
         cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
         currentLoad = 0;
         isDirty = true;
-        Debug.Log("SetInitialData");
     }
     public void ClearDirty()
     {
         isDirty = false;
     }
-
-
     #endregion
 }
 public class WarehouseDataNew
@@ -191,8 +134,6 @@ public class WarehouseDataNew
     public int currentLoad;
     public int currentUpdate;
     public int cost;
-   
-
 }
 [System.Serializable]
 public class UpdateDetails
