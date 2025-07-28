@@ -10,7 +10,7 @@ public class WarehouseManager : MonoBehaviour
     int currentWarehouseCount;
     public static WarehouseManager Instance;
     public List<GameObject> placedWarehouses = new List<GameObject>();
-    [SerializeField] int CurrentCash; // Temporary cash
+   // [SerializeField] int CurrentCash; // Temporary cash
     int currentSelectedObject;
     int requiredCostToUpgrade;
     bool canUpgrade;
@@ -81,6 +81,8 @@ public class WarehouseManager : MonoBehaviour
         currentSelectedObject = n;
         if (placedWarehouses.Count < warehouses.Length && warehouses[currentSelectedObject].GetComponent<Warehouse>().cost < PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(warehouses[currentSelectedObject].GetComponent<Warehouse>().cost);
+            UIManager.Instance.UpdateUI(UIUpdateType.Cash);
             PlaceNewWarehouse();
             UpdateBuildNewWarehouseUI();
         }
@@ -118,7 +120,7 @@ public class WarehouseManager : MonoBehaviour
         Warehouse selectedWarehouse = warehouses[currentSelectedObject].GetComponent<Warehouse>();
         int WarehouseCurrentupdate = selectedWarehouse.currentUpdate;
 
-        if ((WarehouseCurrentupdate) < selectedWarehouse.updates.Count && selectedWarehouse.cost<CurrentCash)
+        if ((WarehouseCurrentupdate) < selectedWarehouse.updates.Count)
         {
             // Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
             buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(4).gameObject.SetActive(false);

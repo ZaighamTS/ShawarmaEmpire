@@ -17,10 +17,17 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         ShawarmaSpawner.onShawarmaCreated += UpdateUI;
+        Warehouse.onWarehouseUpgraded += UpdateUI;
+        Catering.onCateringUpgraded += UpdateUI;
+        Kitchen.onKitchenUpgraded += UpdateUI;
+
     }
     private void OnDisable()
     {
         ShawarmaSpawner.onShawarmaCreated -= UpdateUI;
+        Warehouse.onWarehouseUpgraded -= UpdateUI;
+        Catering.onCateringUpgraded -= UpdateUI;
+        Kitchen.onKitchenUpgraded -= UpdateUI;
     }
     
     public void UpdateUI(UIUpdateType updateType, float value = 0)

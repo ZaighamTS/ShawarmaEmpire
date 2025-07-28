@@ -10,7 +10,7 @@ public class CateringManager : MonoBehaviour
     public GameObject[] Caterings; 
     int currentCateringCount;
     int currentSelectedObject;
-    [SerializeField] int CurrentCash; // Temporary cash
+    //[SerializeField] int CurrentCash; // Temporary cash
     private List<GameObject> placedCatering = new List<GameObject>();
     [Header("UI References")]
     public Transform buidlNewPointParent;
@@ -71,8 +71,10 @@ public class CateringManager : MonoBehaviour
     {
         SoundManager.Instance.PlayButtonClick();
         currentSelectedObject = n;
-        if (placedCatering.Count < Caterings.Length)
+        if (placedCatering.Count < Caterings.Length && Caterings[currentSelectedObject].GetComponent<Catering>().cost < PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(Caterings[currentSelectedObject].GetComponent<Catering>().cost);
+            UIManager.Instance.UpdateUI(UIUpdateType.Cash);
             PlaceNewCatering();
             UpdateBuildNewCateringUI();
         }
@@ -88,7 +90,7 @@ public class CateringManager : MonoBehaviour
         Catering selectedCatering = Caterings[currentSelectedObject].GetComponent<Catering>();
         int CateringCurrentupdate = selectedCatering.currentUpdate;
 
-        if ((CateringCurrentupdate) < selectedCatering.updates.Count && selectedCatering.cost < CurrentCash)
+        if ((CateringCurrentupdate) < selectedCatering.updates.Count)
         {
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();

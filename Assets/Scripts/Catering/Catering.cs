@@ -43,6 +43,7 @@ public class Catering : MonoBehaviour, ISaveable
     public void UpdateCatering()
     {    
         float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
+        GameManager.gameManagerInstance.SpendCash(cost);
         Debug.Log("cost " + cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {

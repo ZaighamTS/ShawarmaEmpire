@@ -39,7 +39,7 @@ public class Shawarma : MonoBehaviour
         if (OnStartMove)
         {
             // Debug.Log(agent.remainingDistance);
-            if (agent.remainingDistance < 2.1f)
+            if (agent.remainingDistance < 1.1f)
             {
                 OnStartMove = false;
                 transform.position = InitialPos;

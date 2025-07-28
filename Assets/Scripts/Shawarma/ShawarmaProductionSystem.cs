@@ -96,7 +96,7 @@ public class ShawarmaProductionSystem : MonoBehaviour
         double cashEarned = value * tapMultiplier;
 
         // CurrencyManager.Instance.AddCoins(cashEarned);
-        GameManager.gameManagerInstance.AddCash((int)cashEarned);
+       // GameManager.gameManagerInstance.AddCash((int)cashEarned);
         //StorageManager.Instance.StoreShawarma(); // Update centralized storage system
         //UIManager.Instance?.UpdateUI();          //  Realtime UI
 

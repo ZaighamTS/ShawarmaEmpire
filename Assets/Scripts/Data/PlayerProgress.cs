@@ -1,9 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 
 public class PlayerProgress : ISaveable
 {
+
     private static PlayerProgress instance;
     public static PlayerProgress Instance
     {
@@ -23,7 +23,7 @@ public class PlayerProgress : ISaveable
     }
     private float playerCash;
     private int chefStars;
-    private bool isDirty;
+    private bool isDirty=false;
     private float totalEarnings;
     public float PlayerCash
     {
@@ -55,7 +55,7 @@ public class PlayerProgress : ISaveable
     #region Save/Load
     public object CaptureState()
     {
-        return new PlayerProgress
+        return new PlayerProgressData
         {
             playerCash = playerCash,
             chefStars = chefStars
@@ -74,6 +74,7 @@ public class PlayerProgress : ISaveable
     public void SetInitialData()
     {
         playerCash = 0;
+        isDirty=true;
     }
 
     public bool IsDirty => isDirty;
@@ -86,6 +87,6 @@ public class PlayerProgress : ISaveable
 }
 public class PlayerProgressData
 {
-    public int playerCash;
+    public float playerCash;
     public int chefStars;
 }

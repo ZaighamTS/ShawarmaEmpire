@@ -21,8 +21,20 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         playerProgress = PlayerProgress.Instance;
-       // ExtraBuildingsPlacement placement = FindObjectOfType<ExtraBuildingsPlacement>();
-       // placement.CurrentLevel = 1;
+        SaveLoadManager.saveLoadManagerInstance.Register(PlayerProgress.Instance);
+        RecordPersistentRegistrations().Forget();
+        // ExtraBuildingsPlacement placement = FindObjectOfType<ExtraBuildingsPlacement>();
+        // placement.CurrentLevel = 1;
+        Invoke("DelayOnStart",1.1f);
+    }
+    public void DelayOnStart()
+    {
+        UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+    }
+
+    private void OnDestroy()
+    {
+        SaveLoadManager.saveLoadManagerInstance.Unregister(PlayerProgress.Instance);
     }
     internal async UniTask RecordPersistentRegistrations()
     {
@@ -43,9 +55,11 @@ public class GameManager : MonoBehaviour
     //}
     internal void AddCash(float value)
     {
+       
         playerProgress.PlayerCash += value;
+       
         playerProgress.TotalEarnings += value;
-        //Passs Total Earning Of All TIme
+        
         CheckChefStars(playerProgress.TotalEarnings);
     }
     internal bool SpendCash(float Value)

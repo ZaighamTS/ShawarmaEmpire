@@ -121,10 +121,11 @@ public class ShawarmaSpawner : MonoBehaviour
             var generationReward = shawarmaValue * generationBonus;
             var shawarmaCount = 1;
             //Add TapMultiplier Here,
+            GameManager.gameManagerInstance.AddCash(generationReward);
             onShawarmaCreated?.Invoke(UIUpdateType.Cash, generationReward);
             onShawarmaCreated?.Invoke(UIUpdateType.Storage, shawarmaCount);
             onStoreShawarma?.Invoke(1/**(Tap Multiplier)*/);
-            GameManager.gameManagerInstance.AddCash(generationReward);
+            
         }
     }
 

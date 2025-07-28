@@ -26,7 +26,8 @@ public class KitchenManager : MonoBehaviour
     void Start()
     {
         //Invoke("DelayOnStart",1);
-        Invoke("DelayOnStart", 1.1f);
+         Invoke("DelayOnStart", 1.1f);
+       // DelayOnStart().Forget();
     }
     public void ActionPerformedOneTime()
     {
@@ -39,9 +40,9 @@ public class KitchenManager : MonoBehaviour
             PlayerPrefs.SetInt(purchaseKey, 1);
         }
     }
-
-    //  public async UniTask DelayOnStart()
     public void DelayOnStart()
+   // public async UniTask DelayOnStart()
+   
     {
         //await UniTask.NextFrame();
         for (int i = 0; i < Kitchens.Length; i++)
@@ -73,8 +74,10 @@ public class KitchenManager : MonoBehaviour
     {
         SoundManager.Instance.PlayButtonClick();
         currentSelectedObject = n;
-        if (placedKitchens.Count < Kitchens.Length)
+        if (placedKitchens.Count < Kitchens.Length && Kitchens[currentSelectedObject].GetComponent<Kitchen>().cost < PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(Kitchens[currentSelectedObject].GetComponent<Kitchen>().cost);
+            UIManager.Instance.UpdateUI(UIUpdateType.Cash);
             PlaceNewKitchen();
             UpdateBuildNewKitchenUI();
         }

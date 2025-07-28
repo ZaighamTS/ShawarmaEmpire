@@ -12,7 +12,8 @@ public enum UpgradeType
 {
     Storage,
     DeliveryVan,
-    Kitchen
+    Kitchen,
+    Catering
 }
 public enum CapacityType
 {

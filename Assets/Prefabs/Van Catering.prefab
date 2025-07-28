@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1982371921066902722}
-  - component: {fileID: 7911153631368533961}
+  - component: {fileID: 8909304961942318519}
   - component: {fileID: 5638866852202135959}
   m_Layer: 6
   m_Name: Van Catering
@@ -41,7 +41,7 @@ Transform:
   - {fileID: 4999000742832197860}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7911153631368533961
+--- !u!114 &8909304961942318519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -50,7 +50,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 96678022825217815}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cffb1eebe0eef5348ad583eac32bff38, type: 3}
+  m_Script: {fileID: 11500000, guid: 7980b0a959701254a8ec956a7ba593f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
@@ -62,10 +62,10 @@ MonoBehaviour:
   - {fileID: 5405020048540997027}
   - {fileID: 7647739441905219647}
   wheelRotationSpeed: 360
-  detectionDistance: 5
+  detectionDistance: 2
   vanLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
 --- !u!65 &5638866852202135959
 BoxCollider:
   m_ObjectHideFlags: 0

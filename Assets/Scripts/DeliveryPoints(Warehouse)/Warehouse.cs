@@ -51,6 +51,7 @@ public class Warehouse : MonoBehaviour, ISaveable
         Debug.Log("cost "+ cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(cost);
             for (int i = 0; i < updates.Count; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
