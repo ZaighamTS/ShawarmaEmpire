@@ -20,6 +20,8 @@ public class UIManager : MonoBehaviour
         Warehouse.onWarehouseUpgraded += UpdateUI;
         Catering.onCateringUpgraded += UpdateUI;
         Kitchen.onKitchenUpgraded += UpdateUI;
+        BuildingUnlockManager.onBuildingUpgraded += UpdateUI;
+        Delivery.onDeliveryUpgraded += UpdateUI;
 
     }
     private void OnDisable()
@@ -28,6 +30,8 @@ public class UIManager : MonoBehaviour
         Warehouse.onWarehouseUpgraded -= UpdateUI;
         Catering.onCateringUpgraded -= UpdateUI;
         Kitchen.onKitchenUpgraded -= UpdateUI;
+        BuildingUnlockManager.onBuildingUpgraded -= UpdateUI;
+        Delivery.onDeliveryUpgraded -= UpdateUI;
     }
     
     public void UpdateUI(UIUpdateType updateType, float value = 0)

@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -9,7 +10,7 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
 {
     PlayerProgress playerProgress;
     public string SaveKey => "delivery_van";
-    public GameObject[] vanPrefab;
+    public  List<GameObject> vanPrefab;
     public Transform spawnPoint;
     public Transform deliveryPoint;
     public Transform Exit_point;
@@ -19,7 +20,14 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     private float deliveryCapacity;
     private int currentLevel;
     private bool isDirty = false;
-
+    public static DeliveryVanSpawner Instance;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
     private void Start()
     {
         playerProgress = PlayerProgress.Instance;
@@ -37,6 +45,7 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     }
     IEnumerator SpawnVanLoop()
     {
+        yield return new WaitForSeconds(2);
         while (true)
         {
             SpawnVan();
@@ -61,7 +70,7 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     }
     void SpawnVan()
     {
-        int n=Random.Range(0, vanPrefab.Length);
+        int n=Random.Range(0, vanPrefab.Count);
         GameObject van = Instantiate(vanPrefab[n], spawnPoint.position, spawnPoint.rotation);
         van.transform.SetParent(transform);
         DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();

@@ -107,7 +107,13 @@ public class DeliveryManager : MonoBehaviour
     public void PlaceNewDelivery()
     {
         GameObject DeliveryObj = Deliverys[currentSelectedObject];
-        DeliveryObj.SetActive(true); 
+        DeliveryObj.SetActive(true);
+        for (int i = 0; i < DeliveryObj.GetComponent<Delivery>().currentUpdate; i++)
+        {
+            DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryObj.GetComponent<Delivery>().DeliveryVanObjects[i]);
+        }
+     
+        
         DeliveryObj.transform.GetChild(DeliveryObj.GetComponent<Delivery>().currentUpdate - 1).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         DeliveryObj.name = "Delivery" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)

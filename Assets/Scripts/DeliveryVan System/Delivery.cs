@@ -7,7 +7,8 @@ public class Delivery : MonoBehaviour, ISaveable
 {
     private int id;
     public int cost;
-    internal string DeliveryName;  
+    internal string DeliveryName;
+    public GameObject[] DeliveryVanObjects; 
     public int currentUpdate;
     public bool DeliveryIsPurchased;
     private bool isDirty = false;
@@ -53,6 +54,10 @@ public class Delivery : MonoBehaviour, ISaveable
             }
             currentUpdate++;
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+           // for (int i = 0; i <= currentUpdate; i++)
+            {
+                DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
+            }
             DeliveryManager.Instance.UpdateDeliveryUI(id);
             DeliveryManager.Instance.UpdateIcon(id);
             SoundManager.Instance.PlayButtonClick();

@@ -33,7 +33,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
     }
     public void DelayOnStart()
     {
-        playerCash = 1000;
+       
         LoadPurchaseStatus();
         GenerateBuildingUI();
         UpdateUI();
@@ -64,6 +64,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
 
     void TryUnlockBuilding(int index)
     {
+        playerCash = (int)PlayerProgress.Instance.PlayerCash;
         if (buildings[index].isPurchased)
             return;
 
@@ -71,15 +72,17 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
 
         if (playerCash >= b.cost)
         {
-            playerCash -= b.cost;
-            SetCash(playerCash);
+            GameManager.gameManagerInstance.SpendCash(cost);
+           // playerCash -= b.cost;
+           // SetCash(playerCash);
             buildings[index].isPurchased = true;
             SaveBuildingPurchase(index, true);
+            onBuildingUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             UpdateUI();
         }
         else
         {
-            Debug.Log("Not enough cash!");
+            UIManager.Instance.lowCashPromt.SetActive(true);
         }
     }
 
