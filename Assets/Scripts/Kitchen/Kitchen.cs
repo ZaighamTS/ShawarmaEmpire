@@ -6,7 +6,7 @@ using UnityEngine;
 public class Kitchen : MonoBehaviour, ISaveable
 {
     private int id;
-    public int cost;
+    public float cost;
     internal string kitchenName;  
     public int currentUpdate;
     public bool KitchenIsPurchased;
@@ -39,24 +39,24 @@ public class Kitchen : MonoBehaviour, ISaveable
         PlayerPrefs.SetInt(kitchenName + "Purchased", 1);
         KitchenIsPurchased = true;
     }
-
+  
     public void UpdateKitchen()
     {    
-        float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
-        GameManager.gameManagerInstance.SpendCash(cost);
-        Debug.Log("cost " + cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(cost);
             for (int i = 0; i < updates.Count; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             currentUpdate++;
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
-            KitchenManager.Instance.UpdateKitchenUI(id);
-            KitchenManager.Instance.UpdateIcon(id);
             SoundManager.Instance.PlayButtonClick();
             onKitchenUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+            KitchenManager.Instance.UpdateKitchenUI(id);
+            KitchenManager.Instance.UpdateIcon(id);
+            KitchenManager.Instance.UpdateCostText(id);
             isDirty = true;
         }
         else
@@ -107,7 +107,7 @@ public class KitchenData
 {
     public int id;
     public int currentUpdate;
-    public int cost;
+    public float cost;
 }
 [System.Serializable]
 public class KitchenUpdateDetails

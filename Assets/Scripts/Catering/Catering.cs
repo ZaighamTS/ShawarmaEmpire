@@ -6,7 +6,7 @@ using UnityEngine;
 public class Catering : MonoBehaviour, ISaveable
 {
     private int id;
-    public int cost;
+    public float cost;
     internal string CateringName;  
     public int currentUpdate;
     public bool CateringIsPurchased;
@@ -39,24 +39,27 @@ public class Catering : MonoBehaviour, ISaveable
         PlayerPrefs.SetInt(CateringName + "Purchased", 1);
         CateringIsPurchased = true;
     }
-
     public void UpdateCatering()
     {    
-        float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
-        GameManager.gameManagerInstance.SpendCash(cost);
+       
+        
         Debug.Log("cost " + cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(cost);
             for (int i = 0; i < updates.Count; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             currentUpdate++;
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
-            CateringManager.Instance.UpdateCateringUI(id);
-            CateringManager.Instance.UpdateIcon(id);
             SoundManager.Instance.PlayButtonClick();
             onCateringUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+            CateringManager.Instance.UpdateCateringUI(id);
+            CateringManager.Instance.UpdateIcon(id);
+            CateringManager.Instance.UpdateCostText(id);
+
             isDirty = true;
         }
         else
@@ -64,7 +67,7 @@ public class Catering : MonoBehaviour, ISaveable
             UIManager.Instance.lowCashPromt.SetActive(true);
         }
     }
-
+  
     public void OnShwarmaGen()
     {
         //currentLoad++;
@@ -107,7 +110,7 @@ public class CateringData
 {
     public int id;
     public int currentUpdate;
-    public int cost;
+    public float cost;
 }
 [System.Serializable]
 public class CateringUpdateDetails

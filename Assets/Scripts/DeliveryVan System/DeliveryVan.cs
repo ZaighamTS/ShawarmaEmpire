@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DeliveryVan : MonoBehaviour
 {
-    StorageManager storageManager;
+    WarehouseManager storageManager;
 
     public float speed = 5f;
     public float waitTimeAtPoint = 3f;
@@ -19,7 +19,7 @@ public class DeliveryVan : MonoBehaviour
 
     private void Start()
     {
-        storageManager = StorageManager.storageManagerInstance;
+        storageManager = WarehouseManager.Instance;
     }
     public void MoveTo(Vector3 deliveryPoint)
     {
@@ -56,16 +56,16 @@ public class DeliveryVan : MonoBehaviour
         {
             yield return new WaitForSeconds(waitTimeAtPoint / 2);
 
-            var shwarmas = storageManager.GetStoredShawarmas();
-            if (shwarmas >= deliveryCapacity)
-            {
-                storageManager.DeliverShawarma(shwarmas);
-                var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
-                var totalRewards = (shawarmaValue * shwarmas) * 0.95f;
-                PlayerProgress.Instance.PlayerCash += totalRewards;
-            }
+            //var shwarmas = storageManager.GetStoredShawarmas();
+            //if (shwarmas >= deliveryCapacity)
+            //{
+            //    storageManager.DeliverShawarma(shwarmas);
+            //    var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
+            //    var totalRewards = (shawarmaValue * shwarmas) * 0.95f;
+            //    PlayerProgress.Instance.PlayerCash += totalRewards;
+            //}
 
-            yield return new WaitForSeconds(waitTimeAtPoint / 2);
+            //yield return new WaitForSeconds(waitTimeAtPoint / 2);
 
             // Go to exit
             targetPosition = exitOffset.position;

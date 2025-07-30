@@ -6,7 +6,7 @@ using UnityEngine;
 public class Delivery : MonoBehaviour, ISaveable
 {
     private int id;
-    public int cost;
+    public float cost;
     internal string DeliveryName;
     public GameObject[] DeliveryVanObjects; 
     public int currentUpdate;
@@ -40,28 +40,34 @@ public class Delivery : MonoBehaviour, ISaveable
         PlayerPrefs.SetInt(DeliveryName + "Purchased", 1);
         DeliveryIsPurchased = true;
     }
+   
 
     public void UpdateDelivery()
     {    
-        float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
-        GameManager.gameManagerInstance.SpendCash(cost);
+       
+      
         Debug.Log("cost " + cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
+            GameManager.gameManagerInstance.SpendCash(cost);
             for (int i = 0; i < updates.Count; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             currentUpdate++;
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
-           // for (int i = 0; i <= currentUpdate; i++)
+            SoundManager.Instance.PlayButtonClick();
+            onDeliveryUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+            // for (int i = 0; i <= currentUpdate; i++)
             {
                 DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
             }
             DeliveryManager.Instance.UpdateDeliveryUI(id);
             DeliveryManager.Instance.UpdateIcon(id);
-            SoundManager.Instance.PlayButtonClick();
-            onDeliveryUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+            DeliveryManager.Instance.UpdateCostText(id);
+
+
             isDirty = true;
         }
         else
@@ -112,7 +118,7 @@ public class DeliveryData
 {
     public int id;
     public int currentUpdate;
-    public int cost;
+    public float cost;
 }
 [System.Serializable]
 public class DeliveryUpdateDetails

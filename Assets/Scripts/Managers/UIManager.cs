@@ -50,7 +50,7 @@ public class UIManager : MonoBehaviour
             case UIUpdateType.Storage:
                 {
                     if (storageText != null)
-                        storageText.text = $"Storage: {StorageManager.storageManagerInstance.GetStoredShawarmas()} / {StorageManager.storageManagerInstance.GetStorageCapacity()}";
+                        storageText.text = $"{WarehouseManager.Instance.GetWholeLoad()}";
                     break;
                 }
             case UIUpdateType.Multiplier:

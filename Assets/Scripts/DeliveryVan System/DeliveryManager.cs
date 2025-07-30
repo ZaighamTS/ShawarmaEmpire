@@ -1,8 +1,9 @@
-using UnityEngine;
-using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class DeliveryManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class DeliveryManager : MonoBehaviour
     public GameObject[] Deliverys; // Assign Deliverya GameObjects (only 1 active at start)
     int currentDeliveryCount;
     int currentSelectedObject;
-    [SerializeField] int CurrentCash; // Temporary cash
+   // [SerializeField] int CurrentCash; // Temporary cash
     private List<GameObject> placedDeliverys = new List<GameObject>();
     [Header("UI References")]
     public Transform buidlNewPointParent;
@@ -81,6 +82,11 @@ public class DeliveryManager : MonoBehaviour
             PlaceNewDelivery();
             UpdateBuildNewDeliveryUI();
         }
+        else
+        {
+            UIManager.Instance.lowCashPromt.SetActive(true);
+            Debug.Log("Low CAsh");
+        }
     }
     public void UpdateDeliveryUI(int n)
     {
@@ -89,20 +95,36 @@ public class DeliveryManager : MonoBehaviour
         for (int i = 0; i < buildDeliveryPointParent.childCount; i++)
         {
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(4).gameObject.SetActive(true);
+            buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Delivery selectedDelivery = Deliverys[currentSelectedObject].GetComponent<Delivery>();
         int DeliveryCurrentupdate = selectedDelivery.currentUpdate;
 
-        if ((DeliveryCurrentupdate) < selectedDelivery.updates.Count && selectedDelivery.cost < CurrentCash)
+        if ((DeliveryCurrentupdate) < selectedDelivery.updates.Count )
         {
             buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedDelivery.cost.ToString("F0");
             buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
             buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 selectedDelivery.UpdateDelivery();
             });
         }
-        SoundManager.Instance.PlayButtonClick();
+        else
+        {
+            UIManager.Instance.lowCashPromt.SetActive(true);
+            Debug.Log("Low CAsh");
+        }
+       
+    }
+    public void UpdateCostText(int i)
+    {
+        Delivery selectedDelivery = Deliverys[i].GetComponent<Delivery>();
+        if (selectedDelivery.currentUpdate < Deliverys.Length && selectedDelivery.currentUpdate < buildDeliveryPointParent.transform.childCount)
+        {
+            Debug.Log("currentUpdate" + selectedDelivery.currentUpdate);
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedDelivery.cost.ToString("F0");
+        }
     }
     public void PlaceNewDelivery()
     {

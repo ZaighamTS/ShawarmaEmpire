@@ -32,7 +32,7 @@ public class CateringVanSpawner : MonoBehaviour
     }
     async UniTask StartSpawning()
     {
-        await UniTask.WaitUntil(() => StorageManager.storageManagerInstance != null);
+        await UniTask.WaitUntil(() => WarehouseManager.Instance != null);
         StartCoroutine(SpawnVanLoop());
     }
     IEnumerator SpawnVanLoop()

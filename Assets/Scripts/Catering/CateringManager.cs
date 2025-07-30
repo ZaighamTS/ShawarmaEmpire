@@ -1,8 +1,9 @@
-using UnityEngine;
-using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Cysharp.Threading.Tasks;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class CateringManager : MonoBehaviour
 {
@@ -78,6 +79,11 @@ public class CateringManager : MonoBehaviour
             PlaceNewCatering();
             UpdateBuildNewCateringUI();
         }
+        else
+        {
+            UIManager.Instance.lowCashPromt.SetActive(true);
+            Debug.Log("Low CAsh");
+        }
     }
     public void UpdateCateringUI(int n)
     {
@@ -86,6 +92,7 @@ public class CateringManager : MonoBehaviour
         for (int i = 0; i < buildDeliveryPointParent.childCount; i++)
         {
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(4).gameObject.SetActive(true);
+            buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Catering selectedCatering = Caterings[currentSelectedObject].GetComponent<Catering>();
         int CateringCurrentupdate = selectedCatering.currentUpdate;
@@ -93,6 +100,7 @@ public class CateringManager : MonoBehaviour
         if ((CateringCurrentupdate) < selectedCatering.updates.Count)
         {
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedCatering.cost.ToString("F0");
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
             buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
             {
@@ -101,6 +109,17 @@ public class CateringManager : MonoBehaviour
         }
         SoundManager.Instance.PlayButtonClick();
     }
+
+    public void UpdateCostText(int i)
+    {
+        Catering selectedCatering = Caterings[i].GetComponent<Catering>();
+        if (selectedCatering.currentUpdate < Caterings.Length && selectedCatering.currentUpdate < buildDeliveryPointParent.transform.childCount)
+        {
+            Debug.Log("currentUpdate" + selectedCatering.currentUpdate);
+            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedCatering.cost.ToString("F0");
+        }
+    }
+
     public void PlaceNewCatering()
     {
         GameObject CateringObj = Caterings[currentSelectedObject];
@@ -113,5 +132,6 @@ public class CateringManager : MonoBehaviour
         currentCateringCount++;
 
     }
+   
 }
 

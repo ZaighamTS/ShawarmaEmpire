@@ -12,7 +12,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     public int currentCapacity;
     public int currentLoad;
     public int currentUpdate;
-    public int cost;
+    public float cost;
     public Transform TargetPosition;
     public int id;
     public string warehouseName;
@@ -47,7 +47,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     public void UpdateWarehouse()
     {
-        float cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+        
         Debug.Log("cost "+ cost);
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
@@ -58,11 +58,15 @@ public class Warehouse : MonoBehaviour, ISaveable
             }
             currentUpdate++;
             transform.GetChild(currentUpdate -1).gameObject.SetActive(true);
-            WarehouseManager.Instance.UpdateWarehoueUI(id);
-            WarehouseManager.Instance.UpdateIcon(id);
+           
+           
             SoundManager.Instance.PlayButtonClick();
             onWarehouseUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
            
+            WarehouseManager.Instance.UpdateWarehoueUI(id);
+            WarehouseManager.Instance.UpdateIcon(id);
+            WarehouseManager.Instance.UpdateCostText(id);
             isDirty = true;
         }
         else
@@ -84,9 +88,9 @@ public class Warehouse : MonoBehaviour, ISaveable
     public void OnShwarmaGen()
     {
         currentLoad++;
+        currentCapacity--;
         isDirty = true;
     }
-
 
     #region Save/Load
     public bool IsDirty => isDirty;
@@ -134,7 +138,7 @@ public class WarehouseData
     public int capacity;
     public int currentLoad;
     public int currentUpdate;
-    public int cost;
+    public float cost;
 }
 [System.Serializable]
 public class UpdateDetails
