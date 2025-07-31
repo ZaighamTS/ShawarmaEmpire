@@ -114,5 +114,6 @@ public class KitchenUpdateDetails
 {
     public int UpdateId;
     public Sprite Icon;
+    public string UpdateName;
 
 }

@@ -51,6 +51,7 @@ public class WarehouseManager : Upgdradable
     }
     protected override void OnUpgradeItem()
     {
+
         base.OnUpgradeItem();
     }
     public int GetWholeCapacity()
@@ -84,7 +85,8 @@ public class WarehouseManager : Upgdradable
         WareHouse.SetActive(true);
         WareHouse.transform.position = Positions[currentWarehouseCount].transform.position;
         WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().currentUpdate-1).gameObject.SetActive(true);
-        ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
+        
+        ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject], WareHouse.GetComponent<Warehouse>().currentLoad);
         Tracks[currentWarehouseCount].SetActive(true);
         WareHouse.name = "warehouse" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
         WareHouse.GetComponent<Warehouse>().SetHouseIsPurchased();
@@ -125,6 +127,8 @@ public class WarehouseManager : Upgdradable
     public void UpdateIcon(int warehosueNumber)
     {
         buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].Icon;
+        Debug.Log("Name "+ warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].UpdateName);
+        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].UpdateName;
     }
     public void UpdateWarehoueUI(int n)
     {
@@ -165,6 +169,7 @@ public class WarehouseManager : Upgdradable
    
     private void Update()
     {
+        //Debug.Log("here");
         Vector2 offset = BeltMat.mainTextureOffset;
         offset += scrollSpeed * Time.deltaTime;
         BeltMat.mainTextureOffset = offset;

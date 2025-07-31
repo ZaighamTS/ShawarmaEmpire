@@ -117,5 +117,6 @@ public class CateringUpdateDetails
 {
     public int UpdateId;
     public Sprite Icon;
+    public string UpdateName;
 
 }

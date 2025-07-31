@@ -57,13 +57,17 @@ public class Warehouse : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             currentUpdate++;
+          
             transform.GetChild(currentUpdate -1).gameObject.SetActive(true);
            
            
             SoundManager.Instance.PlayButtonClick();
             onWarehouseUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
-           
+
+            currentCapacity = (currentCapacity-currentLoad)+ UpgradeCosts.capacityMap[CapacityType.Storage].baseCapacity;
+            currentLoad = 0;
+            ShawarmaSpawner.Instance.UpdateCapacity(gameObject, currentCapacity);
             WarehouseManager.Instance.UpdateWarehoueUI(id);
             WarehouseManager.Instance.UpdateIcon(id);
             WarehouseManager.Instance.UpdateCostText(id);
@@ -88,7 +92,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     public void OnShwarmaGen()
     {
         currentLoad++;
-        currentCapacity--;
+      
         isDirty = true;
     }
 
@@ -122,7 +126,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     {
         currentUpdate = 1;
         currentCapacity = UpgradeCosts.capacityMap[CapacityType.Storage].baseCapacity;
-        cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+        cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
         currentLoad = 0;
         isDirty = true;
     }
@@ -145,4 +149,5 @@ public class UpdateDetails
 {
     public int UpdateId;
     public Sprite Icon;
+    public string UpdateName;
 }

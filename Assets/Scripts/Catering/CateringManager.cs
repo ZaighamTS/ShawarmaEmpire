@@ -62,11 +62,13 @@ public class CateringManager : MonoBehaviour
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
             point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 1].Icon;
+            point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 1].UpdateName;
         }
     }
     public void UpdateIcon(int CateringNumber)
     {
         buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 1].Icon;
+        buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 1].UpdateName;
     }
     public void AddCateringButtonClicked(int n)
     {

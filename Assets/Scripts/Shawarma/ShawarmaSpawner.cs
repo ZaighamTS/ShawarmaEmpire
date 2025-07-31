@@ -1,9 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Linq;
-using System;
+using static UnityEditor.Experimental.GraphView.Port;
 using Random = UnityEngine.Random;
 [DefaultExecutionOrder(10)]
 public class ShawarmaSpawner : MonoBehaviour
@@ -21,7 +22,7 @@ public class ShawarmaSpawner : MonoBehaviour
     private Coroutine genRoutine;
     [Range(0, 1)] public float Delay;
     public SliderController sliderController;
-    public WarehouseManager wareHouseManager;
+   // public WarehouseManager wareHouseManager;
 
     [Header("Upgardes/Qulifiers")]
     private int qualityBonus = 1;
@@ -38,20 +39,20 @@ public class ShawarmaSpawner : MonoBehaviour
     {
         playerProgress = PlayerProgress.Instance;
     }
-    public void CheckBeltMat()
-    {
-        for (int i = 0; i < targets.Count; i++)
-        {
-            if (!targets[i].HasSpace())
-            {
-                wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(false);
-            }
-            else
-            {
-                wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(true);
-            }
-        }
-    }
+    //public void CheckBeltMat()
+    //{
+    //    for (int i = 0; i < targets.Count; i++)
+    //    {
+    //        if (!targets[i].HasSpace())
+    //        {
+    //            wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(false);
+    //        }
+    //        else
+    //        {
+    //            wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(true);
+    //        }
+    //    }
+    //}
     //public void OnPointerDown(PointerEventData eventData)
     //{
     //    StartGenerating();
@@ -152,10 +153,29 @@ public class ShawarmaSpawner : MonoBehaviour
         return availableTargets[randomIndex];
     }
 
-    public void AddNewTarget(int index, int capacity, Transform targetPosition, GameObject WarehouseObject)
+    public void AddNewTarget(int index, int capacity, Transform targetPosition, GameObject WarehouseObject, int load)
     {
-        CanGenShawarma = true;
-        targets.Add(new Target(index, capacity, targetPosition, WarehouseObject));
+        if (capacity > 0)
+        {
+            CanGenShawarma = true;
+        }
+        
+        targets.Add(new Target(index, capacity, targetPosition, WarehouseObject,load));
+    }
+    public void UpdateCapacity(GameObject obj,int newCapacity)
+    {
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (targets[i].WareHouseMainObject == obj)
+            { 
+                targets[i].Capacity =  newCapacity;
+                targets[i].CurrentLoad = 0;
+                if (targets[i].Capacity > 0)
+                {
+                    CanGenShawarma = true;
+                }
+            }
+        }
     }
 
 }
@@ -168,11 +188,11 @@ public class Target
     public int CurrentLoad;
     public Transform targetPoint;
     public bool CanEnter = true;
-    public Target(int index, int capacity, Transform point, GameObject wareHouse)
+    public Target(int index, int capacity, Transform point, GameObject wareHouse,int load)
     {
         Capacity = capacity;
         targetPoint = point;
-        CurrentLoad = 0;
+        CurrentLoad = load;
         Index = index;
         WareHouseMainObject = wareHouse;
     }
@@ -187,6 +207,7 @@ public class Target
         if (CurrentLoad < Capacity)
         {
             CurrentLoad++;
+           
             CanEnter = true;
         }
         if (CurrentLoad >= Capacity)

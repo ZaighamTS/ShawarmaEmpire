@@ -65,11 +65,13 @@ public class DeliveryManager : MonoBehaviour
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
             point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 1].Icon;
+            point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 1].UpdateName;
         }
     }
     public void UpdateIcon(int DeliveryNumber)
     {
         buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 1].Icon;
+        buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 1].UpdateName;
     }
     public void AddDeliveryButtonClicked(int n)
     {
@@ -110,11 +112,7 @@ public class DeliveryManager : MonoBehaviour
                 selectedDelivery.UpdateDelivery();
             });
         }
-        else
-        {
-            UIManager.Instance.lowCashPromt.SetActive(true);
-            Debug.Log("Low CAsh");
-        }
+       
        
     }
     public void UpdateCostText(int i)

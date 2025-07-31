@@ -125,5 +125,6 @@ public class DeliveryUpdateDetails
 {
     public int UpdateId;
     public Sprite Icon;
+    public string UpdateName;
 
 }

@@ -65,11 +65,13 @@ public class KitchenManager : MonoBehaviour
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
             point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 1].Icon;
+            point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 1].UpdateName;
         }
     }
     public void UpdateIcon(int KitchenNumber)
     {
         buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 1].Icon;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Warehouse>().currentUpdate - 1].UpdateName;
     }
     public void AddKitchenButtonClicked(int n)
     {
