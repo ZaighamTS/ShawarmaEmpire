@@ -104,7 +104,7 @@ public class Delivery : MonoBehaviour, ISaveable
     public void SetInitialData()
     {
         currentUpdate = 1;  
-        cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
+        cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
         isDirty = true;
        
     }

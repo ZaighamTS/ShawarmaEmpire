@@ -23,17 +23,10 @@ public class PlayerProgress : ISaveable
     }
     private float playerCash;
     private int chefStars;
-    private bool isDirty=false;
+    private int shwarmaCount;
     private float totalEarnings;
-    public float PlayerCash
-    {
-        get => playerCash;
-        set
-        {
-            playerCash = value;
-            isDirty = true;
-        }
-    }
+    private bool isDirty=false;
+    
     public float TotalEarnings
     {
         get => totalEarnings;
@@ -43,6 +36,26 @@ public class PlayerProgress : ISaveable
             isDirty = true;
         }
     }
+    public int ShwarmaCount
+    {
+        get => shwarmaCount;
+        set
+        {
+            shwarmaCount = value;
+            isDirty = true;
+        }
+    }
+    public float PlayerCash
+    {
+        get => playerCash;
+        set
+        {
+            playerCash = value;
+            isDirty = true;
+        }
+    }
+   
+    
     public int ChefStars
     {
         get => chefStars;
@@ -58,7 +71,9 @@ public class PlayerProgress : ISaveable
         return new PlayerProgressData
         {
             playerCash = playerCash,
-            chefStars = chefStars
+            chefStars = chefStars,
+            shwarmaCount = shwarmaCount,
+            totalEarnings = totalEarnings,
         };
     }
 
@@ -68,12 +83,19 @@ public class PlayerProgress : ISaveable
             return;
         playerCash = data.playerCash;
         chefStars = data.chefStars;
+        shwarmaCount = data.shwarmaCount;
+        totalEarnings = data.totalEarnings;
+
         isDirty = false;
     }
 
     public void SetInitialData()
     {
         playerCash = 0;
+        chefStars = 0;
+        shwarmaCount = 0;
+        totalEarnings = 0;
+
         isDirty=true;
     }
 
@@ -89,4 +111,6 @@ public class PlayerProgressData
 {
     public float playerCash;
     public int chefStars;
+    public int shwarmaCount;
+    public float totalEarnings;
 }

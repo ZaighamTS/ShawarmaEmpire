@@ -57,7 +57,6 @@ public class Warehouse : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             currentUpdate++;
-          
             transform.GetChild(currentUpdate -1).gameObject.SetActive(true);
            
            
@@ -65,7 +64,7 @@ public class Warehouse : MonoBehaviour, ISaveable
             onWarehouseUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
 
-            currentCapacity = (currentCapacity-currentLoad)+ UpgradeCosts.capacityMap[CapacityType.Storage].baseCapacity;
+            currentCapacity = (currentCapacity-currentLoad) + UpgradeCosts.capacityMap[CapacityType.Storage].baseCapacity;
             currentLoad = 0;
             ShawarmaSpawner.Instance.UpdateCapacity(gameObject, currentCapacity);
             WarehouseManager.Instance.UpdateWarehoueUI(id);

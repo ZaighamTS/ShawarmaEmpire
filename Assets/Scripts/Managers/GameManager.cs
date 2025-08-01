@@ -30,6 +30,10 @@ public class GameManager : MonoBehaviour
     public void DelayOnStart()
     {
         UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+        UIManager.Instance.UpdateChefStarsText();
+        UIManager.Instance.UpdateUI(UIUpdateType.Storage);
+
+        // UIManager.Instance.Up
     }
 
     private void OnDestroy()
@@ -62,6 +66,14 @@ public class GameManager : MonoBehaviour
         
         CheckChefStars(playerProgress.TotalEarnings);
     }
+    internal void AddTotalShawarama(int value)
+    {
+
+        playerProgress.ShwarmaCount += value;
+
+       
+    }
+
     internal bool SpendCash(float Value)
     {
         if (Value <= playerProgress.PlayerCash)

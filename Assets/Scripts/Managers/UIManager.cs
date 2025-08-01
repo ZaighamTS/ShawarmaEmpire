@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public TMP_Text coinsText;
     public TMP_Text storageText;
     public TMP_Text multiplierText;
+    public TMP_Text chefStarsText;
     public GameObject lowCashPromt;
     private void Awake()
     {
@@ -50,7 +51,7 @@ public class UIManager : MonoBehaviour
             case UIUpdateType.Storage:
                 {
                     if (storageText != null)
-                        storageText.text = $"{WarehouseManager.Instance.GetWholeLoad()}";
+                        storageText.text = $"{PlayerProgress.Instance.ShwarmaCount}";
                     break;
                 }
             case UIUpdateType.Multiplier:
@@ -66,7 +67,14 @@ public class UIManager : MonoBehaviour
                 }
         }
 
+    }
 
+    public void UpdateChefStarsText()
+    {
+        if (chefStarsText != null)
+        {
+            chefStarsText.text=PlayerProgress.Instance.ChefStars.ToString();
+        }
     }
     void OnUserClickUpgrade(int type)
     {
