@@ -63,13 +63,7 @@ public class ShawarmaProductionSystem : MonoBehaviour
 
     public void TapToCook()
     {
-       // if (StorageManager.storageManagerInstance.GetStoredShawarmas() < StorageManager.storageManagerInstance.GetStorageCapacity())
-        {
-            //StorageManager.Instance.StoreShawarma(); // Adds 1 shawarma
-            //CurrencyManager.Instance.AddCoins(10);    // Adds $10 per shawarma
-            //UIManager.Instance?.UpdateUI();          // ✅ Make sure to refresh UI after tap
-        }
-
+      
         float timeSinceLastTap = Time.time - lastTapTime;
         lastTapTime = Time.time;
 
@@ -94,11 +88,6 @@ public class ShawarmaProductionSystem : MonoBehaviour
 
         double value = isUpgraded ? upgradedShawarmaValue : shawarmaValue;
         double cashEarned = value * tapMultiplier;
-
-        // CurrencyManager.Instance.AddCoins(cashEarned);
-       // GameManager.gameManagerInstance.AddCash((int)cashEarned);
-        //StorageManager.Instance.StoreShawarma(); // Update centralized storage system
-        //UIManager.Instance?.UpdateUI();          //  Realtime UI
 
         // Level Up Logic
         if (shawarmaProducedTotal >= targetShawarmaForNextLevel)

@@ -28,6 +28,15 @@ public class ShawarmaSpawner : MonoBehaviour
     private int qualityBonus = 1;
     private float generationBonus = .05f;
 
+
+    [Header("Tapping Settings")]
+    public float tapMultiplier = 1.0f;
+    public float maxMultiplier = 1.5f;
+    public float multiplierDecayRate = 0.5f;
+    public float multiplierIncreasePerTap = 0.05f;
+    public float timeBetweenTapsThreshold = 0.3f; // seconds for faster tapping
+
+    private float lastTapTime;
     private void Awake()
     {
         if (Instance == null)
@@ -39,61 +48,7 @@ public class ShawarmaSpawner : MonoBehaviour
     {
         playerProgress = PlayerProgress.Instance;
     }
-    //public void CheckBeltMat()
-    //{
-    //    for (int i = 0; i < targets.Count; i++)
-    //    {
-    //        if (!targets[i].HasSpace())
-    //        {
-    //            wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(false);
-    //        }
-    //        else
-    //        {
-    //            wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(true);
-    //        }
-    //    }
-    //}
-    //public void OnPointerDown(PointerEventData eventData)
-    //{
-    //    StartGenerating();
-    //}
-
-    //public void OnPointerUp(PointerEventData eventData)
-    //{
-    //    StopGenerating();
-    //}
-
-    //public void StartGenerating()
-    //{
-    //    if (sliderController.slider.value > sliderController.refillSpeed)
-    //    {
-    //        if (genRoutine == null)
-    //        {
-    //            genRoutine = StartCoroutine(GenerateShawarma());
-
-
-    //        }
-    //    }        
-    //}
-
-    //public void StopGenerating()
-    //{
-    //    if (genRoutine != null)
-    //    {
-    //        StopCoroutine(genRoutine);
-    //        genRoutine = null;
-    //        sliderController?.StartRefilling();
-    //    }
-    //}
-
-    //private IEnumerator GenerateShawarma()
-    //{
-    //    while (true)
-    //    {
-    //        OnTapButtonPressed();
-    //        yield return new WaitForSeconds(Delay);
-    //    }
-    //}
+    
 
     public void OnTapButtonPressed()
     {
@@ -121,17 +76,47 @@ public class ShawarmaSpawner : MonoBehaviour
             var shawarmaValue = UpgradeCosts.GetShawarmaValue(qualityBonus);
             var generationReward = shawarmaValue * generationBonus;
             var shawarmaCount = 1;
+            MultiplierFunctionality();
             //Add TapMultiplier Here,
             GameManager.gameManagerInstance.AddTotalShawarama(1);
             Debug.Log("generationReward " + generationReward);
             GameManager.gameManagerInstance.AddCash(generationReward);
             onShawarmaCreated?.Invoke(UIUpdateType.Cash, generationReward);
             onShawarmaCreated?.Invoke(UIUpdateType.Storage, shawarmaCount);
-            onStoreShawarma?.Invoke(1/**(Tap Multiplier)*/);
-            
+            onShawarmaCreated?.Invoke(UIUpdateType.Multiplier, 1);
+
+
         }
     }
+    private void Update()
+    {
+        if (Time.time - lastTapTime > timeBetweenTapsThreshold && tapMultiplier > 1.0f)
+        {
+            tapMultiplier = Mathf.Max(1.0f, tapMultiplier - multiplierDecayRate * Time.deltaTime);
+            
+            onShawarmaCreated?.Invoke(UIUpdateType.Multiplier, 1);
 
+        }
+    }
+    public float GetMultiplier()
+    {
+        return tapMultiplier;
+    }
+    public void MultiplierFunctionality()
+    {
+
+        float timeSinceLastTap = Time.time - lastTapTime;
+        lastTapTime = Time.time;
+
+        if (timeSinceLastTap < timeBetweenTapsThreshold)
+        {
+            tapMultiplier = Mathf.Min(maxMultiplier, tapMultiplier + multiplierIncreasePerTap);
+        }
+        else
+        {
+            tapMultiplier = 1.0f; // Reset multiplier on slow tap
+        }
+    }
     private Target GetAvailableTarget()
     {
         List<Target> availableTargets = new List<Target>();
@@ -156,7 +141,7 @@ public class ShawarmaSpawner : MonoBehaviour
 
     public void AddNewTarget(int index, int capacity, Transform targetPosition, GameObject WarehouseObject, int load)
     {
-        if (capacity > 0)
+        if (load<capacity)
         {
             CanGenShawarma = true;
         }
@@ -218,6 +203,61 @@ public class Target
     }
 
 }
+//public void CheckBeltMat()
+//{
+//    for (int i = 0; i < targets.Count; i++)
+//    {
+//        if (!targets[i].HasSpace())
+//        {
+//            wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(false);
+//        }
+//        else
+//        {
+//            wareHouseManager.Tracks[i].GetComponent<ScrollMaterial>().ChangeBeltMat(true);
+//        }
+//    }
+//}
+//public void OnPointerDown(PointerEventData eventData)
+//{
+//    StartGenerating();
+//}
+
+//public void OnPointerUp(PointerEventData eventData)
+//{
+//    StopGenerating();
+//}
+
+//public void StartGenerating()
+//{
+//    if (sliderController.slider.value > sliderController.refillSpeed)
+//    {
+//        if (genRoutine == null)
+//        {
+//            genRoutine = StartCoroutine(GenerateShawarma());
+
+
+//        }
+//    }        
+//}
+
+//public void StopGenerating()
+//{
+//    if (genRoutine != null)
+//    {
+//        StopCoroutine(genRoutine);
+//        genRoutine = null;
+//        sliderController?.StartRefilling();
+//    }
+//}
+
+//private IEnumerator GenerateShawarma()
+//{
+//    while (true)
+//    {
+//        OnTapButtonPressed();
+//        yield return new WaitForSeconds(Delay);
+//    }
+//}
 //foreach (Target t in _Targets)
 //{
 

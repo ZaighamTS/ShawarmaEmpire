@@ -56,8 +56,9 @@ public class UIManager : MonoBehaviour
                 }
             case UIUpdateType.Multiplier:
                 {
-                    if (multiplierText != null && ShawarmaProductionSystem.Instance != null)
-                        multiplierText.text = $"Multiplier: {ShawarmaProductionSystem.Instance.GetMultiplier():0.0}x";
+                    if (multiplierText != null && ShawarmaSpawner.Instance != null)
+                        multiplierText.text = ShawarmaSpawner.Instance.tapMultiplier.ToString("f2");
+                    //multiplierText.text = $"{ShawarmaSpawner.Instance.GetMultiplier():0.0}x";
                     break;
                 }
             default:
