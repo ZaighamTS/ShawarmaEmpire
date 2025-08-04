@@ -18,7 +18,8 @@ public enum UpgradeType
 public enum CapacityType
 {
     Storage,
-    Delivery
+    Delivery,
+    Catering
 }
 public enum ZoneType
 {
@@ -42,7 +43,8 @@ public static class UpgradeCosts
     {
         {UpgradeType.Storage,new(100,1.5f,1.5f) },
         {UpgradeType.DeliveryVan, new(100,1.5f,1.5f) },
-        {UpgradeType.Kitchen,new (200,1.2f,1.3f) }
+        {UpgradeType.Kitchen,new (200,1.2f,1.3f) },
+        {UpgradeType.Catering,new (500,1.2f,1.3f) }
     };
     /// <summary>
     /// Capacity MAp
@@ -50,7 +52,8 @@ public static class UpgradeCosts
     internal static readonly Dictionary<CapacityType, CapacityConfig> capacityMap = new()
     {
         {CapacityType.Storage,new(100,1.4f) },
-        {CapacityType.Delivery,new(100,1.3f) }
+        {CapacityType.Delivery,new(100,1.3f) },
+        {CapacityType.Catering,new(100,1.01f) }
     };
     /// <summary>
     /// Zone Multiplier Map
@@ -95,13 +98,14 @@ public static class UpgradeCosts
         float chickenValue = GetChickenUpgradeValue(1);
         float sauceValue = GetSauceUpgradeValue(1);
 
-        return (shwarmaBaseValue + extraValue) * (1 + qualityBonus);
+        float sum=breadValue+chickenValue+sauceValue+extraValue;
+        return (shwarmaBaseValue + sum) * (1 + qualityBonus);
     }
     public static float GetCookRate(float tapRate, float tapPower, float auoChefBonus)
     {
         float extraValue = GetPrestigeExtraCookRate(PlayerProgress.Instance.ChefStars);
         float machineRate = GetMachineUpgradeCookRate(1);
-        return (cookRateBaseValue + extraValue) + (tapPower * tapRate) + auoChefBonus;
+        return (cookRateBaseValue + extraValue+machineRate) + (tapPower * tapRate) + auoChefBonus;
     }
     public static float GetDeliveryInterval(int upgradeLevel)
     {
@@ -109,9 +113,9 @@ public static class UpgradeCosts
         float multiplier = .2f;
         return basePrice / (1 + upgradeLevel * multiplier);
     }
-    public static int GetChefStars(float totalEarnings)
+    public static int GetChefStars(float totalEarnings, int level)
     {
-        return Mathf.FloorToInt(Mathf.Log10(totalEarnings / 100000));
+        return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100000*level)));
     }
     public static float GetTotalSalaries(int officeLevel)
     {
@@ -134,23 +138,23 @@ public static class UpgradeCosts
     }
 
     #region Raw Material Upgrades
-    static float GetBreadUpgradeValue(int upgradeLevel)
+    public static float GetBreadUpgradeValue(int upgradeLevel)
     {
-        return 0;
+        return upgradeLevel*0.03f;
     }
-    static float GetChickenUpgradeValue(int upgradeLevel)
+    public static float GetChickenUpgradeValue(int upgradeLevel)
     {
-        return 0;
+        return upgradeLevel * 0.04f;
     }
-    static float GetSauceUpgradeValue(int upgradeLevel)
+    public static float GetSauceUpgradeValue(int upgradeLevel)
     {
-        return 0;
+        return upgradeLevel * 0.02f;
     }
     #endregion
     #region Cooking Machines Upgrade
-    static float GetMachineUpgradeCookRate(int level)
+    public static float GetMachineUpgradeCookRate(int level)
     {
-        return 0;
+        return level * 0.1f;
     }
     #endregion
 }

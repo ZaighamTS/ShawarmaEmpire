@@ -51,11 +51,12 @@ public class Catering : MonoBehaviour, ISaveable
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
-            currentUpdate++;
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            currentUpdate++;
+           
             SoundManager.Instance.PlayButtonClick();
             onCateringUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
-            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
+            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, currentUpdate);
             CateringManager.Instance.UpdateCateringUI(id);
             CateringManager.Instance.UpdateIcon(id);
             CateringManager.Instance.UpdateCostText(id);
@@ -96,7 +97,7 @@ public class Catering : MonoBehaviour, ISaveable
     public void SetInitialData()
     {
         currentUpdate = 1;  
-        cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
+        cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, currentUpdate);
         isDirty = true;
        
     }

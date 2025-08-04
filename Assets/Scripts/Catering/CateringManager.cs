@@ -22,7 +22,7 @@ public class CateringManager : MonoBehaviour
         {
             Instance = this;
         }
-        ActionPerformedOneTime();
+       // ActionPerformedOneTime();
     }
     void Start()
     {
@@ -36,16 +36,15 @@ public class CateringManager : MonoBehaviour
         if (PlayerPrefs.GetInt(oneTimeKey) != 1)
         {
             PlayerPrefs.SetInt(oneTimeKey, 1);
-            string purchaseKey = Caterings[0].GetComponent<Catering>().CateringName + "Purchased";
-            PlayerPrefs.SetInt(purchaseKey, 1);
+            Caterings[0].GetComponent<Catering>().currentUpdate = 2;
         }
     }
     public void DelayOnStart()
     {
-        
+        ActionPerformedOneTime();
         for (int i = 0; i < Caterings.Length; i++)
         {
-            if (PlayerPrefs.GetInt(Caterings[i].GetComponent<Catering>().CateringName + "Purchased") == 1)
+            if (Caterings[i].GetComponent<Catering>().currentUpdate > 1)
             {
                 currentSelectedObject = i;
                 PlaceNewCatering();
@@ -57,18 +56,32 @@ public class CateringManager : MonoBehaviour
     {
         for (int i = 0; i < buidlNewPointParent.childCount; i++)
         {
-            bool isPurchased = Caterings[i].GetComponent<Catering>().CateringIsPurchased /*&& CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i)*/;
+            bool isPurchased;
+
             Transform point = buidlNewPointParent.GetChild(i);
+            if (Caterings[i].GetComponent<Catering>().currentUpdate > 1)
+            {
+                isPurchased = true;
+                Debug.Log("aa " + (Caterings[i].GetComponent<Catering>().currentUpdate - 2).ToString());
+                point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 2].UpdateName;
+                point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 2].Icon;
+            }
+            else
+            {
+                isPurchased = false;
+            }
+
+            point.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = Caterings[i].GetComponent<Catering>().cost.ToString();
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 1].Icon;
-            point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 1].UpdateName;
+
+
         }
     }
     public void UpdateIcon(int CateringNumber)
     {
-        buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 1].Icon;
-        buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 1].UpdateName;
+        buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 2].Icon;
+        buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 2].UpdateName;
     }
     public void AddCateringButtonClicked(int n)
     {
@@ -78,6 +91,10 @@ public class CateringManager : MonoBehaviour
         {
             GameManager.gameManagerInstance.SpendCash(Caterings[currentSelectedObject].GetComponent<Catering>().cost);
             UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+
+            Caterings[currentSelectedObject].GetComponent<Catering>().currentUpdate++;
+            Caterings[currentSelectedObject].GetComponent<Catering>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, Caterings[currentSelectedObject].GetComponent<Catering>().currentUpdate);
+
             PlaceNewCatering();
             UpdateBuildNewCateringUI();
         }
@@ -97,14 +114,14 @@ public class CateringManager : MonoBehaviour
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Catering selectedCatering = Caterings[currentSelectedObject].GetComponent<Catering>();
-        int CateringCurrentupdate = selectedCatering.currentUpdate;
+        int CateringCurrentupdate = selectedCatering.currentUpdate-1;
 
         if ((CateringCurrentupdate) < selectedCatering.updates.Count)
         {
-            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedCatering.cost.ToString("F0");
-            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
-            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate-1).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate-1).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedCatering.cost.ToString("F0");
+            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedCatering.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 selectedCatering.UpdateCatering();
             });
@@ -126,10 +143,11 @@ public class CateringManager : MonoBehaviour
     {
         GameObject CateringObj = Caterings[currentSelectedObject];
         CateringObj.SetActive(true);
-        CateringObj.transform.GetChild(CateringObj.GetComponent<Catering>().currentUpdate - 1).gameObject.SetActive(true);
+        CateringObj.transform.GetChild(CateringObj.GetComponent<Catering>().currentUpdate - 2).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         CateringObj.name = "Catering" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-        CateringObj.GetComponent<Catering>().SetCateringIsPurchased();
+        //CateringObj.GetComponent<Catering>().SetCateringIsPurchased();
+        CateringObj.GetComponent<Catering>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, CateringObj.GetComponent<Catering>().currentUpdate);
         placedCatering.Add(CateringObj);
         currentCateringCount++;
 

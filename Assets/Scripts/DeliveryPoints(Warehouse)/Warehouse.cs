@@ -56,8 +56,9 @@ public class Warehouse : MonoBehaviour, ISaveable
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
+            transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
             currentUpdate++;
-            transform.GetChild(currentUpdate -1).gameObject.SetActive(true);
+          
            
            
             SoundManager.Instance.PlayButtonClick();

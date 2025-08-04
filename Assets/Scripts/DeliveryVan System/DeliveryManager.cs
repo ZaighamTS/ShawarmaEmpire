@@ -22,7 +22,7 @@ public class DeliveryManager : MonoBehaviour
         {
             Instance = this;
         }
-        ActionPerformedOneTime();
+       // ActionPerformedOneTime();
     }
     void Start()
     {
@@ -37,18 +37,18 @@ public class DeliveryManager : MonoBehaviour
         if (PlayerPrefs.GetInt(oneTimeKey) != 1)
         {
             PlayerPrefs.SetInt(oneTimeKey, 1);
-            string purchaseKey = Deliverys[0].GetComponent<Delivery>().DeliveryName + "Purchased";
-            PlayerPrefs.SetInt(purchaseKey, 1);
+            Deliverys[0].GetComponent<Delivery>().currentUpdate = 2;
         }
     }
     public void DelayOnStart()
    // public async UniTask DelayOnStart()
    
     {
+        ActionPerformedOneTime();
         //await UniTask.NextFrame();
         for (int i = 0; i < Deliverys.Length; i++)
         {
-            if (PlayerPrefs.GetInt(Deliverys[i].GetComponent<Delivery>().DeliveryName + "Purchased") == 1)
+            if (Deliverys[i].GetComponent<Delivery>().currentUpdate > 1)
             {
                 currentSelectedObject = i;
                 PlaceNewDelivery();
@@ -58,20 +58,35 @@ public class DeliveryManager : MonoBehaviour
     }
     public void UpdateBuildNewDeliveryUI()
     {
+
+
         for (int i = 0; i < buidlNewPointParent.childCount; i++)
         {
-            bool isPurchased = Deliverys[i].GetComponent<Delivery>().DeliveryIsPurchased /*&& CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i)*/;
+            bool isPurchased;
+
             Transform point = buidlNewPointParent.GetChild(i);
+            if (Deliverys[i].GetComponent<Delivery>().currentUpdate > 1)
+            {
+                isPurchased = true;
+                Debug.Log("aa " + (Deliverys[i].GetComponent<Delivery>().currentUpdate - 2).ToString());
+                point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 2].UpdateName;
+                point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 2].Icon;
+            }
+            else
+            {
+                isPurchased = false;
+            }
+
+            point.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = Deliverys[i].GetComponent<Delivery>().cost.ToString();
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 1].Icon;
-            point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 1].UpdateName;
+
         }
     }
     public void UpdateIcon(int DeliveryNumber)
     {
-        buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 1].Icon;
-        buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 1].UpdateName;
+        buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 2].Icon;
+        buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 2].UpdateName;
     }
     public void AddDeliveryButtonClicked(int n)
     {
@@ -81,6 +96,10 @@ public class DeliveryManager : MonoBehaviour
         {
             GameManager.gameManagerInstance.SpendCash(Deliverys[currentSelectedObject].GetComponent<Delivery>().cost);
             UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+
+            Deliverys[currentSelectedObject].GetComponent<Delivery>().currentUpdate++;
+            Deliverys[currentSelectedObject].GetComponent<Delivery>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, Deliverys[currentSelectedObject].GetComponent<Delivery>().currentUpdate);
+
             PlaceNewDelivery();
             UpdateBuildNewDeliveryUI();
         }
@@ -100,20 +119,20 @@ public class DeliveryManager : MonoBehaviour
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Delivery selectedDelivery = Deliverys[currentSelectedObject].GetComponent<Delivery>();
-        int DeliveryCurrentupdate = selectedDelivery.currentUpdate;
+        int DeliveryCurrentupdate = selectedDelivery.currentUpdate-1;
 
         if ((DeliveryCurrentupdate) < selectedDelivery.updates.Count )
         {
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedDelivery.cost.ToString("F0");
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedDelivery.cost.ToString("F0");
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 selectedDelivery.UpdateDelivery();
             });
         }
-       
-       
+        SoundManager.Instance.PlayButtonClick();
+
     }
     public void UpdateCostText(int i)
     {
@@ -128,16 +147,19 @@ public class DeliveryManager : MonoBehaviour
     {
         GameObject DeliveryObj = Deliverys[currentSelectedObject];
         DeliveryObj.SetActive(true);
-        for (int i = 0; i < DeliveryObj.GetComponent<Delivery>().currentUpdate; i++)
+        Debug.Log("here");
+        for (int i = 0; i < DeliveryObj.GetComponent<Delivery>().currentUpdate-1; i++)
         {
+            Debug.Log("here");
             DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryObj.GetComponent<Delivery>().DeliveryVanObjects[i]);
         }
-     
-        
-        DeliveryObj.transform.GetChild(DeliveryObj.GetComponent<Delivery>().currentUpdate - 1).gameObject.SetActive(true);
+
+
+        DeliveryObj.transform.GetChild(DeliveryObj.GetComponent<Delivery>().currentUpdate - 2).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         DeliveryObj.name = "Delivery" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-        DeliveryObj.GetComponent<Delivery>().SetDeliveryIsPurchased();
+       // DeliveryObj.GetComponent<Delivery>().SetDeliveryIsPurchased();
+        DeliveryObj.GetComponent<Delivery>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, DeliveryObj.GetComponent<Delivery>().currentUpdate);
         placedDeliverys.Add(DeliveryObj);
         currentDeliveryCount++;
 

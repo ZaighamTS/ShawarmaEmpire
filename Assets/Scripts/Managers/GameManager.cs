@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
        
         playerProgress.TotalEarnings += value;
         
-        CheckChefStars(playerProgress.TotalEarnings);
+        CheckChefStars(playerProgress.TotalEarnings, KitchenManager.Instance.Kitchens[0].GetComponent<Kitchen>().currentUpdate);
     }
     internal void AddTotalShawarama(int value)
     {
@@ -84,9 +84,9 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    private void CheckChefStars(float playerCash)
+    private void CheckChefStars(float playerCash, int level)
     {
-        var newStars = UpgradeCosts.GetChefStars(playerCash);
+        var newStars = UpgradeCosts.GetChefStars(playerCash,level);
         if (newStars > chefStars)
         {
             playerProgress.ChefStars = newStars;

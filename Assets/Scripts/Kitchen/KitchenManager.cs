@@ -22,7 +22,7 @@ public class KitchenManager : MonoBehaviour
         {
             Instance = this;
         }
-        ActionPerformedOneTime();
+        
     }
     void Start()
     {
@@ -37,18 +37,19 @@ public class KitchenManager : MonoBehaviour
         if (PlayerPrefs.GetInt(oneTimeKey) != 1)
         {
             PlayerPrefs.SetInt(oneTimeKey, 1);
-            string purchaseKey = Kitchens[0].GetComponent<Kitchen>().kitchenName + "Purchased";
-            PlayerPrefs.SetInt(purchaseKey, 1);
+            Kitchens[0].GetComponent<Kitchen>().currentUpdate = 2;
+           
         }
     }
     public void DelayOnStart()
    // public async UniTask DelayOnStart()
    
     {
+        ActionPerformedOneTime();
         //await UniTask.NextFrame();
         for (int i = 0; i < Kitchens.Length; i++)
         {
-            if (PlayerPrefs.GetInt(Kitchens[i].GetComponent<Kitchen>().kitchenName + "Purchased") == 1)
+            if (Kitchens[i].GetComponent<Kitchen>().currentUpdate > 1)
             {
                 currentSelectedObject = i;
                 PlaceNewKitchen();
@@ -58,20 +59,35 @@ public class KitchenManager : MonoBehaviour
     }
     public void UpdateBuildNewKitchenUI()
     {
+        
         for (int i = 0; i < buidlNewPointParent.childCount; i++)
         {
-            bool isPurchased = Kitchens[i].GetComponent<Kitchen>().KitchenIsPurchased /*&& CheckCanUpgrade(warehouses[i].GetComponent<Warehouse>().ScriptableWarehouseData.WarehouseName, i)*/;
+            bool isPurchased;
+
             Transform point = buidlNewPointParent.GetChild(i);
+            if (Kitchens[i].GetComponent<Kitchen>().currentUpdate > 1)
+            {
+                isPurchased = true;
+                Debug.Log("aa " + (Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2).ToString());
+                point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2].UpdateName;
+                point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2].Icon;
+            }
+            else
+            {
+                isPurchased = false;
+            }
+
+            point.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = Kitchens[i].GetComponent<Kitchen>().cost.ToString();
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
-            point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 1].Icon;
-            point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 1].UpdateName;
+
+
         }
     }
     public void UpdateIcon(int KitchenNumber)
     {
-        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 1].Icon;
-        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Warehouse>().currentUpdate - 1].UpdateName;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 2].Icon;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 2].UpdateName;
     }
     public void AddKitchenButtonClicked(int n)
     {
@@ -81,6 +97,10 @@ public class KitchenManager : MonoBehaviour
         {
             GameManager.gameManagerInstance.SpendCash(Kitchens[currentSelectedObject].GetComponent<Kitchen>().cost);
             UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+
+            Kitchens[currentSelectedObject].GetComponent<Kitchen>().currentUpdate++;
+            Kitchens[currentSelectedObject].GetComponent<Kitchen>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, Kitchens[currentSelectedObject].GetComponent<Kitchen>().currentUpdate);
+
             PlaceNewKitchen();
             UpdateBuildNewKitchenUI();
         }
@@ -102,14 +122,14 @@ public class KitchenManager : MonoBehaviour
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Kitchen selectedKitchen = Kitchens[currentSelectedObject].GetComponent<Kitchen>();
-        int KitchenCurrentupdate = selectedKitchen.currentUpdate;
+        int KitchenCurrentupdate = selectedKitchen.currentUpdate-1;
 
         if ((KitchenCurrentupdate) < selectedKitchen.updates.Count)
         {
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedKitchen.cost.ToString("F0");
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
-            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate-1).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate-1).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedKitchen.cost.ToString("F0");
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedKitchen.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 selectedKitchen.UpdateKitchen();
             });
@@ -132,10 +152,11 @@ public class KitchenManager : MonoBehaviour
     {
         GameObject kitchenObj = Kitchens[currentSelectedObject];
         kitchenObj.SetActive(true); 
-        kitchenObj.transform.GetChild(kitchenObj.GetComponent<Kitchen>().currentUpdate - 1).gameObject.SetActive(true);
+        kitchenObj.transform.GetChild(kitchenObj.GetComponent<Kitchen>().currentUpdate - 2).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         kitchenObj.name = "Kitchen" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-        kitchenObj.GetComponent<Kitchen>().SetKitchenIsPurchased();
+        //kitchenObj.GetComponent<Kitchen>().SetKitchenIsPurchased();
+        kitchenObj.GetComponent<Kitchen>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, kitchenObj.GetComponent<Kitchen>().currentUpdate);
         placedKitchens.Add(kitchenObj);
         currentKitchenCount++;
 

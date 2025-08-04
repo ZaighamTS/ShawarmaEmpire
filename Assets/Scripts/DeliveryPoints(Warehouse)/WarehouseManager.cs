@@ -30,7 +30,7 @@ public class WarehouseManager : Upgdradable
         {
             Instance = this;
         }
-        ActionPerformedOneTime();
+       
     }
     public void ActionPerformedOneTime()
     {
@@ -39,7 +39,7 @@ public class WarehouseManager : Upgdradable
         if (PlayerPrefs.GetInt(oneTimeKey) != 1)
         {
             PlayerPrefs.SetInt(oneTimeKey, 1);
-          //  warehouses[0].GetComponent<Warehouse>().currentUpdate = 2;
+            warehouses[0].GetComponent<Warehouse>().currentUpdate = 2;
             string purchaseKey = warehouses[0].GetComponent<Warehouse>().warehouseName + "Purchased";
             PlayerPrefs.SetInt(purchaseKey, 1);
         }
@@ -62,20 +62,31 @@ public class WarehouseManager : Upgdradable
     {
         return placedWarehouses.Sum(w => w.GetComponent<Warehouse>().currentLoad);
     }
-    internal void DeliverShawarma(int value)
+    internal void DeliverShawarma(int value,int current)
     {
-       
+        if (placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad > value)
+        {
+            placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad -= value;
+
+        }
+        else
+        {
+            placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad = 0;
+        }
+        ShawarmaSpawner.Instance.targets[current].CurrentLoad = placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad;
     }
     public void DelayOnStart()
     {
+        ActionPerformedOneTime();
 
         for (int i = 0; i < warehouses.Length; i++)
         {
-            if (PlayerPrefs.GetInt(warehouses[i].GetComponent<Warehouse>().warehouseName + "Purchased") == 1)
+            if (warehouses[i].GetComponent<Warehouse>().currentUpdate >1)
             {
                 currentSelectedObject = i;
                 PlaceNewWarehouse();
                 OnUpgradeItem();
+
             }
         }
     }
@@ -84,12 +95,13 @@ public class WarehouseManager : Upgdradable
         GameObject WareHouse = warehouses[currentSelectedObject];
         WareHouse.SetActive(true);
         WareHouse.transform.position = Positions[currentWarehouseCount].transform.position;
-        WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().currentUpdate-1).gameObject.SetActive(true);
+        WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().currentUpdate-2).gameObject.SetActive(true);
         
         ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject], WareHouse.GetComponent<Warehouse>().currentLoad);
         Tracks[currentWarehouseCount].SetActive(true);
         WareHouse.name = "warehouse" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-        WareHouse.GetComponent<Warehouse>().SetHouseIsPurchased();
+       // WareHouse.GetComponent<Warehouse>().SetHouseIsPurchased();
+        WareHouse.GetComponent<Warehouse>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, WareHouse.GetComponent<Warehouse>().currentUpdate);
         placedWarehouses.Add(WareHouse);
         currentWarehouseCount++;
       //  WareHouse.GetComponent<Warehouse>().AssignId(currentWarehouseCount);
@@ -102,8 +114,13 @@ public class WarehouseManager : Upgdradable
         {
             GameManager.gameManagerInstance.SpendCash(warehouses[currentSelectedObject].GetComponent<Warehouse>().cost);
             UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+            warehouses[currentSelectedObject].GetComponent<Warehouse>().currentUpdate++;
+            warehouses[currentSelectedObject].GetComponent<Warehouse>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, warehouses[currentSelectedObject].GetComponent<Warehouse>().currentUpdate);
+
             PlaceNewWarehouse();
+           
             OnUpgradeItem();
+
         }
         else
         {
@@ -126,9 +143,9 @@ public class WarehouseManager : Upgdradable
     }
     public void UpdateIcon(int warehosueNumber)
     {
-        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].Icon;
-        Debug.Log("Name "+ warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].UpdateName);
-        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 1].UpdateName;
+        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 2].Icon;
+        Debug.Log("Name "+ warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 2].UpdateName);
+        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = warehouses[warehosueNumber].GetComponent<Warehouse>().updates[warehouses[warehosueNumber].GetComponent<Warehouse>().currentUpdate - 2].UpdateName;
     }
     public void UpdateWarehoueUI(int n)
     {
@@ -141,15 +158,15 @@ public class WarehouseManager : Upgdradable
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Warehouse selectedWarehouse = warehouses[currentSelectedObject].GetComponent<Warehouse>();
-        int WarehouseCurrentupdate = selectedWarehouse.currentUpdate;
+        int WarehouseCurrentupdate = selectedWarehouse.currentUpdate-1;
 
         if ((WarehouseCurrentupdate) < selectedWarehouse.updates.Count)
         {
             // Debug.Log(selectedWarehouse.warehouseName + " "+ currentSelectedObject+" "+ canUpgrade);
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedWarehouse.cost.ToString("F0");
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
-            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate ).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate-1 ).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate-1).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedWarehouse.cost.ToString("F0");
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate-1 ).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedWarehouse.currentUpdate-1 ).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
                 {
                     selectedWarehouse.UpdateWarehouse();
                 });

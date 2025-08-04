@@ -7,6 +7,8 @@ public class Delivery : MonoBehaviour, ISaveable
 {
     private int id;
     public float cost;
+    public float spawnInterval;
+    public int deliverCapacity;
     internal string DeliveryName;
     public GameObject[] DeliveryVanObjects; 
     public int currentUpdate;
@@ -54,19 +56,20 @@ public class Delivery : MonoBehaviour, ISaveable
             {
                 transform.GetChild(i).gameObject.SetActive(false);
             }
-            currentUpdate++;
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            currentUpdate++;
             SoundManager.Instance.PlayButtonClick();
             onDeliveryUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
-            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
-            // for (int i = 0; i <= currentUpdate; i++)
-            {
-                DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
-            }
+            cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
             DeliveryManager.Instance.UpdateDeliveryUI(id);
             DeliveryManager.Instance.UpdateIcon(id);
             DeliveryManager.Instance.UpdateCostText(id);
 
+
+            DeliveryVanObjects[currentUpdate - 1].transform.GetComponent<DeliveryVan>().deliveryCapacity = deliverCapacity;
+            DeliveryVanSpawner.Instance.spawnInterval = spawnInterval;
+            DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
+            
 
             isDirty = true;
         }
@@ -89,7 +92,10 @@ public class Delivery : MonoBehaviour, ISaveable
         {
             id = id,
             currentUpdate = currentUpdate,
-            cost= cost
+            cost= cost,
+            deliverCapacity = deliverCapacity,
+            spawnInterval = spawnInterval
+
         };
     }
     public void RestoreState(object state)
@@ -99,12 +105,16 @@ public class Delivery : MonoBehaviour, ISaveable
         id = data.id;
         currentUpdate = data.currentUpdate;
         cost = data.cost;
+        spawnInterval = data.spawnInterval;
+        deliverCapacity= data.deliverCapacity;
         isDirty = false;
     }
     public void SetInitialData()
     {
         currentUpdate = 1;  
         cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
+        spawnInterval = 10;
+        deliverCapacity = 10;
         isDirty = true;
        
     }
@@ -119,6 +129,8 @@ public class DeliveryData
     public int id;
     public int currentUpdate;
     public float cost;
+    public float spawnInterval;
+    public int deliverCapacity;
 }
 [System.Serializable]
 public class DeliveryUpdateDetails

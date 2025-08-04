@@ -63,6 +63,7 @@ MonoBehaviour:
   - {fileID: 3383827118414698887}
   - {fileID: 5842547439904192164}
   wheelRotationSpeed: 360
+  deliveryCapacity: 50
   detectionDistance: 5
   vanLayerMask:
     serializedVersion: 2

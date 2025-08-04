@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class DeliveryVan : MonoBehaviour
 {
-    WarehouseManager storageManager;
+    WarehouseManager warehouseManager;
 
     public float speed = 5f;
     public float waitTimeAtPoint = 3f;
@@ -11,20 +11,21 @@ public class DeliveryVan : MonoBehaviour
     public Transform[] wheels; // Assign 4 wheels in Inspector
     public float wheelRotationSpeed = 360f; // degrees per second
 
-    internal float deliveryCapacity;
+     public int deliveryCapacity;
     private Vector3 targetPosition;
     private bool isExiting = false;
     public float detectionDistance = 2f;
     public LayerMask vanLayerMask; // Assign layer for vans in Inspector
-
+    int CurrentStop;
     private void Start()
     {
-        storageManager = WarehouseManager.Instance;
+        warehouseManager = WarehouseManager.Instance;
     }
-    public void MoveTo(Vector3 deliveryPoint)
+    public void MoveTo(Vector3 deliveryPoint,int n)
     {
         targetPosition = deliveryPoint;
         StartCoroutine(MoveVan());
+        CurrentStop = n;
     }
 
     IEnumerator MoveVan()
@@ -54,18 +55,25 @@ public class DeliveryVan : MonoBehaviour
         }
         else
         {
-            yield return new WaitForSeconds(waitTimeAtPoint / 2);
+            var shwarmas = warehouseManager.placedWarehouses[CurrentStop].transform.GetComponent<Warehouse>().currentLoad;
+            if (shwarmas >= deliveryCapacity)
+            {
+                yield return new WaitForSeconds(waitTimeAtPoint / 2);
 
-            //var shwarmas = storageManager.GetStoredShawarmas();
-            //if (shwarmas >= deliveryCapacity)
-            //{
-            //    storageManager.DeliverShawarma(shwarmas);
-            //    var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
-            //    var totalRewards = (shawarmaValue * shwarmas) * 0.95f;
-            //    PlayerProgress.Instance.PlayerCash += totalRewards;
-            //}
 
-            //yield return new WaitForSeconds(waitTimeAtPoint / 2);
+
+                if (shwarmas >= deliveryCapacity)
+                {
+                    warehouseManager.DeliverShawarma(deliveryCapacity, CurrentStop);
+                    var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
+                    var totalRewards = (shawarmaValue + shwarmas) * 0.95f;
+                    Debug.Log("totalRewards " + totalRewards);
+                    //PlayerProgress.Instance.PlayerCash += totalRewards;
+                }
+
+                yield return new WaitForSeconds(waitTimeAtPoint / 2);
+            }
+          
 
             // Go to exit
             targetPosition = exitOffset.position;

@@ -6,20 +6,19 @@ using System.Linq;
 using UnityEngine;
 
 
-public class DeliveryVanSpawner : MonoBehaviour, ISaveable
+public class DeliveryVanSpawner : MonoBehaviour
 {
     PlayerProgress playerProgress;
-    public string SaveKey => "delivery_van";
+    
     public  List<GameObject> vanPrefab;
     public Transform spawnPoint;
     public Transform deliveryPoint;
     public Transform Exit_point;
 
 
-    [SerializeField]private float spawnInterval = 10f;
-    private float deliveryCapacity;
-    private int currentLevel;
-    private bool isDirty = false;
+    public float spawnInterval = 10f;
+   
+ 
     public static DeliveryVanSpawner Instance;
     private void Awake()
     {
@@ -31,12 +30,12 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
     private void Start()
     {
         playerProgress = PlayerProgress.Instance;
-        SaveLoadManager.saveLoadManagerInstance.Register(this);
+       
         StartSpawning().Forget();
     }
     void OnDestroy()
     {
-        SaveLoadManager.saveLoadManagerInstance.Unregister(this);
+       
     }
     async UniTask StartSpawning()
     {
@@ -52,75 +51,39 @@ public class DeliveryVanSpawner : MonoBehaviour, ISaveable
             yield return new WaitForSeconds(spawnInterval);
         }
     }
-    internal void UpgradeVan()
-    {
-        float upgradeCost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentLevel);
-        if (upgradeCost <= playerProgress.PlayerCash)
-        {
-            playerProgress.PlayerCash -= upgradeCost;
-            currentLevel++;
-            deliveryCapacity = UpgradeCosts.GetDeliveryCapacity(CapacityType.Delivery, currentLevel);
-            spawnInterval = UpgradeCosts.GetDeliveryInterval(currentLevel);
-            isDirty = true;
-        }
-        else
-        {
-            //Open Store
-        }
-    }
+   
     void SpawnVan()
     {
-        int n=Random.Range(0, vanPrefab.Count);
-        GameObject van = Instantiate(vanPrefab[n], spawnPoint.position, spawnPoint.rotation);
-        van.transform.SetParent(transform);
-        DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();
-        deliveryVan.exitOffset = Exit_point;
-        if (WarehouseManager.Instance.placedWarehouses.Count > 0)
+        if (vanPrefab.Count > 0)
         {
-            int RandomNumber = Random.Range(0, WarehouseManager.Instance.placedWarehouses.Count);
-            Debug.Log("" + WarehouseManager.Instance.placedWarehouses.Count);
+            int n = Random.Range(0, vanPrefab.Count);
+            GameObject van = Instantiate(vanPrefab[n], spawnPoint.position, spawnPoint.rotation);
+            van.transform.SetParent(transform);
+            DeliveryVan deliveryVan = van.GetComponent<DeliveryVan>();
+            deliveryVan.exitOffset = Exit_point;
+            int RandomNumber = 0;
+            if (WarehouseManager.Instance.placedWarehouses.Count > 0)
+            {
+                //for (int i = 0; i < WarehouseManager.Instance.placedWarehouses.Count; i++)
+                //{
+                //    if (WarehouseManager.Instance.placedWarehouses[i].transform)
+                //}
 
-            // deliveryVan.MoveTo(WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.localPosition);
-            deliveryPoint.position = WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.position;
 
+
+                RandomNumber = Random.Range(0, WarehouseManager.Instance.placedWarehouses.Count);
+              //  Debug.Log("" + WarehouseManager.Instance.placedWarehouses.Count);
+
+                // deliveryVan.MoveTo(WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.localPosition);
+                deliveryPoint.position = WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.position;
+
+            }
+            //Pass Unit To Van To Deduct At Delivery
+            deliveryVan.MoveTo(deliveryPoint.position, RandomNumber);
         }
-        //Pass Unit To Van To Deduct At Delivery
-        deliveryVan.MoveTo(deliveryPoint.position);
+        
 
     }
-    #region Save/Load
-    public bool IsDirty => isDirty;
-    public object CaptureState()
-    {
-        return new DeliveryVanData
-        {
-            spawnInterval = spawnInterval,
-            currentLevel = currentLevel,
-            deliveryCapacity = deliveryCapacity,
-        };
-    }
-    public void RestoreState(object state)
-    {
-        if (state is not DeliveryVanData data)
-            return;
-        spawnInterval = data.spawnInterval;
-        deliveryCapacity = data.deliveryCapacity;
-        currentLevel = data.currentLevel;
-        isDirty = false;
-    }
-    public void SetInitialData()
-    {
+   
+}
 
-    }
-    public void ClearDirty()
-    {
-        isDirty = false;
-    }
-    #endregion
-}
-public class DeliveryVanData
-{
-    public float spawnInterval;
-    public float deliveryCapacity;
-    public int currentLevel;
-}
