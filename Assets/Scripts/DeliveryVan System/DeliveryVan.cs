@@ -67,8 +67,8 @@ public class DeliveryVan : MonoBehaviour
                     warehouseManager.DeliverShawarma(deliveryCapacity, CurrentStop);
                     var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
                     var totalRewards = (shawarmaValue + shwarmas) * 0.95f;
-                    Debug.Log("totalRewards " + totalRewards);
-                    //PlayerProgress.Instance.PlayerCash += totalRewards;
+                    //Debug.Log("totalRewards " + totalRewards);
+                    PlayerProgress.Instance.PlayerCash += totalRewards;
                 }
 
                 yield return new WaitForSeconds(waitTimeAtPoint / 2);
