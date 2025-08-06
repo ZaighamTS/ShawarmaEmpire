@@ -28,15 +28,10 @@ public class Delivery : MonoBehaviour, ISaveable
     {
         SaveLoadManager.saveLoadManagerInstance.Unregister(this);
     }
-    internal void AssignId(int newId)
+    internal void MakePersistent(int newId)
     {
-       
-        if (id == -1)
-        {
-            id = newId;
-        }
+        isDirty = true;
     }
-   
     public void SetDeliveryIsPurchased()
     {
         PlayerPrefs.SetInt(DeliveryName + "Purchased", 1);
@@ -57,6 +52,9 @@ public class Delivery : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            DeliveryVanObjects[currentUpdate - 1].transform.GetComponent<DeliveryVan>().deliveryCapacity = deliverCapacity;
+
+            DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
             DeliveryVanSpawner.Instance.spawnInterval = UpgradeCosts.GetDeliveryInterval(currentUpdate - 1);
             currentUpdate++;
             SoundManager.Instance.PlayButtonClick();
@@ -67,9 +65,7 @@ public class Delivery : MonoBehaviour, ISaveable
             DeliveryManager.Instance.UpdateCostText(id);
           
 
-            DeliveryVanObjects[currentUpdate - 1].transform.GetComponent<DeliveryVan>().deliveryCapacity = deliverCapacity;
-            
-            DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
+          
             
 
             isDirty = true;

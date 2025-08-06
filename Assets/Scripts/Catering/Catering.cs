@@ -25,15 +25,11 @@ public class Catering : MonoBehaviour, ISaveable
     {
         SaveLoadManager.saveLoadManagerInstance.Unregister(this);
     }
-    internal void AssignId(int newId)
+    internal void MakePersistent(int newId)
     {
-       
-        if (id == -1)
-        {
-            id = newId;
-        }
+        isDirty = true;
     }
-   
+
     public void SetCateringIsPurchased()
     {
         PlayerPrefs.SetInt(CateringName + "Purchased", 1);

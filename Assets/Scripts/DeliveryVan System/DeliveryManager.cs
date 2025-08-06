@@ -163,6 +163,7 @@ public class DeliveryManager : MonoBehaviour
         DeliveryObj.GetComponent<Delivery>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, DeliveryObj.GetComponent<Delivery>().currentUpdate);
         placedDeliverys.Add(DeliveryObj);
         currentDeliveryCount++;
+        DeliveryObj.GetComponent<Delivery>().MakePersistent(currentDeliveryCount);
 
     }
 }

@@ -80,12 +80,15 @@ public class WarehouseManager : Upgdradable
     }
     public void DelayOnStart()
     {
+        
         ActionPerformedOneTime();
 
         for (int i = 0; i < warehouses.Length; i++)
         {
+            
             if (warehouses[i].GetComponent<Warehouse>().currentUpdate >1)
             {
+                Debug.Log("cHECK");
                 currentSelectedObject = i;
                 PlaceNewWarehouse();
                 OnUpgradeItem();
@@ -107,7 +110,7 @@ public class WarehouseManager : Upgdradable
         WareHouse.GetComponent<Warehouse>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, WareHouse.GetComponent<Warehouse>().currentUpdate);
         placedWarehouses.Add(WareHouse);
         currentWarehouseCount++;
-      //  WareHouse.GetComponent<Warehouse>().AssignId(currentWarehouseCount);
+        WareHouse.GetComponent<Warehouse>().MakePersistent(currentWarehouseCount);
     }
     public void AddWarehouseButtonClicked(int n)
     {
@@ -118,6 +121,7 @@ public class WarehouseManager : Upgdradable
             GameManager.gameManagerInstance.SpendCash(warehouses[currentSelectedObject].GetComponent<Warehouse>().cost);
             UIManager.Instance.UpdateUI(UIUpdateType.Cash);
             warehouses[currentSelectedObject].GetComponent<Warehouse>().currentUpdate++;
+            //warehouses[currentSelectedObject].GetComponent<Warehouse>().IsDirty = true;
             warehouses[currentSelectedObject].GetComponent<Warehouse>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, warehouses[currentSelectedObject].GetComponent<Warehouse>().currentUpdate);
 
             PlaceNewWarehouse();

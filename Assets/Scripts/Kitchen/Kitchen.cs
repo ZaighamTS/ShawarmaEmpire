@@ -25,15 +25,11 @@ public class Kitchen : MonoBehaviour, ISaveable
     {
         SaveLoadManager.saveLoadManagerInstance.Unregister(this);
     }
-    internal void AssignId(int newId)
+    internal void MakePersistent(int newId)
     {
-       
-        if (id == -1)
-        {
-            id = newId;
-        }
+        isDirty = true;
     }
-   
+
     public void SetKitchenIsPurchased()
     {
         PlayerPrefs.SetInt(kitchenName + "Purchased", 1);

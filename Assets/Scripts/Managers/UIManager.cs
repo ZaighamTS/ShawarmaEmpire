@@ -96,6 +96,11 @@ public class UIManager : MonoBehaviour
                 }
         }
     }
+
+    public void ClickOnQuit()
+    { 
+        Application.Quit();
+    }
 }
 public enum UIUpdateType
 {

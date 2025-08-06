@@ -153,6 +153,7 @@ public class CateringManager : MonoBehaviour
         CateringObj.GetComponent<Catering>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, CateringObj.GetComponent<Catering>().currentUpdate);
         placedCatering.Add(CateringObj);
         currentCateringCount++;
+        CateringObj.GetComponent<Catering>().MakePersistent(currentCateringCount);
 
     }
    

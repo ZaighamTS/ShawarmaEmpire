@@ -41,6 +41,7 @@ public class SaveLoadManager : MonoBehaviour
     }
     internal void SaveGame()
     {
+        Debug.Log("Check Here");
         foreach (ISaveable saveable in saveables)
         {
             if (saveable.IsDirty)
@@ -56,20 +57,22 @@ public class SaveLoadManager : MonoBehaviour
     {
         if (!File.Exists(SavePath))
         {
-            return;
+            string _json = JsonConvert.SerializeObject(saveData, jsonSettings);
+            File.WriteAllText(SavePath, _json);
+           // return;
         }
         string json = File.ReadAllText(SavePath);
         saveData = JsonConvert.DeserializeObject<Dictionary<string, object>>(json, jsonSettings);
         foreach (ISaveable saveable in saveables)
         {
-          //  print("key" + saveable.SaveKey);
+            print("key" + saveable.SaveKey);
             if (saveData.TryGetValue(saveable.SaveKey, out var state))
             {
                 saveable.RestoreState(state);
             }
             else
             {
-               // Debug.Log("Else " + saveable.SaveKey);
+                Debug.Log("Else " + saveable.SaveKey);
                 saveable.SetInitialData();
             }
         }

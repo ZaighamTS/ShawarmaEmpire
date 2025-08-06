@@ -159,6 +159,7 @@ public class KitchenManager : MonoBehaviour
         kitchenObj.GetComponent<Kitchen>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, kitchenObj.GetComponent<Kitchen>().currentUpdate);
         placedKitchens.Add(kitchenObj);
         currentKitchenCount++;
+        kitchenObj.GetComponent<Kitchen>().MakePersistent(currentKitchenCount);
 
     }
 }

@@ -101,4 +101,15 @@ public class GameManager : MonoBehaviour
     {
         SaveLoadManager.saveLoadManagerInstance.SaveGame();
     }
+    int i;
+    void OnApplicationPause()
+    {
+        i++;
+
+      //  SaveLoadManager.saveLoadManagerInstance.SaveGame();
+    }
+    private void OnApplicationFocus(bool focus)
+    {
+        Debug.Log("pppppppppp "+i);
+    }
 }
