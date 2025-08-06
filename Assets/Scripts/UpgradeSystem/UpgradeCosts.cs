@@ -109,7 +109,13 @@ public static class UpgradeCosts
     }
     public static float GetDeliveryInterval(int upgradeLevel)
     {
-        float basePrice = 100f;
+        float basePrice = 30f;
+        float multiplier = .2f;
+        return basePrice / (1 + upgradeLevel * multiplier);
+    }
+    public static float GetCateringInterval(int upgradeLevel)
+    {
+        float basePrice = 20f;
         float multiplier = .2f;
         return basePrice / (1 + upgradeLevel * multiplier);
     }

@@ -44,11 +44,11 @@ public class DeliveryVanSpawner : MonoBehaviour
     }
     IEnumerator SpawnVanLoop()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSecondsRealtime(2);
         while (true)
         {
             SpawnVan();
-            yield return new WaitForSeconds(spawnInterval);
+            yield return new WaitForSecondsRealtime(spawnInterval);
         }
     }
    

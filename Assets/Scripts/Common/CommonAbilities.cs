@@ -39,7 +39,7 @@ public class CommonAbilities : MonoBehaviour
         if (Level < 10)
         {
             obj.transform.GetChild(0).GetChild(4).gameObject.SetActive(false);
-            Debug.Log("cost " + Level);
+           // Debug.Log("cost " + Level);
             obj.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>().text = Cost.ToString();
         }
         else

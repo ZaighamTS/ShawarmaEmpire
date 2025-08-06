@@ -68,7 +68,7 @@ public class KitchenManager : MonoBehaviour
             if (Kitchens[i].GetComponent<Kitchen>().currentUpdate > 1)
             {
                 isPurchased = true;
-                Debug.Log("aa " + (Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2).ToString());
+               // Debug.Log("aa " + (Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2).ToString());
                 point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2].UpdateName;
                 point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[i].GetComponent<Kitchen>().updates[Kitchens[i].GetComponent<Kitchen>().currentUpdate - 2].Icon;
             }

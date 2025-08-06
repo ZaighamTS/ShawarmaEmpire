@@ -65,7 +65,7 @@ MonoBehaviour:
   detectionDistance: 2
   vanLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
 --- !u!65 &5638866852202135959
 BoxCollider:
   m_ObjectHideFlags: 0

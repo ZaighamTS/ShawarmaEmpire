@@ -65,6 +65,7 @@ public class ShawarmaSpawner : MonoBehaviour
             shawarma.SetTarget(currentTarget.targetPoint);
             currentTarget.AddObject();
             currentTarget.WareHouseMainObject.GetComponent<Warehouse>().OnShwarmaGen();
+            currentTarget.WareHouseMainObject.GetComponent<Warehouse>().CheckWaring();
             obj.SetActive(true);
             //Below Logic to check avaiblity to accept shawarma in all warerhouse
             //int n = 0;
@@ -161,6 +162,14 @@ public class ShawarmaSpawner : MonoBehaviour
                     CanGenShawarma = true;
                 }
             }
+        }
+    }
+    public void UpdateRecord(int i)
+    {
+        if (targets[i].CurrentLoad < targets[i].Capacity)
+        {
+            targets[i].CanEnter = true;
+            CanGenShawarma=true;
         }
     }
 

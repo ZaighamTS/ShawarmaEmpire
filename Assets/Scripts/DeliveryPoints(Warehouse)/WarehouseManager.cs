@@ -62,7 +62,7 @@ public class WarehouseManager : Upgdradable
     {
         return placedWarehouses.Sum(w => w.GetComponent<Warehouse>().currentLoad);
     }
-    internal void DeliverShawarma(int value,int current)
+    internal void DeliverShawarma(int value, int current)
     {
         if (placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad > value)
         {
@@ -73,6 +73,9 @@ public class WarehouseManager : Upgdradable
         {
             placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad = 0;
         }
+        ShawarmaSpawner.Instance.targets[current].CurrentLoad = placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad;
+        ShawarmaSpawner.Instance.UpdateRecord(current);
+        placedWarehouses[current].transform.GetComponent<Warehouse>().CheckWaring();
         ShawarmaSpawner.Instance.targets[current].CurrentLoad = placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad;
     }
     public void DelayOnStart()

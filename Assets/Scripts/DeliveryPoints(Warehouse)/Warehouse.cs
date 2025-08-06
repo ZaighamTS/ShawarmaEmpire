@@ -22,7 +22,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     public Transform DeliveryPosition;
     public bool HouseIsPurchased;
     [SerializeField] public List<UpdateDetails> updates = new List<UpdateDetails>();
-
+    public GameObject WarningImage;
     public void SetHouseIsPurchased()
     {
         PlayerPrefs.SetInt(warehouseName + "Purchased", 1);
@@ -78,6 +78,22 @@ public class Warehouse : MonoBehaviour, ISaveable
             UIManager.Instance.lowCashPromt.SetActive(true);
         }
     }
+
+    public void CheckWaring()
+    {
+        if (WarningImage)
+        {
+            if (currentLoad >= currentCapacity)
+            {
+                WarningImage.SetActive(true);
+            }
+            else
+            {
+                WarningImage.SetActive(false);
+            }
+        }
+        
+    }
     private void OnMouseDown()
     {
         // Block interaction if a UI element is under the pointer
@@ -95,6 +111,7 @@ public class Warehouse : MonoBehaviour, ISaveable
       
         isDirty = true;
     }
+
 
     #region Save/Load
     public bool IsDirty => isDirty;

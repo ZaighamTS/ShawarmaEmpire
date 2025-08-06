@@ -143,6 +143,9 @@ public class CateringManager : MonoBehaviour
     {
         GameObject CateringObj = Caterings[currentSelectedObject];
         CateringObj.SetActive(true);
+
+        CateringVanSpawner.Instance.spawnInterval = UpgradeCosts.GetCateringInterval(CateringObj.GetComponent<Catering>().currentUpdate - 1);
+
         CateringObj.transform.GetChild(CateringObj.GetComponent<Catering>().currentUpdate - 2).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         CateringObj.name = "Catering" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)

@@ -57,6 +57,7 @@ public class Delivery : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            DeliveryVanSpawner.Instance.spawnInterval = UpgradeCosts.GetDeliveryInterval(currentUpdate - 1);
             currentUpdate++;
             SoundManager.Instance.PlayButtonClick();
             onDeliveryUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
@@ -64,10 +65,10 @@ public class Delivery : MonoBehaviour, ISaveable
             DeliveryManager.Instance.UpdateDeliveryUI(id);
             DeliveryManager.Instance.UpdateIcon(id);
             DeliveryManager.Instance.UpdateCostText(id);
-
+          
 
             DeliveryVanObjects[currentUpdate - 1].transform.GetComponent<DeliveryVan>().deliveryCapacity = deliverCapacity;
-            DeliveryVanSpawner.Instance.spawnInterval = spawnInterval;
+            
             DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
             
 

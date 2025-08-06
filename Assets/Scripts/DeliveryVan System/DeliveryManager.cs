@@ -120,7 +120,7 @@ public class DeliveryManager : MonoBehaviour
         }
         Delivery selectedDelivery = Deliverys[currentSelectedObject].GetComponent<Delivery>();
         int DeliveryCurrentupdate = selectedDelivery.currentUpdate-1;
-
+       
         if ((DeliveryCurrentupdate) < selectedDelivery.updates.Count )
         {
             buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(4).gameObject.SetActive(false);
@@ -147,13 +147,14 @@ public class DeliveryManager : MonoBehaviour
     {
         GameObject DeliveryObj = Deliverys[currentSelectedObject];
         DeliveryObj.SetActive(true);
-        Debug.Log("here");
+       
         for (int i = 0; i < DeliveryObj.GetComponent<Delivery>().currentUpdate-1; i++)
         {
-            Debug.Log("here");
+          
             DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryObj.GetComponent<Delivery>().DeliveryVanObjects[i]);
+            
         }
-
+        DeliveryVanSpawner.Instance.spawnInterval = UpgradeCosts.GetDeliveryInterval(DeliveryObj.GetComponent<Delivery>().currentUpdate - 1);
 
         DeliveryObj.transform.GetChild(DeliveryObj.GetComponent<Delivery>().currentUpdate - 2).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);

@@ -8,20 +8,24 @@ using UnityEngine;
 public class CateringVanSpawner : MonoBehaviour
 {
     PlayerProgress playerProgress;
- 
+    public static CateringVanSpawner Instance;
     public GameObject[] vanPrefab;
     public Transform spawnPoint;
     public Transform deliveryPoint;
     public Transform Exit_point;
 
 
-    [SerializeField]private float spawnInterval = 10f;
+    public float spawnInterval = 10f;
     private float deliveryCapacity;
     private int currentLevel;
     private bool isDirty = false;
 
     private void Start()
     {
+        if (Instance == null)
+        { 
+            Instance = this;
+        }
         playerProgress = PlayerProgress.Instance;
        
         StartSpawning().Forget();
@@ -37,10 +41,11 @@ public class CateringVanSpawner : MonoBehaviour
     }
     IEnumerator SpawnVanLoop()
     {
+        yield return new WaitForSecondsRealtime(5);
         while (true)
-        {
+        { 
             SpawnVan();
-            yield return new WaitForSeconds(spawnInterval);
+            yield return new WaitForSecondsRealtime(spawnInterval);
         }
     }
     internal void UpgradeVan()
