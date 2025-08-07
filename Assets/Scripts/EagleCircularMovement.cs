@@ -15,7 +15,7 @@ public class EagleCircularSwoop : MonoBehaviour
     void Start()
     {
         //if (centerPoint != null)
-           baseHeight = centerPoint.position.y; // Base flying height above center
+           baseHeight = 0; // Base flying height above center
         //else
             //baseHeight = transform.position.y;
     }

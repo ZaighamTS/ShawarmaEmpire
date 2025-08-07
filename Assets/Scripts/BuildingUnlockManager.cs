@@ -6,8 +6,7 @@ using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 public class BuildingUnlockManager : MonoBehaviour, ISaveable
 {
-   
-
+  
     public List<Building> buildings;
    
     public Transform buildingListParent;
@@ -25,8 +24,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         SaveLoadManager.saveLoadManagerInstance.Register(this);
         GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
         Invoke("DelayOnStart", 1.1f);
-    }
-   
+    } 
     private void OnDestroy()
     {
         SaveLoadManager.saveLoadManagerInstance.Unregister(this);
@@ -45,7 +43,6 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             buildings[i].isPurchased = IsBuildingPurchased(i);
         }
     }
-
     void GenerateBuildingUI()
     {
         for (int i = 0; i < buildings.Count; i++)

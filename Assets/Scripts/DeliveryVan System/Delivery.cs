@@ -8,7 +8,7 @@ public class Delivery : MonoBehaviour, ISaveable
     private int id;
     public float cost;
     public float spawnInterval;
-    public int deliverCapacity;
+    public float deliverCapacity;
     internal string DeliveryName;
     public GameObject[] DeliveryVanObjects; 
     public int currentUpdate;
@@ -52,7 +52,7 @@ public class Delivery : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
-            DeliveryVanObjects[currentUpdate - 1].transform.GetComponent<DeliveryVan>().deliveryCapacity = deliverCapacity;
+            DeliveryVanObjects[currentUpdate - 1].transform.GetComponent<DeliveryVan>().deliveryCapacity = (int)deliverCapacity;
 
             DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryVanObjects[currentUpdate - 1]);
             DeliveryVanSpawner.Instance.spawnInterval = UpgradeCosts.GetDeliveryInterval(currentUpdate - 1);
@@ -110,8 +110,8 @@ public class Delivery : MonoBehaviour, ISaveable
     {
         currentUpdate = 1;  
         cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
-        spawnInterval = 10;
-        deliverCapacity = 10;
+        spawnInterval = UpgradeCosts.GetDeliveryInterval(currentUpdate);
+        deliverCapacity = UpgradeCosts.GetDeliveryCapacity(CapacityType.Delivery, currentUpdate);
         isDirty = true;
        
     }
@@ -127,7 +127,7 @@ public class DeliveryData
     public int currentUpdate;
     public float cost;
     public float spawnInterval;
-    public int deliverCapacity;
+    public float deliverCapacity;
 }
 [System.Serializable]
 public class DeliveryUpdateDetails

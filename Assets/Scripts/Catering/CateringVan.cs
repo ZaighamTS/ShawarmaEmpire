@@ -54,20 +54,22 @@ public class CateringVan : MonoBehaviour
         }
         else
         {
-            yield return new WaitForSeconds(waitTimeAtPoint / 2);
+            
 
             var shwarmas = storageManager.GetWholeLoad();
-            if (shwarmas > deliveryCapacity)
+            if (shwarmas > 0)
             {
+                yield return new WaitForSeconds(waitTimeAtPoint / 2);
                 //storageManager.DeliverShawarma(shwarmas);
-                //var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
-                //var totalRewards = (shawarmaValue + shwarmas) * 0.95f;
-                //Debug.Log("Cater reward "+ totalRewards);
-                //PlayerProgress.Instance.PlayerCash += totalRewards;
-                //UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+                var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
+                var totalRewards = (shawarmaValue + shwarmas) * 0.95f;
+                Debug.Log("Cater reward " + totalRewards);
+                PlayerProgress.Instance.PlayerCash += totalRewards;
+                UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+                yield return new WaitForSeconds(waitTimeAtPoint / 2);
             }
 
-            yield return new WaitForSeconds(waitTimeAtPoint / 2);
+        
 
             // Go to exit
             targetPosition = exitOffset.position;

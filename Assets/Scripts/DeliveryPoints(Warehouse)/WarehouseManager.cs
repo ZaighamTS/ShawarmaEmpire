@@ -64,7 +64,7 @@ public class WarehouseManager : Upgdradable
     }
     internal void DeliverShawarma(int value, int current)
     {
-        if (placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad > value)
+        if (placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad >= value)
         {
             placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad -= value;
 

@@ -11,7 +11,7 @@ public class DeliveryVan : MonoBehaviour
     public Transform[] wheels; // Assign 4 wheels in Inspector
     public float wheelRotationSpeed = 360f; // degrees per second
 
-     public int deliveryCapacity;
+    public int deliveryCapacity;
     private Vector3 targetPosition;
     private bool isExiting = false;
     public float detectionDistance = 2f;
@@ -56,17 +56,26 @@ public class DeliveryVan : MonoBehaviour
         else
         {
             var shwarmas = warehouseManager.placedWarehouses[CurrentStop].transform.GetComponent<Warehouse>().currentLoad;
-            if (shwarmas >= deliveryCapacity)
+            if (shwarmas >0)
             {
                 yield return new WaitForSeconds(waitTimeAtPoint / 2);
 
 
 
-                if (shwarmas >= deliveryCapacity)
+                //if (shwarmas <= deliveryCapacity)
                 {
-                    warehouseManager.DeliverShawarma(deliveryCapacity, CurrentStop);
+                    var n = 0;
+                    if (shwarmas < deliveryCapacity)
+                    {
+                        n = shwarmas;
+                    }
+                    else if (shwarmas > deliveryCapacity)
+                    {
+                        n = deliveryCapacity;
+                    }
+                    warehouseManager.DeliverShawarma(n, CurrentStop);
                     var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
-                    var totalRewards = (shawarmaValue + shwarmas) * 0.95f;
+                    var totalRewards = (shawarmaValue + n) * 0.95f;
                     Debug.Log("totalRewards " + totalRewards);
                     PlayerProgress.Instance.PlayerCash += totalRewards;
                     UIManager.Instance.UpdateUI(UIUpdateType.Cash);

@@ -65,7 +65,7 @@ public static class UpgradeCosts
     };
     public static readonly PrestigeConfig prestigeConfig = new(5f, 2f, -1f, 1f);
 
-    public static float shwarmaBaseValue = 200;
+    public static float shwarmaBaseValue = 20;
     public static float cookRateBaseValue = 200;
 
     public static float GetUpgradeCost(UpgradeType itemType, int level)
@@ -115,7 +115,7 @@ public static class UpgradeCosts
     }
     public static float GetCateringInterval(int upgradeLevel)
     {
-        float basePrice = 20f;
+        float basePrice = 40f;
         float multiplier = .2f;
         return basePrice / (1 + upgradeLevel * multiplier);
     }
