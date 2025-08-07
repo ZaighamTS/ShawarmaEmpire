@@ -10,6 +10,8 @@ public class UIManager : MonoBehaviour
     public TMP_Text multiplierText;
     public TMP_Text chefStarsText;
     public GameObject lowCashPromt;
+    public TMP_Text TotalEarningTxt;
+    public GameObject PrestigeWarning;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -45,6 +47,10 @@ public class UIManager : MonoBehaviour
                     {
                         coinsText.text = $"{GameManager.gameManagerInstance.GetCurrentCash():N0}";
                     }
+                    if (TotalEarningTxt)
+                    {
+                        TotalEarningTxt.text = $"{GameManager.gameManagerInstance.GetTotalEarning():N0}";
+                    }
                        
                     break;
                 }
@@ -57,7 +63,7 @@ public class UIManager : MonoBehaviour
             case UIUpdateType.Multiplier:
                 {
                     if (multiplierText != null && ShawarmaSpawner.Instance != null)
-                        multiplierText.text = ShawarmaSpawner.Instance.tapMultiplier.ToString("f2");
+                        multiplierText.text = ShawarmaSpawner.Instance.tapMultiplier.ToString("f2")+ "x";
                     //multiplierText.text = $"{ShawarmaSpawner.Instance.GetMultiplier():0.0}x";
                     break;
                 }
@@ -67,6 +73,16 @@ public class UIManager : MonoBehaviour
                     break;
                 }
         }
+
+    }
+
+    public void ClickOnPrestigeButton()
+    { 
+        
+    }
+    public void ShowPrestigeBtn()
+    {
+
 
     }
 

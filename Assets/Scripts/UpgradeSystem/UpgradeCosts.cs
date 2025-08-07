@@ -119,9 +119,9 @@ public static class UpgradeCosts
         float multiplier = .2f;
         return basePrice / (1 + upgradeLevel * multiplier);
     }
-    public static int GetChefStars(float totalEarnings, int level)
+    public static int GetChefStars(float totalEarnings)
     {
-        return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100000*level)));
+        return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (1_000_000)));
     }
     public static float GetTotalSalaries(int officeLevel)
     {

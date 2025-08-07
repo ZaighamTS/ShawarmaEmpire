@@ -48,22 +48,7 @@ public class CateringVanSpawner : MonoBehaviour
             yield return new WaitForSecondsRealtime(spawnInterval);
         }
     }
-    internal void UpgradeVan()
-    {
-        float upgradeCost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentLevel);
-        if (upgradeCost <= playerProgress.PlayerCash)
-        {
-            playerProgress.PlayerCash -= upgradeCost;
-            currentLevel++;
-            deliveryCapacity = UpgradeCosts.GetDeliveryCapacity(CapacityType.Delivery, currentLevel);
-            spawnInterval = UpgradeCosts.GetDeliveryInterval(currentLevel);
-            isDirty = true;
-        }
-        else
-        {
-            //Open Store
-        }
-    }
+   
     void SpawnVan()
     {
         int n=Random.Range(0, vanPrefab.Length);
