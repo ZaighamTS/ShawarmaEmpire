@@ -32,6 +32,15 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.UpdateUI(UIUpdateType.Cash);
         UIManager.Instance.UpdateChefStarsText();
         UIManager.Instance.UpdateUI(UIUpdateType.Storage);
+        Debug.Log("here");
+        // GameObject.FindObjectByType(TransitionEffectScript );
+        if (TransitionEffectScript.PrestigeDone)
+        {
+            TransitionEffectScript.PrestigeDone = false;
+            FindObjectOfType<TransitionEffectScript>().transform.GetChild(0).gameObject.SetActive(false);
+           // FindFirstObjectByType<TransitionEffectScript>().transform.GetChild(0).gameObject.SetActive(false);
+        }
+      
 
         // UIManager.Instance.Up
     }
@@ -94,15 +103,20 @@ public class GameManager : MonoBehaviour
     private void CheckChefStars(float TotalEarning)
     {
         var newStars = UpgradeCosts.GetChefStars(TotalEarning);
-        if (newStars > chefStars)
+        Debug.Log("newStars "+newStars);
+       // Debug.Log("chefStars " + chefStars);
+        if (newStars > playerProgress.ChefStars)
         {
-            playerProgress.ChefStars = newStars;
-            ResetPlayerStats();
+            
+            // ResetPlayerStats();
+            UIManager.Instance.ShowPrestigeBtn();
         }
     }
-    private void ResetPlayerStats()
+    public void ResetPlayerStats()
     {
-        playerProgress.PlayerCash = 0;
+        //playerProgress.PlayerCash = 0;
+        playerProgress.ChefStars ++;
+        SaveLoadManager.saveLoadManagerInstance.ResetAllISaveables();
     }
     private void OnApplicationQuit()
     {
@@ -117,6 +131,6 @@ public class GameManager : MonoBehaviour
     }
     private void OnApplicationFocus(bool focus)
     {
-        Debug.Log("pppppppppp "+i);
+      //  Debug.Log("pppppppppp "+i);
     }
 }

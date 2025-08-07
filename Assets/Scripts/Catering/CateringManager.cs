@@ -62,7 +62,7 @@ public class CateringManager : MonoBehaviour
             if (Caterings[i].GetComponent<Catering>().currentUpdate > 1)
             {
                 isPurchased = true;
-                Debug.Log("aa " + (Caterings[i].GetComponent<Catering>().currentUpdate - 2).ToString());
+               // Debug.Log("aa " + (Caterings[i].GetComponent<Catering>().currentUpdate - 2).ToString());
                 point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 2].UpdateName;
                 point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[i].GetComponent<Catering>().updates[Caterings[i].GetComponent<Catering>().currentUpdate - 2].Icon;
             }

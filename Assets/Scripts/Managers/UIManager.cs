@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class UIManager : MonoBehaviour
     public GameObject lowCashPromt;
     public TMP_Text TotalEarningTxt;
     public GameObject PrestigeWarning;
+    public GameObject PrestigePop;
+    public GameObject PrestigeTramsitioneffect;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -78,12 +81,22 @@ public class UIManager : MonoBehaviour
 
     public void ClickOnPrestigeButton()
     { 
-        
+        GameManager.gameManagerInstance.ResetPlayerStats();
+        PlayerPrefs.DeleteAll();
+        TransitionEffectScript.PrestigeDone = true;
+        PrestigeTramsitioneffect.transform.GetChild(0).gameObject.SetActive(true);
+
+        PrestigePop.SetActive(false);
+        ReloadScene();
+    }
+    private void ReloadScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
     }
     public void ShowPrestigeBtn()
     {
 
-
+        PrestigeWarning.SetActive(true);
     }
 
     public void UpdateChefStarsText()

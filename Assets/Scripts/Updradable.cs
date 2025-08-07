@@ -29,7 +29,7 @@ public abstract class Upgdradable : MonoBehaviour
             if (warehouses[i].GetComponent<Warehouse>().currentUpdate > 1)
             {
                 isPurchased = true;
-                Debug.Log("aa " + (warehouses[i].GetComponent<Warehouse>().currentUpdate - 2).ToString());
+               // Debug.Log("aa " + (warehouses[i].GetComponent<Warehouse>().currentUpdate - 2).ToString());
                 point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().currentUpdate - 2].UpdateName;
                 point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = warehouses[i].GetComponent<Warehouse>().updates[warehouses[i].GetComponent<Warehouse>().currentUpdate - 2].Icon;
             }

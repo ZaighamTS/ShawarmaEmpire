@@ -88,7 +88,7 @@ public class WarehouseManager : Upgdradable
             
             if (warehouses[i].GetComponent<Warehouse>().currentUpdate >1)
             {
-                Debug.Log("cHECK");
+              //  Debug.Log("cHECK");
                 currentSelectedObject = i;
                 PlaceNewWarehouse();
                 OnUpgradeItem();

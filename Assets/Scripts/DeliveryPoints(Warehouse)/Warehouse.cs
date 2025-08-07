@@ -33,7 +33,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     {
         SaveLoadManager.saveLoadManagerInstance.Register(this);
         GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
-        Debug.Log("wareHouse "+id);
+       // Debug.Log("wareHouse "+id);
     }
     private void OnDestroy()
     {
@@ -115,7 +115,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     public bool IsDirty => isDirty;
     public object CaptureState()
     {
-        Debug.Log("CaptureState");
+      //  Debug.Log("CaptureState");
         return new WarehouseData
         {
             id = id,
@@ -132,7 +132,7 @@ public class Warehouse : MonoBehaviour, ISaveable
             return;
         id = data.id;
         currentCapacity = data.capacity;
-        Debug.Log("currentCapacity restore " + currentCapacity);
+       // Debug.Log("currentCapacity restore " + currentCapacity);
         currentLoad = data.currentLoad;
         currentUpdate = data.currentUpdate;
         cost = data.cost;
@@ -142,7 +142,7 @@ public class Warehouse : MonoBehaviour, ISaveable
     {
         currentUpdate = 1;
         currentCapacity = UpgradeCosts.capacityMap[CapacityType.Storage].baseCapacity;
-        Debug.Log("currentCapacity initial "+ currentCapacity);
+      //  Debug.Log("currentCapacity initial "+ currentCapacity);
         cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Storage, currentUpdate);
         currentLoad = 0;
         isDirty = true;

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
+
 
 namespace System.Runtime.CompilerServices
 {
@@ -65,7 +65,7 @@ public static class UpgradeCosts
     };
     public static readonly PrestigeConfig prestigeConfig = new(5f, 2f, -1f, 1f);
 
-    public static float shwarmaBaseValue = 20;
+    public static float shwarmaBaseValue = 200;
     public static float cookRateBaseValue = 200;
 
     public static float GetUpgradeCost(UpgradeType itemType, int level)
@@ -121,7 +121,9 @@ public static class UpgradeCosts
     }
     public static int GetChefStars(float totalEarnings)
     {
-        return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (1_000_000)));
+          return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (1_000_000)));
+        
+       // return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100)));
     }
     public static float GetTotalSalaries(int officeLevel)
     {

@@ -65,6 +65,15 @@ public class PlayerProgress : ISaveable
             isDirty = true;
         }
     }
+    public void ResetDataOnPrestigue()
+    {
+        playerCash = 0;
+        // chefStars = 0;
+        shwarmaCount = 0;
+        //  totalEarnings = 0;
+
+        isDirty = true;
+    }
     #region Save/Load
     public object CaptureState()
     {
@@ -76,7 +85,7 @@ public class PlayerProgress : ISaveable
             totalEarnings = totalEarnings,
         };
     }
-
+   
     public void RestoreState(object state)
     {
         if (state is not PlayerProgressData data)
