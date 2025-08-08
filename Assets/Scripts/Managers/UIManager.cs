@@ -78,7 +78,10 @@ public class UIManager : MonoBehaviour
         }
 
     }
-
+    public void ClickOnRewardBtn()
+    {
+       // FindObjectOfType<RewardedAdManager>().ShowAd();
+    }
     public void ClickOnPrestigeButton()
     { 
         GameManager.gameManagerInstance.ResetPlayerStats();
