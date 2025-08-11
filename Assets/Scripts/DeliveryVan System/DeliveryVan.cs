@@ -74,6 +74,7 @@ public class DeliveryVan : MonoBehaviour
                         n = deliveryCapacity;
                     }
                     warehouseManager.DeliverShawarma(n, CurrentStop);
+
                     var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
                     var totalRewards = (shawarmaValue + n) * 0.95f;
                     Debug.Log("totalRewards " + totalRewards);

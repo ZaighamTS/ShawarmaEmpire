@@ -12,7 +12,7 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
     string _adUnitId = null; // This will remain null for unsupported platforms
     public string id;
     public bool Test;
-
+    public Button _showAdButton;
     public Action RewardVideoCompletedAction;
 
 
@@ -33,7 +33,7 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
     }
     public void LoadSDK()
     {
-        // Advertisement.Initialize(id,Test,this);
+        
         if (!Advertisement.isInitialized && Advertisement.isSupported)
         {
             Advertisement.Initialize(id, Test, this);
@@ -42,10 +42,10 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
     }
 
 
-    // Call this public method when you want to get an ad ready to show.
+    
     public void LoadAd()
     {
-        // IMPORTANT! Only load content AFTER initialization (in this example, initialization is handled in a different script).
+       
         Debug.Log("Loading Ad: " + _adUnitId);
         Advertisement.Load(_adUnitId, this);
     }
@@ -58,9 +58,9 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
         if (adUnitId.Equals(_adUnitId))
         {
             // Configure the button to call the ShowAd() method when clicked:
-            // _showAdButton.onClick.AddListener(ShowAd);
+             _showAdButton.onClick.AddListener(ShowRewardedAd);
             // Enable the button for users to click:
-            // _showAdButton.interactable = true;
+             _showAdButton.interactable = true;
         }
     }
 
@@ -68,7 +68,7 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
     public void ShowRewardedAd()
     {
         // Disable the button:
-        //_showAdButton.interactable = false;
+      //  _showAdButton.interactable = false;
         // Then show the ad:
         Advertisement.Show(_adUnitId, this);
     }
@@ -80,7 +80,7 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
         {
             //AdsManager.Instance.GiveReward();
             Debug.Log("Unity Ads Rewarded Ad Completed");
-
+            UIManager.Instance.OnRewardedAdSuccess();
             // Grant a reward.
         }
     }

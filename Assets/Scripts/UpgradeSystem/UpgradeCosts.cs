@@ -41,10 +41,10 @@ public static class UpgradeCosts
     /// </summary>
     private static readonly Dictionary<UpgradeType, UpgradeConfig> priceMap = new()
     {
-        {UpgradeType.Storage,new(100,1.5f,1.5f) },
-        {UpgradeType.DeliveryVan, new(100,1.5f,1.5f) },
-        {UpgradeType.Kitchen,new (200,1.2f,1.3f) },
-        {UpgradeType.Catering,new (500,1.2f,1.3f) }
+        {UpgradeType.Storage,new(1000,1.5f,1.5f) },
+        {UpgradeType.DeliveryVan, new(500,1.5f,1.5f) },
+        {UpgradeType.Kitchen,new (2000,1.2f,1.3f) },
+        {UpgradeType.Catering,new (1500,1.2f,1.3f) }
     };
     /// <summary>
     /// Capacity MAp
@@ -121,7 +121,7 @@ public static class UpgradeCosts
     }
     public static int GetChefStars(float totalEarnings)
     {
-          return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (1_000_000)));
+          return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100000)));
         
        // return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100)));
     }

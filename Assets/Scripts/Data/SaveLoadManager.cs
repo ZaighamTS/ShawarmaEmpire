@@ -52,6 +52,7 @@ public class SaveLoadManager : MonoBehaviour
         }
         string json = JsonConvert.SerializeObject(saveData, jsonSettings);
         File.WriteAllText(SavePath, json);
+        Debug.Log("Data Save Here");
     }
 
     internal void ResetAllISaveables()

@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 [DefaultExecutionOrder(50)]
@@ -25,7 +27,14 @@ public class GameManager : MonoBehaviour
         RecordPersistentRegistrations().Forget();
         // ExtraBuildingsPlacement placement = FindObjectOfType<ExtraBuildingsPlacement>();
         // placement.CurrentLevel = 1;
-        Invoke("DelayOnStart",1.1f);
+        if (TransitionEffectScript.PrestigeDone)
+        {
+           
+          
+            UIManager.Instance.StartPanel.SetActive(false);
+            
+        }
+        Invoke("DelayOnStart", 1.1f);
     }
     public void DelayOnStart()
     {
@@ -38,9 +47,32 @@ public class GameManager : MonoBehaviour
         {
             TransitionEffectScript.PrestigeDone = false;
             FindObjectOfType<TransitionEffectScript>().transform.GetChild(0).gameObject.SetActive(false);
-           // FindFirstObjectByType<TransitionEffectScript>().transform.GetChild(0).gameObject.SetActive(false);
+            UIManager.Instance.GameplayPanel.SetActive(true);
+            // FindFirstObjectByType<TransitionEffectScript>().transform.GetChild(0).gameObject.SetActive(false);
         }
-      
+
+
+        if (PlayerPrefs.GetInt("RewardCount") > 0)
+        {
+            Debug.Log("RewardCount" + PlayerPrefs.GetInt("RewardCount"));
+            if (DateTime.TryParse(PlayerPrefs.GetString("CurrentDateTime"), null, DateTimeStyles.RoundtripKind, out DateTime savedTime))
+            {
+
+                TimeSpan elapsed = DateTime.UtcNow - savedTime;
+              
+
+                double secondsElapsed = elapsed.TotalSeconds;
+                Debug.Log(secondsElapsed.ToString());
+                double amount = (PlayerPrefs.GetInt("RewardCount") * 100) + secondsElapsed;
+                PlayerPrefs.SetInt("RewardCount", 0);
+                AddCash((int)amount);
+                // int cfuel = (int)secondsElapsed / (int)currentWaitTime;
+                //for (int i = 0; i < trucksToRefuel; i++)
+                //{
+                //    Do();
+                //}
+            }
+        }
 
         // UIManager.Instance.Up
     }
@@ -72,14 +104,14 @@ public class GameManager : MonoBehaviour
     //}
     internal void AddCash(float value)
     {
-       
+
         playerProgress.PlayerCash += value;
         if (value > 0)
         {
             playerProgress.TotalEarnings += value;
         }
-        
-        
+
+
         CheckChefStars(playerProgress.TotalEarnings);
     }
     internal void AddTotalShawarama(int value)
@@ -87,7 +119,7 @@ public class GameManager : MonoBehaviour
 
         playerProgress.ShwarmaCount += value;
 
-       
+
     }
 
     internal bool SpendCash(float Value)
@@ -103,11 +135,11 @@ public class GameManager : MonoBehaviour
     private void CheckChefStars(float TotalEarning)
     {
         var newStars = UpgradeCosts.GetChefStars(TotalEarning);
-        Debug.Log("newStars "+newStars);
-       // Debug.Log("chefStars " + chefStars);
+        Debug.Log("newStars " + newStars);
+        // Debug.Log("chefStars " + chefStars);
         if (newStars > playerProgress.ChefStars)
         {
-            
+
             // ResetPlayerStats();
             UIManager.Instance.ShowPrestigeBtn();
         }
@@ -115,22 +147,56 @@ public class GameManager : MonoBehaviour
     public void ResetPlayerStats()
     {
         //playerProgress.PlayerCash = 0;
-        playerProgress.ChefStars ++;
+        playerProgress.ChefStars++;
         SaveLoadManager.saveLoadManagerInstance.ResetAllISaveables();
     }
-    private void OnApplicationQuit()
+    [RuntimeInitializeOnLoadMethod]
+    static void RegisterQuitCallback()
     {
-        SaveLoadManager.saveLoadManagerInstance.SaveGame();
+        Application.wantsToQuit += OnAppWantsToQuit;
+#if UNITY_EDITOR
+        EditorApplication.playModeStateChanged += OnPlayModeChanged;
+#endif
     }
-    int i;
-    void OnApplicationPause()
+    static bool OnAppWantsToQuit()
     {
-        i++;
+        SaveLoadManager.saveLoadManagerInstance?.SaveGame();
+        return true;
+    }
+#if UNITY_EDITOR
+    static void OnPlayModeChanged(PlayModeStateChange state)
+    {
+        if (state == PlayModeStateChange.ExitingPlayMode)
+        {
+            SaveLoadManager.saveLoadManagerInstance?.SaveGame();
+        }
+    }
+#endif
 
-      //  SaveLoadManager.saveLoadManagerInstance.SaveGame();
-    }
-    private void OnApplicationFocus(bool focus)
+private void OnApplicationQuit()
+{
+    SaveLoadManager.saveLoadManagerInstance.SaveGame();
+    PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString());
+
+}
+int i;
+void OnApplicationPause(bool pauseStatus)
+{
+    i++;
+        if (pauseStatus)
+        {
+            SaveLoadManager.saveLoadManagerInstance.SaveGame();
+            Debug.Log("pause Integer " + i);
+        }
+   
+}
+private void OnApplicationFocus(bool focus)
     {
-      //  Debug.Log("pppppppppp "+i);
+        if (!focus)
+        {
+            SaveLoadManager.saveLoadManagerInstance.SaveGame();
+            Debug.Log("focus Integer " + i);
+        }
+        
     }
 }

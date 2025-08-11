@@ -27,7 +27,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
     } 
     private void OnDestroy()
     {
-        SaveLoadManager.saveLoadManagerInstance.Unregister(this);
+        SaveLoadManager.saveLoadManagerInstance?.Unregister(this);
     }
     public void DelayOnStart()
     {

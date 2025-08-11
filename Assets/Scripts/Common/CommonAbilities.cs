@@ -34,7 +34,7 @@ public class CommonAbilities : MonoBehaviour
     public void CheckAvaibility(string PlayerPrefName, GameObject obj)
     {
         Level = PlayerPrefs.GetInt(PlayerPrefName);
-        Cost = (Level + 1) * 10;
+        Cost = (Level + 1) * 100;
         obj.transform.GetChild(0).GetChild(5).GetComponent<TextMeshProUGUI>().text = Level + "/10";
         if (Level < 10)
         {
@@ -78,7 +78,7 @@ public class CommonAbilities : MonoBehaviour
     public void ClickOnUpdateBtn(string PlayerPrefName)
     {
         Level = PlayerPrefs.GetInt(PlayerPrefName);
-        Cost = (Level + 1) * 10;
+        Cost = (Level + 1) * 100;
 
         if (Cost < PlayerProgress.Instance.PlayerCash)
         {
