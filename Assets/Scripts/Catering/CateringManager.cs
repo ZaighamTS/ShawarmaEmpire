@@ -27,7 +27,6 @@ public class CateringManager : MonoBehaviour
     void Start()
     {
         //Invoke("DelayOnStart",1);
-        Invoke("DelayOnStart", 1.1f);
     }
     public void ActionPerformedOneTime()
     {
@@ -39,8 +38,9 @@ public class CateringManager : MonoBehaviour
             Caterings[0].GetComponent<Catering>().currentUpdate = 2;
         }
     }
-    public void DelayOnStart()
+    public async UniTask DelayOnStart()
     {
+        await UniTask.NextFrame();
         ActionPerformedOneTime();
         for (int i = 0; i < Caterings.Length; i++)
         {
@@ -82,6 +82,11 @@ public class CateringManager : MonoBehaviour
     {
         buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 2].Icon;
         buidlNewPointParent.GetChild(CateringNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Caterings[CateringNumber].GetComponent<Catering>().updates[Caterings[CateringNumber].GetComponent<Catering>().currentUpdate - 2].UpdateName;
+    }
+    public void UpdateSlider(int KitchenNumber, int maxValue, int currentValue)
+    {
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().maxValue = maxValue;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().value = currentValue;
     }
     public void AddCateringButtonClicked(int n)
     {
@@ -153,6 +158,7 @@ public class CateringManager : MonoBehaviour
         CateringObj.GetComponent<Catering>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, CateringObj.GetComponent<Catering>().currentUpdate);
         placedCatering.Add(CateringObj);
         currentCateringCount++;
+        UpdateSlider(CateringObj.GetComponent<Catering>().id, CateringObj.GetComponent<Catering>().updates.Count, CateringObj.GetComponent<Catering>().currentUpdate - 1);
         CateringObj.GetComponent<Catering>().MakePersistent(currentCateringCount);
 
     }

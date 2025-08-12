@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Catering : MonoBehaviour, ISaveable
 {
-    private int id;
+    internal int id;
     public float cost;
     internal string CateringName;  
     public int currentUpdate;
@@ -54,6 +54,7 @@ public class Catering : MonoBehaviour, ISaveable
             onCateringUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Catering, currentUpdate);
             CateringManager.Instance.UpdateCateringUI(id);
+            CateringManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             CateringManager.Instance.UpdateIcon(id);
             CateringManager.Instance.UpdateCostText(id);
 

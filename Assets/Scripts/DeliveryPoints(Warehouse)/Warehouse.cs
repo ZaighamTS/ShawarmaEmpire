@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 
@@ -55,6 +56,9 @@ public class Warehouse : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            transform.GetChild(currentUpdate - 1).transform.GetComponent<DOTweenAnimation>().DOPlay();
+            transform.GetChild(8).gameObject.SetActive(true);
+            WarehouseManager.Instance.DisableEffect(gameObject).Forget();
             currentUpdate++;
           
            

@@ -87,7 +87,7 @@ public class GameManager : MonoBehaviour
         if (subscribersCount == maxSubscribersCount)
         {
             await UniTask.NextFrame();
-            SaveLoadManager.saveLoadManagerInstance.LoadGame();
+            SaveLoadManager.saveLoadManagerInstance.LoadGame().Forget();
         }
     }
     internal float GetCurrentCash()
@@ -194,7 +194,7 @@ private void OnApplicationFocus(bool focus)
     {
         if (!focus)
         {
-            SaveLoadManager.saveLoadManagerInstance.SaveGame();
+          //  SaveLoadManager.saveLoadManagerInstance.SaveGame();
             Debug.Log("focus Integer " + i);
         }
         

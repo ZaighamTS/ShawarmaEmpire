@@ -7,16 +7,16 @@ public class Kitchen : MonoBehaviour, ISaveable
 {
     public int id;
     public float cost;
-    public string kitchenName;  
+    public string kitchenName;
     public int currentUpdate;
     public bool KitchenIsPurchased;
     private bool isDirty = false;
     public string SaveKey => "kitchen" + id;
     public static event Action<UIUpdateType, float> onKitchenUpgraded;
     public List<KitchenUpdateDetails> updates = new List<KitchenUpdateDetails>();
-   
+
     private void Start()
-    {  
+    {
         SaveLoadManager.saveLoadManagerInstance.Register(this);
         GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
         //Debug.Log("CP " + currentCapacity);
@@ -35,9 +35,9 @@ public class Kitchen : MonoBehaviour, ISaveable
         PlayerPrefs.SetInt(kitchenName + "Purchased", 1);
         KitchenIsPurchased = true;
     }
-  
+
     public void UpdateKitchen()
-    {    
+    {
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
             GameManager.gameManagerInstance.SpendCash(cost);
@@ -47,12 +47,13 @@ public class Kitchen : MonoBehaviour, ISaveable
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
             currentUpdate++;
-           
+
             SoundManager.Instance.PlayButtonClick();
             onKitchenUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
             KitchenManager.Instance.UpdateKitchenUI(id);
             KitchenManager.Instance.UpdateIcon(id);
+            KitchenManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             KitchenManager.Instance.UpdateCostText(id);
             isDirty = true;
         }
@@ -75,7 +76,7 @@ public class Kitchen : MonoBehaviour, ISaveable
         {
             id = id,
             currentUpdate = currentUpdate,
-            cost= cost
+            cost = cost
         };
     }
     public void RestoreState(object state)
@@ -89,10 +90,9 @@ public class Kitchen : MonoBehaviour, ISaveable
     }
     public void SetInitialData()
     {
-        currentUpdate = 1;  
+        currentUpdate = 1;
         cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
         isDirty = true;
-       
     }
     public void ClearDirty()
     {

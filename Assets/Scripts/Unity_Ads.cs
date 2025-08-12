@@ -37,12 +37,17 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
         if (!Advertisement.isInitialized && Advertisement.isSupported)
         {
             Advertisement.Initialize(id, Test, this);
-            LoadAd();
+            Debug.Log("1");
+           
         }
     }
 
+    public void OnInitializationComplete()
+    {
+        LoadAd();
+        Debug.Log("Unity Ads initialization complete.");
+    }
 
-    
     public void LoadAd()
     {
        
@@ -81,6 +86,7 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
             //AdsManager.Instance.GiveReward();
             Debug.Log("Unity Ads Rewarded Ad Completed");
             UIManager.Instance.OnRewardedAdSuccess();
+            LoadAd();
             // Grant a reward.
         }
     }
@@ -107,10 +113,10 @@ public class Unity_Ads : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowList
         LoadAd();
     }
 
-    public void OnInitializationComplete()
-    {
-        // throw new System.NotImplementedException();
-    }
+    //public void OnInitializationComplete()
+    //{
+    //    // throw new System.NotImplementedException();
+    //}
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
     {

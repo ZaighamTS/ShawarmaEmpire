@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Delivery : MonoBehaviour, ISaveable
 {
-    private int id;
+    internal int id;
     public float cost;
     public float spawnInterval;
     public float deliverCapacity;
@@ -61,6 +61,7 @@ public class Delivery : MonoBehaviour, ISaveable
             onDeliveryUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, currentUpdate);
             DeliveryManager.Instance.UpdateDeliveryUI(id);
+            DeliveryManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             DeliveryManager.Instance.UpdateIcon(id);
             DeliveryManager.Instance.UpdateCostText(id);
           

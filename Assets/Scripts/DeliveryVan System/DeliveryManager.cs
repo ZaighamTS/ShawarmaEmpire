@@ -11,7 +11,7 @@ public class DeliveryManager : MonoBehaviour
     public GameObject[] Deliverys; // Assign Deliverya GameObjects (only 1 active at start)
     int currentDeliveryCount;
     int currentSelectedObject;
-   // [SerializeField] int CurrentCash; // Temporary cash
+    // [SerializeField] int CurrentCash; // Temporary cash
     private List<GameObject> placedDeliverys = new List<GameObject>();
     [Header("UI References")]
     public Transform buidlNewPointParent;
@@ -22,13 +22,12 @@ public class DeliveryManager : MonoBehaviour
         {
             Instance = this;
         }
-       // ActionPerformedOneTime();
+        // ActionPerformedOneTime();
     }
     void Start()
     {
         //Invoke("DelayOnStart",1);
-         Invoke("DelayOnStart", 1.1f);
-       // DelayOnStart().Forget();
+        // DelayOnStart().Forget();
     }
     public void ActionPerformedOneTime()
     {
@@ -40,10 +39,9 @@ public class DeliveryManager : MonoBehaviour
             Deliverys[0].GetComponent<Delivery>().currentUpdate = 2;
         }
     }
-    public void DelayOnStart()
-   // public async UniTask DelayOnStart()
-   
+    public async UniTask DelayOnStart()
     {
+        await UniTask.NextFrame();
         ActionPerformedOneTime();
         //await UniTask.NextFrame();
         for (int i = 0; i < Deliverys.Length; i++)
@@ -88,6 +86,11 @@ public class DeliveryManager : MonoBehaviour
         buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 2].Icon;
         buidlNewPointParent.GetChild(DeliveryNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[DeliveryNumber].GetComponent<Delivery>().updates[Deliverys[DeliveryNumber].GetComponent<Delivery>().currentUpdate - 2].UpdateName;
     }
+    public void UpdateSlider(int KitchenNumber, int maxValue, int currentValue)
+    {
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().maxValue = maxValue;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().value = currentValue;
+    }
     public void AddDeliveryButtonClicked(int n)
     {
         SoundManager.Instance.PlayButtonClick();
@@ -119,14 +122,14 @@ public class DeliveryManager : MonoBehaviour
             buildDeliveryPointParent.transform.GetChild(i).GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "0";
         }
         Delivery selectedDelivery = Deliverys[currentSelectedObject].GetComponent<Delivery>();
-        int DeliveryCurrentupdate = selectedDelivery.currentUpdate-1;
-       
-        if ((DeliveryCurrentupdate) < selectedDelivery.updates.Count )
+        int DeliveryCurrentupdate = selectedDelivery.currentUpdate - 1;
+
+        if ((DeliveryCurrentupdate) < selectedDelivery.updates.Count)
         {
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(4).gameObject.SetActive(false);
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedDelivery.cost.ToString("F0");
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
-            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate-1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate - 1).GetChild(0).GetChild(4).gameObject.SetActive(false);
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate - 1).GetChild(0).GetChild(1).GetChild(1).transform.GetComponent<TextMeshProUGUI>().text = selectedDelivery.cost.ToString("F0");
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate - 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.RemoveAllListeners();
+            buildDeliveryPointParent.transform.GetChild(selectedDelivery.currentUpdate - 1).GetChild(0).GetChild(1).transform.GetComponent<Button>().onClick.AddListener(() =>
             {
                 selectedDelivery.UpdateDelivery();
             });
@@ -147,22 +150,23 @@ public class DeliveryManager : MonoBehaviour
     {
         GameObject DeliveryObj = Deliverys[currentSelectedObject];
         DeliveryObj.SetActive(true);
-       
-        for (int i = 0; i < DeliveryObj.GetComponent<Delivery>().currentUpdate-1; i++)
+
+        for (int i = 0; i < DeliveryObj.GetComponent<Delivery>().currentUpdate - 1; i++)
         {
-          
+
             DeliveryVanSpawner.Instance.vanPrefab.Add(DeliveryObj.GetComponent<Delivery>().DeliveryVanObjects[i]);
-            
+
         }
         DeliveryVanSpawner.Instance.spawnInterval = UpgradeCosts.GetDeliveryInterval(DeliveryObj.GetComponent<Delivery>().currentUpdate - 1);
 
         DeliveryObj.transform.GetChild(DeliveryObj.GetComponent<Delivery>().currentUpdate - 2).gameObject.SetActive(true);
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         DeliveryObj.name = "Delivery" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
-       // DeliveryObj.GetComponent<Delivery>().SetDeliveryIsPurchased();
+                                                                    // DeliveryObj.GetComponent<Delivery>().SetDeliveryIsPurchased();
         DeliveryObj.GetComponent<Delivery>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.DeliveryVan, DeliveryObj.GetComponent<Delivery>().currentUpdate);
         placedDeliverys.Add(DeliveryObj);
         currentDeliveryCount++;
+        UpdateSlider(DeliveryObj.GetComponent<Delivery>().id, DeliveryObj.GetComponent<Delivery>().updates.Count, DeliveryObj.GetComponent<Delivery>().currentUpdate - 1);
         DeliveryObj.GetComponent<Delivery>().MakePersistent(currentDeliveryCount);
 
     }

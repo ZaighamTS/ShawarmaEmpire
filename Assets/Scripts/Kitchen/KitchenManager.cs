@@ -26,9 +26,6 @@ public class KitchenManager : MonoBehaviour
     }
     void Start()
     {
-        //Invoke("DelayOnStart",1);
-         Invoke("DelayOnStart", 1.1f);
-       // DelayOnStart().Forget();
     }
     public void ActionPerformedOneTime()
     {
@@ -41,10 +38,11 @@ public class KitchenManager : MonoBehaviour
            
         }
     }
-    public void DelayOnStart()
+    public async UniTask DelayOnStart()
    // public async UniTask DelayOnStart()
    
     {
+        await UniTask.NextFrame();
         ActionPerformedOneTime();
         //await UniTask.NextFrame();
         for (int i = 0; i < Kitchens.Length; i++)
@@ -88,6 +86,11 @@ public class KitchenManager : MonoBehaviour
     {
         buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 2].Icon;
         buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Kitchens[KitchenNumber].GetComponent<Kitchen>().updates[Kitchens[KitchenNumber].GetComponent<Kitchen>().currentUpdate - 2].UpdateName;
+    }
+    public void UpdateSlider(int KitchenNumber, int maxValue, int currentValue)
+    {
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().maxValue = maxValue;
+        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().value = currentValue;
     }
     public void AddKitchenButtonClicked(int n)
     {
@@ -159,6 +162,7 @@ public class KitchenManager : MonoBehaviour
         kitchenObj.GetComponent<Kitchen>().cost = UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, kitchenObj.GetComponent<Kitchen>().currentUpdate);
         placedKitchens.Add(kitchenObj);
         currentKitchenCount++;
+        UpdateSlider(kitchenObj.GetComponent<Kitchen>().id, kitchenObj.GetComponent<Kitchen>().updates.Count, kitchenObj.GetComponent<Kitchen>().currentUpdate - 1);
         kitchenObj.GetComponent<Kitchen>().MakePersistent(currentKitchenCount);
 
     }

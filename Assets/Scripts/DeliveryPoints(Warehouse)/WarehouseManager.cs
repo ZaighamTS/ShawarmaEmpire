@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -47,7 +50,6 @@ public class WarehouseManager : Upgdradable
     }
     void Start()
     {
-         Invoke("DelayOnStart", 1.1f);
     }
     protected override void OnUpgradeItem()
     {
@@ -79,11 +81,10 @@ public class WarehouseManager : Upgdradable
         placedWarehouses[current].transform.GetComponent<Warehouse>().CheckWaring();
         ShawarmaSpawner.Instance.targets[current].CurrentLoad = placedWarehouses[current].transform.GetComponent<Warehouse>().currentLoad;
     }
-    public void DelayOnStart()
+    public async UniTask DelayOnStart()
     {
-        
+        await UniTask.NextFrame();
         ActionPerformedOneTime();
-
         for (int i = 0; i < warehouses.Length; i++)
         {
             
@@ -103,7 +104,9 @@ public class WarehouseManager : Upgdradable
         WareHouse.SetActive(true);
         WareHouse.transform.position = Positions[currentWarehouseCount].transform.position;
         WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().currentUpdate-2).gameObject.SetActive(true);
-        
+        WareHouse.transform.GetChild(WareHouse.GetComponent<Warehouse>().currentUpdate - 2).transform.GetComponent<DOTweenAnimation>().DOPlay();
+        WareHouse.transform.GetChild(8).gameObject.SetActive(true);
+        DisableEffect(WareHouse).Forget();
         ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject], WareHouse.GetComponent<Warehouse>().currentLoad);
         UpdateSliderCurrentValue(WareHouse.GetComponent<Warehouse>().id, 0, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().currentLoad);
         Tracks[currentWarehouseCount].SetActive(true);
@@ -114,6 +117,12 @@ public class WarehouseManager : Upgdradable
        
         currentWarehouseCount++;
         WareHouse.GetComponent<Warehouse>().MakePersistent(currentWarehouseCount);
+    }
+    public async UniTask DisableEffect(GameObject WareHouse)
+    {
+        await UniTask.Delay(2000);
+        WareHouse.transform.GetChild(8).gameObject.SetActive(false);
+
     }
     public void AddWarehouseButtonClicked(int n)
     {
