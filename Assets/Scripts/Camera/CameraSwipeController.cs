@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -16,7 +17,16 @@ public class CameraSwipeController : MonoBehaviour
     private Vector2 lastInputPosition;
     private bool isDragging = false;
     private bool needsBounceBack = false;
-
+    Vector3 PreviousPos;
+    Vector3 newPos;
+    public static CameraSwipeController instance;
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
     void Update()
     {
         HandleInput();
@@ -135,5 +145,40 @@ public class CameraSwipeController : MonoBehaviour
 #else
         return EventSystem.current.IsPointerOverGameObject(fingerId);
 #endif
+    }
+
+
+    public void LerpCamera(float x,float z)
+    {
+        newPos = new Vector3(x,mainCamera.transform.position.y,z);
+        StopAllCoroutines(); // Stop any ongoing lerps
+        StartCoroutine(LerpToAndBack(newPos, 0.3f));
+    }
+
+    private IEnumerator LerpToAndBack(Vector3 targetPos, float duration)
+    {
+        Vector3 startPos = mainCamera.transform.position;
+
+        // Lerp to target
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            mainCamera.transform.position = Vector3.Lerp(startPos, targetPos, t);
+            yield return null;
+        }
+        mainCamera.transform.position = targetPos;
+        yield return new WaitForSeconds(2);
+        // Lerp back to start
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            mainCamera.transform.position = Vector3.Lerp(targetPos, startPos, t);
+            yield return null;
+        }
+        mainCamera.transform.position = startPos;
     }
 }

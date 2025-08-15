@@ -76,6 +76,9 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             SaveBuildingPurchase(index, true);
             onBuildingUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
             UpdateUI();
+            UIManager.Instance.DisableGameplayPanel();
+            CameraSwipeController.instance.LerpCamera(b.BuildingObject.transform.position.x, b.BuildingObject.transform.position.z);
+            b.Particle.SetActive(true);
         }
         else
         {
@@ -165,10 +168,12 @@ public class Building
     public int cost;
     public bool isPurchased;
     public GameObject BuildingObject;
+    public GameObject Particle;
 }
 public class BuildingsData
 {
     public int id;
     public int currentUpdate;
     public int cost;
+
 }

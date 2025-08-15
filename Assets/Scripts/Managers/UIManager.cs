@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Globalization;
 using TMPro;
@@ -21,6 +22,9 @@ public class UIManager : MonoBehaviour
     public GameObject InappPopup;
     public GameObject StartPanel;
     public GameObject GameplayPanel;
+    public GameObject PostprocessingEffect;
+    public GameObject InfoPopUp;
+    public TMP_Text InfoText;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -87,6 +91,16 @@ public class UIManager : MonoBehaviour
         }
 
     }
+    public void ShowInfoPopup(string info_text)
+    {
+        InfoPopUp.SetActive(true);
+        InfoText.text = info_text;
+
+    }
+    //public async UniTask DisablePop()
+    //{ 
+    //    UniTask.Delay()
+    //}
     public void ClickOnRewardBtn()
     {
        // FindObjectOfType<RewardedAdManager>().ShowAd();
@@ -159,6 +173,20 @@ public class UIManager : MonoBehaviour
     public void ClickOnQuit()
     { 
         Application.Quit();
+    }
+
+    public void DisableGameplayPanel()
+    { 
+        GameplayPanel.SetActive(false);
+        PostprocessingEffect.SetActive(false);
+        EnableGameplayPanel().Forget();
+    }
+
+    public async UniTask EnableGameplayPanel()
+    {
+        await UniTask.WaitForSeconds(2.0f);
+        PostprocessingEffect.SetActive(true);
+        GameplayPanel.SetActive(true);
     }
 }
 public enum UIUpdateType

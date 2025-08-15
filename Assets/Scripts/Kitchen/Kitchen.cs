@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,6 +47,9 @@ public class Kitchen : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            transform.GetChild(currentUpdate - 1).transform.GetComponent<DOTweenAnimation>().DOPlay();
+            transform.GetChild(4).gameObject.SetActive(true);
+            KitchenManager.Instance.DisableEffect(gameObject).Forget();
             currentUpdate++;
 
             SoundManager.Instance.PlayButtonClick();
@@ -55,6 +59,7 @@ public class Kitchen : MonoBehaviour, ISaveable
             KitchenManager.Instance.UpdateIcon(id);
             KitchenManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             KitchenManager.Instance.UpdateCostText(id);
+            KitchenManager.Instance.ShowAnimationEffect();
             isDirty = true;
         }
         else

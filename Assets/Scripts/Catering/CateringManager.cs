@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
@@ -102,12 +103,19 @@ public class CateringManager : MonoBehaviour
 
             PlaceNewCatering();
             UpdateBuildNewCateringUI();
+            ShowAnimationEffect();
         }
         else
         {
             UIManager.Instance.lowCashPromt.SetActive(true);
             Debug.Log("Low CAsh");
         }
+    }
+    public void ShowAnimationEffect()
+    {
+        UIManager.Instance.DisableGameplayPanel();
+
+        CameraSwipeController.instance.LerpCamera(Caterings[currentSelectedObject].transform.position.x + 5, Caterings[currentSelectedObject].transform.position.z + 5);
     }
     public void UpdateCateringUI(int n)
     {
@@ -152,6 +160,10 @@ public class CateringManager : MonoBehaviour
         CateringVanSpawner.Instance.spawnInterval = UpgradeCosts.GetCateringInterval(CateringObj.GetComponent<Catering>().currentUpdate - 1);
 
         CateringObj.transform.GetChild(CateringObj.GetComponent<Catering>().currentUpdate - 2).gameObject.SetActive(true);
+        CateringObj.transform.GetChild(CateringObj.GetComponent<Catering>().currentUpdate - 2).transform.GetComponent<DOTweenAnimation>().DOPlay();
+        CateringObj.transform.GetChild(5).gameObject.SetActive(true);
+        DisableEffect(CateringObj).Forget();
+
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         CateringObj.name = "Catering" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
         //CateringObj.GetComponent<Catering>().SetCateringIsPurchased();
@@ -162,6 +174,11 @@ public class CateringManager : MonoBehaviour
         CateringObj.GetComponent<Catering>().MakePersistent(currentCateringCount);
 
     }
-   
+    public async UniTask DisableEffect(GameObject Catering)
+    {
+        await UniTask.Delay(2000);
+        Catering.transform.GetChild(5).gameObject.SetActive(false);
+
+    }
 }
 

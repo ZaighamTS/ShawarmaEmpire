@@ -66,7 +66,7 @@ public class ShawarmaSpawner : MonoBehaviour
             currentTarget.AddObject();
             currentTarget.WareHouseMainObject.GetComponent<Warehouse>().OnShwarmaGen();
             currentTarget.WareHouseMainObject.GetComponent<Warehouse>().CheckWaring();
-            WarehouseManager.Instance.UpdateSliderCurrentValue(currentTarget.WareHouseMainObject.GetComponent<Warehouse>().id, 0, currentTarget.WareHouseMainObject.GetComponent<Warehouse>().currentCapacity, currentTarget.WareHouseMainObject.GetComponent<Warehouse>().currentLoad);
+           // WarehouseManager.Instance.UpdateSliderCurrentValue(currentTarget.WareHouseMainObject.GetComponent<Warehouse>().id, 0, currentTarget.WareHouseMainObject.GetComponent<Warehouse>().currentCapacity, currentTarget.WareHouseMainObject.GetComponent<Warehouse>().currentLoad);
             obj.SetActive(true);
             //Below Logic to check avaiblity to accept shawarma in all warerhouse
             //int n = 0;

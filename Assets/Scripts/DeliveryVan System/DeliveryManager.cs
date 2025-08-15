@@ -105,6 +105,7 @@ public class DeliveryManager : MonoBehaviour
 
             PlaceNewDelivery();
             UpdateBuildNewDeliveryUI();
+            UIManager.Instance.ShowInfoPopup("Vehicle has been successfully added to your delivery system.");
         }
         else
         {

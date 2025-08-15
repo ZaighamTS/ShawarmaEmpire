@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -48,6 +49,9 @@ public class Catering : MonoBehaviour, ISaveable
                 transform.GetChild(i).gameObject.SetActive(false);
             }
             transform.GetChild(currentUpdate - 1).gameObject.SetActive(true);
+            transform.GetChild(currentUpdate - 1).transform.GetComponent<DOTweenAnimation>().DOPlay();
+            transform.GetChild(5).gameObject.SetActive(true);
+            CateringManager.Instance.DisableEffect(gameObject).Forget();
             currentUpdate++;
            
             SoundManager.Instance.PlayButtonClick();
@@ -57,7 +61,7 @@ public class Catering : MonoBehaviour, ISaveable
             CateringManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             CateringManager.Instance.UpdateIcon(id);
             CateringManager.Instance.UpdateCostText(id);
-
+            CateringManager.Instance.ShowAnimationEffect();
             isDirty = true;
         }
         else

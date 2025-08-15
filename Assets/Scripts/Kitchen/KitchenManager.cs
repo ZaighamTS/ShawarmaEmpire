@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
@@ -106,6 +107,7 @@ public class KitchenManager : MonoBehaviour
 
             PlaceNewKitchen();
             UpdateBuildNewKitchenUI();
+            ShowAnimationEffect();
         }
         else
         {
@@ -139,7 +141,11 @@ public class KitchenManager : MonoBehaviour
         }
         SoundManager.Instance.PlayButtonClick();
     }
-
+    public void ShowAnimationEffect()
+    {
+        UIManager.Instance.DisableGameplayPanel();
+        CameraSwipeController.instance.LerpCamera(26.9f, 62.9f);
+    }
     public void UpdateCostText(int i)
     {
         Kitchen selectedKitchen = Kitchens[i].GetComponent<Kitchen>();
@@ -156,6 +162,10 @@ public class KitchenManager : MonoBehaviour
         GameObject kitchenObj = Kitchens[currentSelectedObject];
         kitchenObj.SetActive(true); 
         kitchenObj.transform.GetChild(kitchenObj.GetComponent<Kitchen>().currentUpdate - 2).gameObject.SetActive(true);
+
+        kitchenObj.transform.GetChild(kitchenObj.GetComponent<Kitchen>().currentUpdate - 2).transform.GetComponent<DOTweenAnimation>().DOPlay();
+        kitchenObj.transform.GetChild(4).gameObject.SetActive(true);
+        DisableEffect(kitchenObj).Forget();
         //ShawarmaSpawner.Instance.AddNewTarget(WareHouse.GetComponent<Warehouse>().id, WareHouse.GetComponent<Warehouse>().currentCapacity, WareHouse.GetComponent<Warehouse>().TargetPosition, warehouses[currentSelectedObject]);
         kitchenObj.name = "Kitchen" + (currentSelectedObject + 1);// For changing gameobject name to see in hierarchy (optional)
         //kitchenObj.GetComponent<Kitchen>().SetKitchenIsPurchased();
@@ -164,6 +174,12 @@ public class KitchenManager : MonoBehaviour
         currentKitchenCount++;
         UpdateSlider(kitchenObj.GetComponent<Kitchen>().id, kitchenObj.GetComponent<Kitchen>().updates.Count, kitchenObj.GetComponent<Kitchen>().currentUpdate - 1);
         kitchenObj.GetComponent<Kitchen>().MakePersistent(currentKitchenCount);
+
+    }
+    public async UniTask DisableEffect(GameObject Kitchen)
+    {
+        await UniTask.Delay(2000);
+        Kitchen.transform.GetChild(4).gameObject.SetActive(false);
 
     }
 }

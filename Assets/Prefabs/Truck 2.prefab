@@ -59,7 +59,7 @@ MonoBehaviour:
   - {fileID: 7670672906754851820}
   - {fileID: 1546240181670441209}
   wheelRotationSpeed: 360
-  deliveryCapacity: 200
+  deliveryCapacity: 400
   detectionDistance: 5
   vanLayerMask:
     serializedVersion: 2
@@ -228,7 +228,7 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -6652725513331149018, guid: ed37fec3fff7c8b469e30cb399c39229, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: 38fee9a8779b0cd4ea3227cccf962d60, type: 2}
     - target: {fileID: 919132149155446097, guid: ed37fec3fff7c8b469e30cb399c39229, type: 3}

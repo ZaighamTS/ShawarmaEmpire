@@ -64,10 +64,11 @@ public class Delivery : MonoBehaviour, ISaveable
             DeliveryManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             DeliveryManager.Instance.UpdateIcon(id);
             DeliveryManager.Instance.UpdateCostText(id);
-          
+            UIManager.Instance.ShowInfoPopup("Vehicle has been successfully added to your delivery system.");
 
-          
-            
+
+
+
 
             isDirty = true;
         }
