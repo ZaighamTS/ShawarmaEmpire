@@ -63,7 +63,7 @@ public class CateringVan : MonoBehaviour
                 //storageManager.DeliverShawarma(shwarmas);
                 var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
                 var totalRewards = (shawarmaValue + shwarmas) * 0.95f;
-                Debug.Log("Cater reward " + totalRewards);
+             //   Debug.Log("Cater reward " + totalRewards);
                 //PlayerProgress.Instance.PlayerCash += totalRewards;
                 GameManager.gameManagerInstance.AddCash(totalRewards);
                 UIManager.Instance.UpdateUI(UIUpdateType.Cash);

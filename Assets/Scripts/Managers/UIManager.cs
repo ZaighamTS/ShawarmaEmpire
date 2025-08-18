@@ -4,6 +4,7 @@ using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -25,6 +26,7 @@ public class UIManager : MonoBehaviour
     public GameObject PostprocessingEffect;
     public GameObject InfoPopUp;
     public TMP_Text InfoText;
+    public Image TotalEarningImage;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -90,6 +92,15 @@ public class UIManager : MonoBehaviour
                 }
         }
 
+    }
+    public void UpdateEarningSlider()
+    {
+       // Debug.Log("bb "+PlayerProgress.Instance.ChefStars);
+      //  Debug.Log("check "+ UpgradeCosts.GetNextPrestigeValue());
+      //  Debug.Log("val "+ Mathf.Clamp01(PlayerProgress.Instance.TotalEarnings / UpgradeCosts.GetNextPrestigeValue()));
+          TotalEarningImage.fillAmount = Mathf.Clamp01(PlayerProgress.Instance.TotalEarnings / UpgradeCosts.GetNextPrestigeValue());
+
+       // Debug.Log((UpgradeCosts.GetNextPrestigeValue(PlayerProgress.Instance.TotalEarnings) / PlayerProgress.Instance.TotalEarnings));
     }
     public void ShowInfoPopup(string info_text)
     {

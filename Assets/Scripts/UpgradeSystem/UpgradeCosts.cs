@@ -125,6 +125,12 @@ public static class UpgradeCosts
         
        // return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100)));
     }
+    public static int GetNextPrestigeValue()
+    {
+        // return Mathf.FloorToInt(Mathf.Log10(100000*(PlayerProgress.Instance.ChefStars+1)));
+        int nextStar = PlayerProgress.Instance.ChefStars ;
+        return Mathf.FloorToInt(Mathf.Pow(10, nextStar) * 100000f) ;
+    }
     public static float GetTotalSalaries(int officeLevel)
     {
         return 1;

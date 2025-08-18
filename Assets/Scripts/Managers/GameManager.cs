@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
         UIManager.Instance.UpdateUI(UIUpdateType.Cash);
         UIManager.Instance.UpdateChefStarsText();
         UIManager.Instance.UpdateUI(UIUpdateType.Storage);
-        Debug.Log("here");
+       // Debug.Log("here");
         // GameObject.FindObjectByType(TransitionEffectScript );
         if (TransitionEffectScript.PrestigeDone)
         {
@@ -109,6 +109,7 @@ public class GameManager : MonoBehaviour
         if (value > 0)
         {
             playerProgress.TotalEarnings += value;
+            UIManager.Instance.UpdateEarningSlider();
         }
 
 
@@ -135,7 +136,7 @@ public class GameManager : MonoBehaviour
     private void CheckChefStars(float TotalEarning)
     {
         var newStars = UpgradeCosts.GetChefStars(TotalEarning);
-        Debug.Log("newStars " + newStars);
+       // Debug.Log("newStars " + newStars);
         // Debug.Log("chefStars " + chefStars);
         if (newStars > playerProgress.ChefStars)
         {
@@ -195,7 +196,7 @@ private void OnApplicationFocus(bool focus)
         if (!focus)
         {
           //  SaveLoadManager.saveLoadManagerInstance.SaveGame();
-            Debug.Log("focus Integer " + i);
+           // Debug.Log("focus Integer " + i);
         }
         
     }
