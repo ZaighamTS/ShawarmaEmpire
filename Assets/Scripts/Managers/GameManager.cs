@@ -98,6 +98,10 @@ public class GameManager : MonoBehaviour
     {
         return playerProgress.TotalEarnings;
     }
+    internal float GetGold()
+    { 
+        return playerProgress.Gold;
+    }
     //private void Update()
     //{
     //    moneyText.text = "$" + money.ToString("F0");
@@ -115,12 +119,13 @@ public class GameManager : MonoBehaviour
 
         CheckChefStars(playerProgress.TotalEarnings);
     }
+    internal void AddGold(float value)
+    { 
+        playerProgress.Gold+= value;
+    }
     internal void AddTotalShawarama(int value)
     {
-
         playerProgress.ShwarmaCount += value;
-
-
     }
 
     internal bool SpendCash(float Value)
@@ -128,6 +133,15 @@ public class GameManager : MonoBehaviour
         if (Value <= playerProgress.PlayerCash)
         {
             playerProgress.PlayerCash -= Value;
+            return true;
+        }
+        return false;
+    }
+    internal bool SpendGold(float Value)
+    {
+        if (Value <= playerProgress.Gold)
+        {
+            playerProgress.Gold -= Value;
             return true;
         }
         return false;

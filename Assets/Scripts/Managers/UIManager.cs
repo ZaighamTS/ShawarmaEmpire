@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance;
 
     public TMP_Text coinsText;
+    public TMP_Text goldText;
     public TMP_Text[] storageText;
     public TMP_Text multiplierText;
     public TMP_Text chefStarsText;
@@ -83,6 +84,14 @@ public class UIManager : MonoBehaviour
                     if (multiplierText != null && ShawarmaSpawner.Instance != null)
                         multiplierText.text = ShawarmaSpawner.Instance.tapMultiplier.ToString("f2")+ "x";
                     //multiplierText.text = $"{ShawarmaSpawner.Instance.GetMultiplier():0.0}x";
+                    break;
+                }
+            case UIUpdateType.Gold:
+                {
+                    if (goldText != null)
+                    {
+                        goldText.text = $"{GameManager.gameManagerInstance.GetGold():N0}";
+                    }
                     break;
                 }
             default:
@@ -204,5 +213,6 @@ public enum UIUpdateType
 {
     Cash,
     Storage,
-    Multiplier
+    Multiplier,
+    Gold
 }

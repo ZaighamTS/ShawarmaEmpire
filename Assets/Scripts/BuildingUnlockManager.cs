@@ -14,11 +14,12 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
 
     private List<Transform> buildingButtons = new List<Transform>();
     private int playerCash;
+    private int playerGold;
     private bool isDirty = false;
     public string SaveKey => "building";
     public static event Action<UIUpdateType, float> onBuildingUpgraded;
-    public int currentUpdate;
-    public int cost;
+    [HideInInspector]public int currentUpdate;
+    [HideInInspector]public int cost;
     void Start()
     {
         SaveLoadManager.saveLoadManagerInstance.Register(this);
@@ -51,10 +52,13 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             Transform btn = buildingListParent.GetChild(i);
             Image iconImage = btn.transform.GetChild(0).GetChild(0).GetComponent<Image>();
             Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
+            Text costTextGold = btn.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Text>();
             iconImage.sprite = b.icon;
             costText.text = b.cost.ToString();
+            costTextGold.text=b.goldCost.ToString();
             int index = i;
             btn.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(() => TryUnlockBuilding(index));
+            btn.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => TryUnlockBuildingGold(index));
             buildingButtons.Add(btn);
         }
     }
@@ -69,7 +73,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
 
         if (playerCash >= b.cost)
         {
-            GameManager.gameManagerInstance.SpendCash(cost);
+            GameManager.gameManagerInstance.SpendCash(b.cost);
            // playerCash -= b.cost;
            // SetCash(playerCash);
             buildings[index].isPurchased = true;
@@ -85,6 +89,36 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             UIManager.Instance.lowCashPromt.SetActive(true);
         }
     }
+
+
+    void TryUnlockBuildingGold(int index)
+    {
+        playerGold = (int)PlayerProgress.Instance.Gold;
+        if (buildings[index].isPurchased)
+            return;
+
+        Building b = buildings[index];
+
+        if (playerGold >= b.goldCost)
+        {
+            GameManager.gameManagerInstance.SpendGold(b.goldCost);
+            // playerCash -= b.cost;
+            // SetCash(playerCash);
+            buildings[index].isPurchased = true;
+            SaveBuildingPurchase(index, true);
+            onBuildingUpgraded?.Invoke(UIUpdateType.Gold, PlayerProgress.Instance.Gold);
+            UpdateUI();
+            UIManager.Instance.DisableGameplayPanel();
+            CameraSwipeController.instance.LerpCamera(b.BuildingObject.transform.position.x, b.BuildingObject.transform.position.z);
+            b.Particle.SetActive(true);
+        }
+        else
+        {
+            UIManager.Instance.lowCashPromt.SetActive(true);
+        }
+    }
+
+
 
     void UpdateUI()
     {
@@ -106,17 +140,6 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         }
     }
 
-
-    public float GetCash()
-    {
-        return PlayerProgress.Instance.PlayerCash;
-    }
-
-    public void SetCash(int amount)
-    {
-        PlayerProgress.Instance.PlayerCash -= amount;
-    }
-
     public bool IsBuildingPurchased(int index)
     {
         return PlayerPrefs.GetInt("building_purchased_" + index, 0) == 1;
@@ -134,7 +157,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         return new BuildingsData
         {    
             currentUpdate = currentUpdate,
-            cost = cost
+           // cost = cost
         };
     }
     public void RestoreState(object state)
@@ -143,12 +166,12 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             return;
        
         currentUpdate = data.currentUpdate;
-        cost = data.cost;
+      //  cost = data.cost;
         isDirty = false;
     }
     public void SetInitialData()
     {
-        currentUpdate = 1;
+       // currentUpdate = 1;
         cost = (int)UpgradeCosts.GetUpgradeCost(UpgradeType.Kitchen, currentUpdate);
         isDirty = true;
 
@@ -169,11 +192,13 @@ public class Building
     public bool isPurchased;
     public GameObject BuildingObject;
     public GameObject Particle;
+    public int goldCost;
 }
 public class BuildingsData
 {
     public int id;
     public int currentUpdate;
-    public int cost;
+   // public int cost;
+   
 
 }
