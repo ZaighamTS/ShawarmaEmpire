@@ -28,6 +28,7 @@ public class UIManager : MonoBehaviour
     public GameObject InfoPopUp;
     public TMP_Text InfoText;
     public Image TotalEarningImage;
+    public Transform[] TabsButton;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -207,6 +208,14 @@ public class UIManager : MonoBehaviour
         await UniTask.WaitForSeconds(2.0f);
         PostprocessingEffect.SetActive(true);
         GameplayPanel.SetActive(true);
+    }
+    public void OnClickTabsButton(Transform ThisButton)
+    {
+        for (int i = 0; i < TabsButton.Length; i++)
+        {
+            TabsButton[i].localScale = Vector3.one;
+        }
+        ThisButton.localScale = new Vector3(1.2f, 1.2f, 1.2f);
     }
 }
 public enum UIUpdateType

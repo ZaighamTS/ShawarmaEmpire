@@ -68,7 +68,7 @@ public class DeliveryManager : MonoBehaviour
                 isPurchased = true;
                // Debug.Log("aa " + (Deliverys[i].GetComponent<Delivery>().currentUpdate - 2).ToString());
                 point.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 2].UpdateName;
-                point.GetChild(1).GetChild(1).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 2].Icon;
+                point.GetChild(1).GetChild(1).GetChild(0).GetChild(0).transform.GetComponent<Image>().sprite = Deliverys[i].GetComponent<Delivery>().updates[Deliverys[i].GetComponent<Delivery>().currentUpdate - 2].Icon;
             }
             else
             {

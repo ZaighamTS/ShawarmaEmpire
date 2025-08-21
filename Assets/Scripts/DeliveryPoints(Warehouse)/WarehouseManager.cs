@@ -176,10 +176,10 @@ public class WarehouseManager : Upgdradable
     }
 
 
-    public void UpdateSlider(int KitchenNumber, int maxValue, int currentValue)
+    public void UpdateSlider(int warehosueNumber, int maxValue, int currentValue)
     {
-        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().maxValue = maxValue;
-        buidlNewPointParent.GetChild(KitchenNumber).GetChild(1).GetChild(3).GetComponent<Slider>().value = currentValue;
+        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(3).GetComponent<Slider>().maxValue = maxValue;
+        buidlNewPointParent.GetChild(warehosueNumber).GetChild(1).GetChild(3).GetComponent<Slider>().value = currentValue;
     }
 
     public void UpdateIcon(int warehosueNumber)
