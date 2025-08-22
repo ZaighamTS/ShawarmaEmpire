@@ -118,6 +118,9 @@ public class UIManager : MonoBehaviour
         InfoText.text = info_text;
 
     }
+
+
+     
     //public async UniTask DisablePop()
     //{ 
     //    UniTask.Delay()
@@ -159,11 +162,19 @@ public class UIManager : MonoBehaviour
         RewardedAdPopUp.SetActive(false);
         PlayerPrefs.SetInt("RewardCount", PlayerPrefs.GetInt("RewardCount")+1);
         Debug.Log("RewardCount  "+ PlayerPrefs.GetInt("RewardCount"));
+        //  ShowInfoPopup("Reward has been added to your offline earnings");
+        ShowRewardPop("Reward has been added to your offline earnings").Forget();
         //GameManager.gameManagerInstance.AddCash(1000);
         //UpdateUI(UIUpdateType.Cash);
-       
-    }
 
+    }
+    public async UniTask ShowRewardPop(string _text)
+    {
+        await UniTask.WaitForSeconds(0.5f);
+        InfoPopUp.SetActive(true);
+        InfoText.text = _text;
+
+    }
     public void InappPurchaseSuccess()
     {
         GameManager.gameManagerInstance.AddCash(10000);

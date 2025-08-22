@@ -135,9 +135,10 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             // If already purchased, disable button and show faded icon
             btn.GetChild(0).GetChild(1).GetComponent<Button>().interactable = !isPurchased;
             btn.GetChild(0).GetChild(2).GetComponent<Button>().interactable = !isPurchased;
-            icon.color = isPurchased ? new Color(1, 1, 1, 0.4f) : Color.white;
+           // icon.color = isPurchased ? new Color(1, 1, 1, 0.4f) : Color.white;
             buildings[i].BuildingObject.SetActive(isPurchased);
-            costText.gameObject.SetActive(!isPurchased);
+            btn.transform.GetChild(0).GetChild(5).gameObject.SetActive(isPurchased);
+           // costText.gameObject.SetActive(!isPurchased);
         }
     }
 

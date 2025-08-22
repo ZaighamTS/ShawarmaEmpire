@@ -67,6 +67,7 @@ public class GameManager : MonoBehaviour
                 double amount = (PlayerPrefs.GetInt("RewardCount") * 100) + secondsElapsed;
                 PlayerPrefs.SetInt("RewardCount", 0);
                 AddCash((int)amount);
+                
                 // int cfuel = (int)secondsElapsed / (int)currentWaitTime;
                 //for (int i = 0; i < trucksToRefuel; i++)
                 //{

@@ -33,12 +33,12 @@
 //    }
 //    public void LoadSDK()
 //    {
-        
+
 //        if (!Advertisement.isInitialized && Advertisement.isSupported)
 //        {
 //            Advertisement.Initialize(id, Test, this);
 //            Debug.Log("1");
-           
+
 //        }
 //    }
 
@@ -50,7 +50,7 @@
 
 //    public void LoadAd()
 //    {
-       
+
 //        Debug.Log("Loading Ad: " + _adUnitId);
 //        Advertisement.Load(_adUnitId, this);
 //    }
@@ -63,9 +63,9 @@
 //        if (adUnitId.Equals(_adUnitId))
 //        {
 //            // Configure the button to call the ShowAd() method when clicked:
-//             _showAdButton.onClick.AddListener(ShowRewardedAd);
+//            _showAdButton.onClick.AddListener(ShowRewardedAd);
 //            // Enable the button for users to click:
-//             _showAdButton.interactable = true;
+//            _showAdButton.interactable = true;
 //        }
 //    }
 
@@ -73,7 +73,7 @@
 //    public void ShowRewardedAd()
 //    {
 //        // Disable the button:
-//      //  _showAdButton.interactable = false;
+//          _showAdButton.interactable = false;
 //        // Then show the ad:
 //        Advertisement.Show(_adUnitId, this);
 //    }
