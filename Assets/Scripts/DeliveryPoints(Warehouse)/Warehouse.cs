@@ -75,6 +75,7 @@ public class Warehouse : MonoBehaviour, ISaveable
             WarehouseManager.Instance.UpdateCostText(id);
             WarehouseManager.Instance.UpdateSlider(id, updates.Count, currentUpdate - 1);
             WarehouseManager.Instance.ShowAnimationEffect();
+            CheckWaring();
             isDirty = true;
         }
         else

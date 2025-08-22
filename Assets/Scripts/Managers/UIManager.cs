@@ -161,9 +161,10 @@ public class UIManager : MonoBehaviour
     { 
         RewardedAdPopUp.SetActive(false);
         PlayerPrefs.SetInt("RewardCount", PlayerPrefs.GetInt("RewardCount")+1);
-        Debug.Log("RewardCount  "+ PlayerPrefs.GetInt("RewardCount"));
-        //  ShowInfoPopup("Reward has been added to your offline earnings");
         ShowRewardPop("Reward has been added to your offline earnings").Forget();
+        // Debug.Log("RewardCount  "+ PlayerPrefs.GetInt("RewardCount"));
+        //  ShowInfoPopup("Reward has been added to your offline earnings");
+
         //GameManager.gameManagerInstance.AddCash(1000);
         //UpdateUI(UIUpdateType.Cash);
 

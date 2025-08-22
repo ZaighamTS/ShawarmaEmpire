@@ -53,21 +53,27 @@ public class GameManager : MonoBehaviour
         }
 
 
+      
+
+        // UIManager.Instance.Up
+    }
+
+    public void CheckOfflineEarning()
+    {
         if (PlayerPrefs.GetInt("RewardCount") > 0)
         {
-            Debug.Log("RewardCount" + PlayerPrefs.GetInt("RewardCount"));
+
             if (DateTime.TryParse(PlayerPrefs.GetString("CurrentDateTime"), null, DateTimeStyles.RoundtripKind, out DateTime savedTime))
             {
-
                 TimeSpan elapsed = DateTime.UtcNow - savedTime;
-              
-
                 double secondsElapsed = elapsed.TotalSeconds;
                 Debug.Log(secondsElapsed.ToString());
                 double amount = (PlayerPrefs.GetInt("RewardCount") * 100) + secondsElapsed;
                 PlayerPrefs.SetInt("RewardCount", 0);
                 AddCash((int)amount);
-                
+                UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+                Debug.Log("Granted reward amount " + amount);
+                UIManager.Instance.ShowInfoPopup("Reward of amount "+(int)amount+" has been granted");
                 // int cfuel = (int)secondsElapsed / (int)currentWaitTime;
                 //for (int i = 0; i < trucksToRefuel; i++)
                 //{
@@ -75,9 +81,10 @@ public class GameManager : MonoBehaviour
                 //}
             }
         }
-
-        // UIManager.Instance.Up
     }
+
+
+
 
     private void OnDestroy()
     {
@@ -152,7 +159,7 @@ public class GameManager : MonoBehaviour
     private void CheckChefStars(float TotalEarning)
     {
         var newStars = UpgradeCosts.GetChefStars(TotalEarning);
-       // Debug.Log("newStars " + newStars);
+        Debug.Log("newStars " + newStars);
         // Debug.Log("chefStars " + chefStars);
         if (newStars > playerProgress.ChefStars)
         {
@@ -203,6 +210,7 @@ void OnApplicationPause(bool pauseStatus)
         if (pauseStatus)
         {
             SaveLoadManager.saveLoadManagerInstance.SaveGame();
+            PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString());
             Debug.Log("pause Integer " + i);
         }
    

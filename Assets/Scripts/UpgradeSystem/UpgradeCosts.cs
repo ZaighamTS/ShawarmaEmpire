@@ -121,7 +121,7 @@ public static class UpgradeCosts
     }
     public static int GetChefStars(float totalEarnings)
     {
-          return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100000)));
+          return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (10000)));
         
        // return Mathf.FloorToInt(Mathf.Log10(totalEarnings / (100)));
     }
