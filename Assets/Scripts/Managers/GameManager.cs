@@ -39,6 +39,7 @@ public class GameManager : MonoBehaviour
     public void DelayOnStart()
     {
         UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+        UIManager.Instance.UpdateUI(UIUpdateType.Gold);
         UIManager.Instance.UpdateChefStarsText();
         UIManager.Instance.UpdateUI(UIUpdateType.Storage);
        // Debug.Log("here");

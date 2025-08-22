@@ -51,9 +51,9 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             Building b = buildings[i];
             Transform btn = buildingListParent.GetChild(i);
             Image iconImage = btn.transform.GetChild(0).GetChild(0).GetComponent<Image>();
-            Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
-            Text costTextGold = btn.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<Text>();
-            iconImage.sprite = b.icon;
+            TMP_Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
+            TMP_Text costTextGold = btn.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
+            //iconImage.sprite = b.icon;
             costText.text = b.cost.ToString();
             costTextGold.text=b.goldCost.ToString();
             int index = i;
@@ -128,12 +128,13 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         {
             Transform btn = buildingListParent.GetChild(i);
             Image icon = btn.transform.GetChild(0).GetChild(0).GetComponent<Image>();
-            Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>();
+            TMP_Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
 
             bool isPurchased = buildings[i].isPurchased;
 
             // If already purchased, disable button and show faded icon
             btn.GetChild(0).GetChild(1).GetComponent<Button>().interactable = !isPurchased;
+            btn.GetChild(0).GetChild(2).GetComponent<Button>().interactable = !isPurchased;
             icon.color = isPurchased ? new Color(1, 1, 1, 0.4f) : Color.white;
             buildings[i].BuildingObject.SetActive(isPurchased);
             costText.gameObject.SetActive(!isPurchased);
@@ -187,7 +188,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
 public class Building
 {
     public string name;
-    public Sprite icon;
+   // public Sprite icon;
     public int cost;
     public bool isPurchased;
     public GameObject BuildingObject;

@@ -1710,10 +1710,10 @@ TextureImporter:
       name: NewSprite_83
       rect:
         serializedVersion: 2
-        x: 1221
-        y: 766
-        width: 200
-        height: 102
+        x: 1201
+        y: 776
+        width: 220
+        height: 92
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1798,10 +1798,10 @@ TextureImporter:
       name: NewSprite_16
       rect:
         serializedVersion: 2
-        x: 3070
-        y: 411
+        x: 3243
+        y: 466
         width: 800
-        height: 511
+        height: 456
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1812,6 +1812,160 @@ TextureImporter:
       bones: []
       spriteID: 4511cc236a80f484c85c34c3d8c3a379
       internalID: 1781264598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_18
+      rect:
+        serializedVersion: 2
+        x: 948
+        y: 776
+        width: 220
+        height: 92
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 507875dd9b102be42b86d2afc484cbc3
+      internalID: 919969138
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_19
+      rect:
+        serializedVersion: 2
+        x: 139
+        y: 354
+        width: 1171
+        height: 280
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9536602b0f046bf4f89f2c00ed89895f
+      internalID: 538380737
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_20
+      rect:
+        serializedVersion: 2
+        x: 2092
+        y: 2002
+        width: 612
+        height: 583
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 278798d49811d574cb9550a6bb92b720
+      internalID: 1493245894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_21
+      rect:
+        serializedVersion: 2
+        x: 310
+        y: 3555
+        width: 65
+        height: 66
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 108c514570bb9164487be95b4bd80f3a
+      internalID: -1354976448
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_23
+      rect:
+        serializedVersion: 2
+        x: 1532
+        y: 2946
+        width: 340
+        height: 131
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 818862e228c471d47863edc0090fa024
+      internalID: -786910590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_69
+      rect:
+        serializedVersion: 2
+        x: 2092
+        y: 2002
+        width: 612
+        height: 583
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6322b60a4c1f72a408b5a20150318dd9
+      internalID: 211987727
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: NewSprite_70
+      rect:
+        serializedVersion: 2
+        x: 3056
+        y: 465
+        width: 137
+        height: 126
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a12f2c0d675a9af4d9d4f56bfead04c4
+      internalID: -1806275513
       vertices: []
       indices: 
       edges: []
@@ -1896,6 +2050,7 @@ TextureImporter:
       NewSprite_66: 429480279
       NewSprite_67: -6773634
       NewSprite_68: -806203611
+      NewSprite_69: 211987727
       NewSprite_69 b: -334585267
       NewSprite_7: -1629410066
       NewSprite_70: -1806275513

@@ -29,6 +29,9 @@ public class BaloonPop : MonoBehaviour
 
         // Destroy(gameObject); // Destroy the balloon
         BaloonMesh.SetActive(false);
+        int RandomNumber = Random.Range(3,10);
+        GameManager.gameManagerInstance.AddGold(RandomNumber);
+        UIManager.Instance.UpdateUI(UIUpdateType.Gold);
         GetComponent<BoxCollider>().enabled = false;
         Invoke("ResetBaloon",10);
     }

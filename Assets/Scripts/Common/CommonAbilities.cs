@@ -40,7 +40,7 @@ public class CommonAbilities : MonoBehaviour
         {
             obj.transform.GetChild(0).GetChild(4).gameObject.SetActive(false);
            // Debug.Log("cost " + Level);
-            obj.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<Text>().text = Cost.ToString();
+            obj.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = Cost.ToString();
         }
         else
         {
