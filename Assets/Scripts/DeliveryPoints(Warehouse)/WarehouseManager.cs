@@ -25,6 +25,9 @@ public class WarehouseManager : Upgdradable
     [Header("UI References")]
    // public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
+    [Header("Upgrade Availability Indicator")]
+    public GameObject upgradeBadgePrefab; // Badge to show on tab button (optional)
+    public Button storageTabButton; // Tab button for storage upgrades (optional - for badge display)
 
 
     private void Awake()
@@ -313,5 +316,99 @@ public class WarehouseManager : Upgdradable
         Vector2 offset = BeltMat.mainTextureOffset;
         offset += scrollSpeed * Time.deltaTime;
         BeltMat.mainTextureOffset = offset;
+    }
+    
+    /// <summary>
+    /// Counts how many storage upgrades are currently affordable
+    /// </summary>
+    public int GetAvailableUpgradeCount()
+    {
+        int count = 0;
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        if (warehouses == null) return 0;
+        
+        foreach (var warehouse in warehouses)
+        {
+            if (warehouse == null) continue;
+            
+            Warehouse w = warehouse.GetComponent<Warehouse>();
+            if (w == null) continue;
+            
+            // Check if can purchase new warehouse
+            if (w.currentUpdate <= 1)
+            {
+                int existingCount = placedWarehouses.Count;
+                float cost = UpgradeCosts.GetPurchaseCost(UpgradeType.Storage, existingCount);
+                if (cost <= playerCash) count++;
+            }
+            // Check if can upgrade existing warehouse
+            else if (w.currentUpdate <= w.updates.Count && w.cost <= playerCash)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    /// <summary>
+    /// Navigates to the first affordable storage upgrade and highlights it
+    /// </summary>
+    public void NavigateToFirstAffordableUpgrade()
+    {
+        if (warehouses == null) return;
+        
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        // Find first affordable warehouse upgrade
+        for (int i = 0; i < warehouses.Length; i++)
+        {
+            if (warehouses[i] == null) continue;
+            
+            Warehouse w = warehouses[i].GetComponent<Warehouse>();
+            if (w == null) continue;
+            
+            float cost = w.currentUpdate <= 1 
+                ? UpgradeCosts.GetPurchaseCost(UpgradeType.Storage, placedWarehouses.Count)
+                : w.cost;
+            
+            if (cost <= playerCash)
+            {
+                // Select this warehouse and show its upgrade UI
+                UpdateWarehoueUI(i);
+                
+                // Highlight the upgrade button with pulsing animation
+                if (buildDeliveryPointParent != null && w.currentUpdate - 1 >= 0 && w.currentUpdate - 1 < buildDeliveryPointParent.childCount)
+                {
+                    Transform upgradeButton = buildDeliveryPointParent.GetChild(w.currentUpdate - 1);
+                    if (upgradeButton != null)
+                    {
+                        HighlightUpgradeButton(upgradeButton);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Adds a pulsing highlight effect to an upgrade button
+    /// </summary>
+    private void HighlightUpgradeButton(Transform buttonTransform)
+    {
+        if (buttonTransform == null) return;
+        
+        Button button = buttonTransform.GetComponentInChildren<Button>();
+        if (button != null)
+        {
+            // Stop any existing animations
+            DG.Tweening.DOTween.Kill(button.transform);
+            
+            // Add pulsing scale animation
+            button.transform.DOScale(1.15f, 0.5f)
+                .SetLoops(-1, DG.Tweening.LoopType.Yoyo)
+                .SetEase(DG.Tweening.Ease.InOutSine);
+        }
     }
 }

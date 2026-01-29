@@ -17,6 +17,8 @@ public class CateringManager : MonoBehaviour
     [Header("UI References")]
     public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
+    [Header("Upgrade Availability Indicator")]
+    public Button cateringTabButton; // Tab button for catering upgrades (optional - for badge display)
     private void Awake()
     {
         if (Instance == null)
@@ -179,6 +181,88 @@ public class CateringManager : MonoBehaviour
         await UniTask.Delay(2000);
         Catering.transform.GetChild(5).gameObject.SetActive(false);
 
+    }
+    
+    /// <summary>
+    /// Counts how many catering upgrades are currently affordable
+    /// </summary>
+    public int GetAvailableUpgradeCount()
+    {
+        int count = 0;
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        if (Caterings == null) return 0;
+        
+        foreach (var catering in Caterings)
+        {
+            if (catering == null) continue;
+            
+            Catering c = catering.GetComponent<Catering>();
+            if (c == null) continue;
+            
+            if (c.currentUpdate <= c.updates.Count && c.cost <= playerCash)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    /// <summary>
+    /// Navigates to the first affordable catering upgrade and highlights it
+    /// </summary>
+    public void NavigateToFirstAffordableUpgrade()
+    {
+        if (Caterings == null) return;
+        
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        // Find first affordable catering upgrade
+        for (int i = 0; i < Caterings.Length; i++)
+        {
+            if (Caterings[i] == null) continue;
+            
+            Catering c = Caterings[i].GetComponent<Catering>();
+            if (c == null) continue;
+            
+            if (c.cost <= playerCash && c.currentUpdate <= c.updates.Count)
+            {
+                // Select this catering and show its upgrade UI
+                UpdateCateringUI(i);
+                
+                // Highlight the upgrade button
+                if (buildDeliveryPointParent != null && c.currentUpdate - 1 >= 0 && c.currentUpdate - 1 < buildDeliveryPointParent.childCount)
+                {
+                    Transform upgradeButton = buildDeliveryPointParent.GetChild(c.currentUpdate - 1);
+                    if (upgradeButton != null)
+                    {
+                        HighlightUpgradeButton(upgradeButton);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Adds a pulsing highlight effect to an upgrade button
+    /// </summary>
+    private void HighlightUpgradeButton(Transform buttonTransform)
+    {
+        if (buttonTransform == null) return;
+        
+        Button button = buttonTransform.GetComponentInChildren<Button>();
+        if (button != null)
+        {
+            // Stop any existing animations
+            DG.Tweening.DOTween.Kill(button.transform);
+            
+            // Add pulsing scale animation
+            button.transform.DOScale(1.15f, 0.5f)
+                .SetLoops(-1, DG.Tweening.LoopType.Yoyo)
+                .SetEase(DG.Tweening.Ease.InOutSine);
+        }
     }
 }
 

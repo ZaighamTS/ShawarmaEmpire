@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
@@ -16,6 +17,8 @@ public class DeliveryManager : MonoBehaviour
     [Header("UI References")]
     public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
+    [Header("Upgrade Availability Indicator")]
+    public Button deliveryTabButton; // Tab button for delivery upgrades (optional - for badge display)
     private void Awake()
     {
         if (Instance == null)
@@ -170,6 +173,88 @@ public class DeliveryManager : MonoBehaviour
         UpdateSlider(DeliveryObj.GetComponent<Delivery>().id, DeliveryObj.GetComponent<Delivery>().updates.Count, DeliveryObj.GetComponent<Delivery>().currentUpdate - 1);
         DeliveryObj.GetComponent<Delivery>().MakePersistent(currentDeliveryCount);
 
+    }
+    
+    /// <summary>
+    /// Counts how many delivery upgrades are currently affordable
+    /// </summary>
+    public int GetAvailableUpgradeCount()
+    {
+        int count = 0;
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        if (Deliverys == null) return 0;
+        
+        foreach (var delivery in Deliverys)
+        {
+            if (delivery == null) continue;
+            
+            Delivery d = delivery.GetComponent<Delivery>();
+            if (d == null) continue;
+            
+            if (d.currentUpdate <= d.updates.Count && d.cost <= playerCash)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    /// <summary>
+    /// Navigates to the first affordable delivery upgrade and highlights it
+    /// </summary>
+    public void NavigateToFirstAffordableUpgrade()
+    {
+        if (Deliverys == null) return;
+        
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        // Find first affordable delivery upgrade
+        for (int i = 0; i < Deliverys.Length; i++)
+        {
+            if (Deliverys[i] == null) continue;
+            
+            Delivery d = Deliverys[i].GetComponent<Delivery>();
+            if (d == null) continue;
+            
+            if (d.cost <= playerCash && d.currentUpdate <= d.updates.Count)
+            {
+                // Select this delivery and show its upgrade UI
+                UpdateDeliveryUI(i);
+                
+                // Highlight the upgrade button
+                if (buildDeliveryPointParent != null && d.currentUpdate - 1 >= 0 && d.currentUpdate - 1 < buildDeliveryPointParent.childCount)
+                {
+                    Transform upgradeButton = buildDeliveryPointParent.GetChild(d.currentUpdate - 1);
+                    if (upgradeButton != null)
+                    {
+                        HighlightUpgradeButton(upgradeButton);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Adds a pulsing highlight effect to an upgrade button
+    /// </summary>
+    private void HighlightUpgradeButton(Transform buttonTransform)
+    {
+        if (buttonTransform == null) return;
+        
+        Button button = buttonTransform.GetComponentInChildren<Button>();
+        if (button != null)
+        {
+            // Stop any existing animations
+            DG.Tweening.DOTween.Kill(button.transform);
+            
+            // Add pulsing scale animation
+            button.transform.DOScale(1.15f, 0.5f)
+                .SetLoops(-1, DG.Tweening.LoopType.Yoyo)
+                .SetEase(DG.Tweening.Ease.InOutSine);
+        }
     }
 }
 

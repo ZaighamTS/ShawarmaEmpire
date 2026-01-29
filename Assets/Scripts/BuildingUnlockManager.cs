@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 public class BuildingUnlockManager : MonoBehaviour, ISaveable
 {
   
@@ -24,6 +25,8 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
     [Header("Extra Building Configuration")]
     [Tooltip("Map each building in the 'buildings' list to its ExtraBuildingType. Set size to match buildings list.")]
     public ExtraBuildingType[] buildingTypes; // Set in Unity Inspector - map to buildings list
+    [Header("Upgrade Availability Indicator")]
+    public Button buildingsTabButton; // Tab button for building unlocks (optional - for badge display)
     void Start()
     {
         SaveLoadManager.saveLoadManagerInstance.Register(this);
@@ -235,6 +238,108 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
     }
     #endregion
     
+    /// <summary>
+    /// Counts how many buildings are currently affordable
+    /// </summary>
+    public int GetAvailableUpgradeCount()
+    {
+        int count = 0;
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        if (buildings == null) return 0;
+        
+        for (int i = 0; i < buildings.Count; i++)
+        {
+            Building b = buildings[i];
+            if (b == null) continue;
+            
+            if (!b.isPurchased)
+            {
+                // Recalculate dynamic cost
+                float cost = b.cost;
+                if (buildingTypes != null && i < buildingTypes.Length)
+                {
+                    int existingCount = GetPurchasedCountOfType(buildingTypes[i]);
+                    cost = UpgradeCosts.GetExtraBuildingCost(buildingTypes[i], existingCount);
+                }
+                
+                if (cost <= playerCash)
+                {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
+    
+    /// <summary>
+    /// Navigates to the first affordable building and highlights it
+    /// </summary>
+    public void NavigateToFirstAffordableUpgrade()
+    {
+        if (buildings == null || buildingListParent == null) return;
+        
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        // Find first affordable building
+        for (int i = 0; i < buildings.Count && i < buildingListParent.childCount; i++)
+        {
+            Building b = buildings[i];
+            if (b == null) continue;
+            
+            if (!b.isPurchased)
+            {
+                // Recalculate dynamic cost
+                float cost = b.cost;
+                if (buildingTypes != null && i < buildingTypes.Length)
+                {
+                    int existingCount = GetPurchasedCountOfType(buildingTypes[i]);
+                    cost = UpgradeCosts.GetExtraBuildingCost(buildingTypes[i], existingCount);
+                }
+                
+                if (cost <= playerCash)
+                {
+                    // Scroll to and highlight this building
+                    Transform buildingButton = buildingListParent.GetChild(i);
+                    if (buildingButton != null)
+                    {
+                        HighlightUpgradeButton(buildingButton);
+                        
+                        // Scroll to show this building (if using ScrollRect)
+                        ScrollRect scrollRect = buildingListParent.GetComponentInParent<ScrollRect>();
+                        if (scrollRect != null)
+                        {
+                            // Calculate normalized position to scroll to
+                            float normalizedPosition = 1f - ((float)i / (buildingListParent.childCount - 1));
+                            scrollRect.verticalNormalizedPosition = normalizedPosition;
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Adds a pulsing highlight effect to a building button
+    /// </summary>
+    private void HighlightUpgradeButton(Transform buttonTransform)
+    {
+        if (buttonTransform == null) return;
+        
+        Button button = buttonTransform.GetComponentInChildren<Button>();
+        if (button != null)
+        {
+            // Stop any existing animations
+            DG.Tweening.DOTween.Kill(button.transform);
+            
+            // Add pulsing scale animation
+            button.transform.DOScale(1.1f, 0.5f)
+                .SetLoops(-1, DG.Tweening.LoopType.Yoyo)
+                .SetEase(DG.Tweening.Ease.InOutSine);
+        }
+    }
 }
 [System.Serializable]
 public class Building

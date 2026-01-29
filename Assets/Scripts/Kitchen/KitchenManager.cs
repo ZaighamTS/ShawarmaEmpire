@@ -17,6 +17,8 @@ public class KitchenManager : MonoBehaviour
     [Header("UI References")]
     public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
+    [Header("Upgrade Availability Indicator")]
+    public Button kitchenTabButton; // Tab button for kitchen upgrades (optional - for badge display)
     private void Awake()
     {
         if (Instance == null)
@@ -181,6 +183,88 @@ public class KitchenManager : MonoBehaviour
         await UniTask.Delay(2000);
         Kitchen.transform.GetChild(4).gameObject.SetActive(false);
 
+    }
+    
+    /// <summary>
+    /// Counts how many kitchen upgrades are currently affordable
+    /// </summary>
+    public int GetAvailableUpgradeCount()
+    {
+        int count = 0;
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        if (Kitchens == null) return 0;
+        
+        foreach (var kitchen in Kitchens)
+        {
+            if (kitchen == null) continue;
+            
+            Kitchen k = kitchen.GetComponent<Kitchen>();
+            if (k == null) continue;
+            
+            if (k.currentUpdate <= k.updates.Count && k.cost <= playerCash)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    /// <summary>
+    /// Navigates to the first affordable kitchen upgrade and highlights it
+    /// </summary>
+    public void NavigateToFirstAffordableUpgrade()
+    {
+        if (Kitchens == null) return;
+        
+        float playerCash = PlayerProgress.Instance.PlayerCash;
+        
+        // Find first affordable kitchen upgrade
+        for (int i = 0; i < Kitchens.Length; i++)
+        {
+            if (Kitchens[i] == null) continue;
+            
+            Kitchen k = Kitchens[i].GetComponent<Kitchen>();
+            if (k == null) continue;
+            
+            if (k.cost <= playerCash && k.currentUpdate <= k.updates.Count)
+            {
+                // Select this kitchen and show its upgrade UI
+                UpdateKitchenUI(i);
+                
+                // Highlight the upgrade button
+                if (buildDeliveryPointParent != null && k.currentUpdate - 1 >= 0 && k.currentUpdate - 1 < buildDeliveryPointParent.childCount)
+                {
+                    Transform upgradeButton = buildDeliveryPointParent.GetChild(k.currentUpdate - 1);
+                    if (upgradeButton != null)
+                    {
+                        HighlightUpgradeButton(upgradeButton);
+                    }
+                }
+                break;
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Adds a pulsing highlight effect to an upgrade button
+    /// </summary>
+    private void HighlightUpgradeButton(Transform buttonTransform)
+    {
+        if (buttonTransform == null) return;
+        
+        Button button = buttonTransform.GetComponentInChildren<Button>();
+        if (button != null)
+        {
+            // Stop any existing animations
+            DG.Tweening.DOTween.Kill(button.transform);
+            
+            // Add pulsing scale animation
+            button.transform.DOScale(1.15f, 0.5f)
+                .SetLoops(-1, DG.Tweening.LoopType.Yoyo)
+                .SetEase(DG.Tweening.Ease.InOutSine);
+        }
     }
 }
 
