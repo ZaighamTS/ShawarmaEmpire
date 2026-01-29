@@ -99,7 +99,26 @@ public class UIManager : MonoBehaviour
             case UIUpdateType.Multiplier:
                 {
                     if (multiplierText != null && ShawarmaSpawner.Instance != null)
-                        multiplierText.text = ShawarmaSpawner.Instance.tapMultiplier.ToString("f2")+ "x";
+                    {
+                        float tapMultiplier = ShawarmaSpawner.Instance.tapMultiplier;
+                        float perSecondEarnings = 0f;
+                        
+                        // Get per-second earnings from GameManager if available
+                        if (GameManager.gameManagerInstance != null)
+                        {
+                            perSecondEarnings = GameManager.gameManagerInstance.GetAutomaticEarningRate();
+                        }
+                        
+                        // Display both multiplier and per-second earnings
+                        if (perSecondEarnings > 0f)
+                        {
+                            multiplierText.text = $"{tapMultiplier:F2}x (${perSecondEarnings:F2}/sec)";
+                        }
+                        else
+                        {
+                            multiplierText.text = $"{tapMultiplier:F2}x";
+                        }
+                    }
                     //multiplierText.text = $"{ShawarmaSpawner.Instance.GetMultiplier():0.0}x";
                     break;
                 }
@@ -284,6 +303,21 @@ public class UIManager : MonoBehaviour
         {
             // Format: "x1.00" or "x1.25" etc.
             automaticEarningMultiplierText.text = $"x{multiplier:F2}";
+        }
+        
+        // Also update the multiplier text to show per-second earnings
+        // This ensures the multiplier display shows both tap multiplier and per-second earnings
+        if (multiplierText != null && ShawarmaSpawner.Instance != null)
+        {
+            float tapMultiplier = ShawarmaSpawner.Instance.tapMultiplier;
+            if (earningRatePerSecond > 0f)
+            {
+                multiplierText.text = $"{tapMultiplier:F2}x (${earningRatePerSecond:F2}/sec)";
+            }
+            else
+            {
+                multiplierText.text = $"{tapMultiplier:F2}x";
+            }
         }
     }
 }
