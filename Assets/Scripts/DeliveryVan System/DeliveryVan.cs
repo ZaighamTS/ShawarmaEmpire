@@ -76,7 +76,10 @@ public class DeliveryVan : MonoBehaviour
                     warehouseManager.DeliverShawarma(n, CurrentStop);
 
                     var shawarmaValue = UpgradeCosts.GetShawarmaValue(1);
-                    var totalRewards = (shawarmaValue + n) * 0.95f;
+                    // EXTENDED GAMEPLAY: Increased tax rate from 20% to 30% to extend gameplay to 1+ week
+                    // Before: 0.80 (20% tax) - upgrades unlocked too quickly
+                    // After: 0.70 (30% tax) - slower income = upgrades take 10-20 minutes
+                    var totalRewards = shawarmaValue * n * 0.70f;
                     Debug.Log("totalRewards " + totalRewards);
                     //   PlayerProgress.Instance.PlayerCash += totalRewards;
                     GameManager.gameManagerInstance.AddCash(totalRewards);

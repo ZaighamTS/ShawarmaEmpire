@@ -34,7 +34,11 @@ public class CommonAbilities : MonoBehaviour
     public void CheckAvaibility(string PlayerPrefName, GameObject obj)
     {
         Level = PlayerPrefs.GetInt(PlayerPrefName);
-        Cost = (Level + 1) * 100;
+        // EXTENDED GAMEPLAY: Increased material upgrade costs by 5x to extend gameplay
+        // Before: (Level + 1) * 100 (material upgrades completed in ~3 hours)
+        // After: (Level + 1) * 500 (material upgrades take ~15-20 hours)
+        // COST REDUCTION: Reduced by 25%: 500 → 375
+        Cost = (Level + 1) * 375;
         obj.transform.GetChild(0).GetChild(5).GetComponent<TextMeshProUGUI>().text = Level + "/10";
         if (Level < 10)
         {
@@ -78,7 +82,11 @@ public class CommonAbilities : MonoBehaviour
     public void ClickOnUpdateBtn(string PlayerPrefName)
     {
         Level = PlayerPrefs.GetInt(PlayerPrefName);
-        Cost = (Level + 1) * 100;
+        // EXTENDED GAMEPLAY: Increased material upgrade costs by 5x to extend gameplay
+        // Before: (Level + 1) * 100 (material upgrades completed in ~3 hours)
+        // After: (Level + 1) * 500 (material upgrades take ~15-20 hours)
+        // COST REDUCTION: Reduced by 25%: 500 → 375
+        Cost = (Level + 1) * 375;
 
         if (Cost < PlayerProgress.Instance.PlayerCash)
         {

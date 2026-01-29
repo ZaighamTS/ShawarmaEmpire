@@ -17,6 +17,8 @@ public class UIManager : MonoBehaviour
     public TMP_Text chefStarsText;
     public GameObject lowCashPromt;
     public TMP_Text TotalEarningTxt;
+    public TMP_Text automaticEarningText; // Display for automatic earning rate
+    public TMP_Text automaticEarningMultiplierText; // Display for automatic earning multiplier
     public GameObject PrestigeWarning;
     public GameObject PrestigePop;
     public GameObject PrestigeTramsitioneffect;
@@ -37,21 +39,35 @@ public class UIManager : MonoBehaviour
     private void OnEnable()
     {
         ShawarmaSpawner.onShawarmaCreated += UpdateUI;
-        Warehouse.onWarehouseUpgraded += UpdateUI;
-        Catering.onCateringUpgraded += UpdateUI;
-        Kitchen.onKitchenUpgraded += UpdateUI;
+        Warehouse.onWarehouseUpgraded += OnUpgradeChanged;
+        Catering.onCateringUpgraded += OnUpgradeChanged;
+        Kitchen.onKitchenUpgraded += OnUpgradeChanged;
         BuildingUnlockManager.onBuildingUpgraded += UpdateUI;
-        Delivery.onDeliveryUpgraded += UpdateUI;
+        Delivery.onDeliveryUpgraded += OnUpgradeChanged;
 
     }
     private void OnDisable()
     {
         ShawarmaSpawner.onShawarmaCreated -= UpdateUI;
-        Warehouse.onWarehouseUpgraded -= UpdateUI;
-        Catering.onCateringUpgraded -= UpdateUI;
-        Kitchen.onKitchenUpgraded -= UpdateUI;
+        Warehouse.onWarehouseUpgraded -= OnUpgradeChanged;
+        Catering.onCateringUpgraded -= OnUpgradeChanged;
+        Kitchen.onKitchenUpgraded -= OnUpgradeChanged;
         BuildingUnlockManager.onBuildingUpgraded -= UpdateUI;
-        Delivery.onDeliveryUpgraded -= UpdateUI;
+        Delivery.onDeliveryUpgraded -= OnUpgradeChanged;
+    }
+    
+    /// <summary>
+    /// Called when upgrades change to update automatic earning multiplier
+    /// </summary>
+    private void OnUpgradeChanged(UIUpdateType updateType, float value = 0)
+    {
+        UpdateUI(updateType, value);
+        
+        // Update automatic earning multiplier when upgrades change
+        if (GameManager.gameManagerInstance != null)
+        {
+            GameManager.gameManagerInstance.OnPrestigeOrUpgradeChanged();
+        }
     }
     
     public void UpdateUI(UIUpdateType updateType, float value = 0)
@@ -95,6 +111,11 @@ public class UIManager : MonoBehaviour
                     }
                     break;
                 }
+            case UIUpdateType.AutomaticEarning:
+                {
+                    UpdateAutomaticEarningDisplay(value);
+                    break;
+                }
             default:
                 {
                     print($"No Handler For UpdateType {updateType}");
@@ -132,7 +153,15 @@ public class UIManager : MonoBehaviour
     public void ClickOnPrestigeButton()
     { 
         GameManager.gameManagerInstance.ResetPlayerStats();
-        PlayerPrefs.DeleteAll();
+        // Use SaveLoadManager's reset method to clear both PlayerPrefs and JSON file
+        if (SaveLoadManager.saveLoadManagerInstance != null)
+        {
+            SaveLoadManager.saveLoadManagerInstance.CompleteReset();
+        }
+        else
+        {
+            PlayerPrefs.DeleteAll();
+        }
         TransitionEffectScript.PrestigeDone = true;
         PrestigeTramsitioneffect.transform.GetChild(0).gameObject.SetActive(true);
        // TransitionEffectScript
@@ -154,6 +183,12 @@ public class UIManager : MonoBehaviour
         if (chefStarsText != null)
         {
             chefStarsText.text=PlayerProgress.Instance.ChefStars.ToString();
+        }
+        
+        // Update automatic earning multiplier when chef stars change
+        if (GameManager.gameManagerInstance != null)
+        {
+            GameManager.gameManagerInstance.OnPrestigeOrUpgradeChanged();
         }
     }
 
@@ -229,11 +264,34 @@ public class UIManager : MonoBehaviour
         }
         ThisButton.localScale = new Vector3(1.2f, 1.2f, 1.2f);
     }
+    
+    /// <summary>
+    /// Updates the automatic earning display in the UI
+    /// Shows earnings per second based on spawned shawarmas and multiplier
+    /// Format: "0.01/sec" (number only, no prefix)
+    /// Also displays multiplier if multiplierText is assigned
+    /// </summary>
+    public void UpdateAutomaticEarningDisplay(float earningRatePerSecond, float multiplier = 1f)
+    {
+        if (automaticEarningText != null)
+        {
+            // Format: "0.01/sec" - just the number and /sec
+            automaticEarningText.text = $"{earningRatePerSecond:F2}/sec";
+        }
+        
+        // Display multiplier separately if text field is assigned
+        if (automaticEarningMultiplierText != null)
+        {
+            // Format: "x1.00" or "x1.25" etc.
+            automaticEarningMultiplierText.text = $"x{multiplier:F2}";
+        }
+    }
 }
 public enum UIUpdateType
 {
     Cash,
     Storage,
     Multiplier,
-    Gold
+    Gold,
+    AutomaticEarning
 }

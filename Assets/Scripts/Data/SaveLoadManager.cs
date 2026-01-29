@@ -124,6 +124,14 @@ public class SaveLoadManager : MonoBehaviour
         WarehouseManager.Instance.DelayOnStart().Forget();
         CateringManager.Instance.DelayOnStart().Forget();
         DeliveryManager.Instance.DelayOnStart().Forget();
+        
+        // Check for offline earnings after game loads
+        if (GameManager.gameManagerInstance != null)
+        {
+            // Delay offline earnings check to ensure all managers are initialized
+            await UniTask.Delay(500); // Wait 500ms for managers to initialize
+            GameManager.gameManagerInstance.CheckOfflineEarning();
+        }
     }
     private void WaitForFileReady(string path)
     {
@@ -154,6 +162,87 @@ public class SaveLoadManager : MonoBehaviour
 
             System.Threading.Thread.Sleep(50); // small delay before retry
         }
+    }
+
+    /// <summary>
+    /// Deletes the JSON save file from disk.
+    /// Call this to completely clear saved game data.
+    /// </summary>
+    public void DeleteSaveFile()
+    {
+        if (string.IsNullOrEmpty(SavePath))
+        {
+            Debug.LogWarning("SavePath not initialized yet. Save file path: " + 
+                Path.Combine(Application.persistentDataPath, saveFilename));
+            return;
+        }
+
+        if (File.Exists(SavePath))
+        {
+            try
+            {
+                File.Delete(SavePath);
+                Debug.Log($"Save file deleted: {SavePath}");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"Failed to delete save file: {e.Message}");
+            }
+        }
+        else
+        {
+            Debug.Log($"Save file does not exist: {SavePath}");
+        }
+    }
+
+    /// <summary>
+    /// Completely resets all game data:
+    /// 1. Deletes JSON save file
+    /// 2. Clears PlayerPrefs
+    /// 3. Resets all ISaveables to initial state
+    /// 4. Clears in-memory save data
+    /// </summary>
+    public void CompleteReset()
+    {
+        Debug.Log("=== COMPLETE GAME RESET ===");
+        
+        // 1. Delete JSON save file
+        DeleteSaveFile();
+        
+        // 2. Clear PlayerPrefs (including CurrentDateTime for offline earnings)
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.DeleteKey("CurrentDateTime"); // Explicitly clear offline time tracking
+        PlayerPrefs.Save();
+        Debug.Log("PlayerPrefs cleared (including CurrentDateTime)");
+        
+        // 3. Clear in-memory save data
+        saveData.Clear();
+        Debug.Log("In-memory save data cleared");
+        
+        // 4. Reset all ISaveables to initial state
+        foreach (ISaveable saveable in saveables)
+        {
+            saveable.SetInitialData();
+            Debug.Log($"Reset ISaveable: {saveable.SaveKey}");
+        }
+        
+        // 5. Create fresh save file with initial data
+        SaveGame();
+        Debug.Log("Fresh save file created with initial data");
+        Debug.Log("=== RESET COMPLETE ===");
+    }
+
+    /// <summary>
+    /// Gets the full path to the save file.
+    /// Useful for debugging or manual file deletion.
+    /// </summary>
+    public string GetSaveFilePath()
+    {
+        if (string.IsNullOrEmpty(SavePath))
+        {
+            return Path.Combine(Application.persistentDataPath, saveFilename);
+        }
+        return SavePath;
     }
 }
 public interface ISaveable

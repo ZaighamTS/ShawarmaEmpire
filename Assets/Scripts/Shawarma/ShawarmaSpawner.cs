@@ -81,9 +81,20 @@ public class ShawarmaSpawner : MonoBehaviour
             MultiplierFunctionality();
             //Add TapMultiplier Here,
             GameManager.gameManagerInstance.AddTotalShawarama(1);
+            
+            // Update automatic earning rate when shawarma is spawned
+            // Each shawarma adds 0.01 per second to automatic earning
+            if (GameManager.gameManagerInstance != null)
+            {
+                GameManager.gameManagerInstance.OnShawarmaSpawned();
+            }
+            
            // Debug.Log("generationReward " + generationReward);
-            GameManager.gameManagerInstance.AddCash(generationReward);
-            onShawarmaCreated?.Invoke(UIUpdateType.Cash, generationReward);
+            // FIXED: Removed earnings from production - earnings should ONLY come from deliveries
+            // Earnings are now handled in DeliveryVan.cs when shawarmas are delivered to customers
+            // Automatic earnings are now handled separately: 0.01 per second per spawned shawarma
+            // GameManager.gameManagerInstance.AddCash(generationReward);
+            // onShawarmaCreated?.Invoke(UIUpdateType.Cash, generationReward);
             onShawarmaCreated?.Invoke(UIUpdateType.Storage, shawarmaCount);
             onShawarmaCreated?.Invoke(UIUpdateType.Multiplier, 1);
 
@@ -165,13 +176,67 @@ public class ShawarmaSpawner : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Updates the target record by index
+    /// Syncs CurrentLoad from warehouse and updates CanEnter status
+    /// </summary>
     public void UpdateRecord(int i)
     {
+        // Bounds check to prevent ArgumentOutOfRangeException
+        if (i < 0 || i >= targets.Count)
+        {
+            Debug.LogWarning($"UpdateRecord: Index {i} is out of range. Targets count: {targets.Count}");
+            return;
+        }
+        
+        // Sync CurrentLoad from warehouse to target
+        if (targets[i].WareHouseMainObject != null)
+        {
+            Warehouse warehouse = targets[i].WareHouseMainObject.GetComponent<Warehouse>();
+            if (warehouse != null)
+            {
+                targets[i].CurrentLoad = warehouse.currentLoad;
+            }
+        }
+        
         if (targets[i].CurrentLoad < targets[i].Capacity)
         {
             targets[i].CanEnter = true;
             CanGenShawarma=true;
         }
+    }
+    
+    /// <summary>
+    /// Updates the target record by warehouse GameObject
+    /// Finds the target that matches the warehouse GameObject and updates it
+    /// </summary>
+    public void UpdateRecordByWarehouse(GameObject warehouseObject)
+    {
+        if (warehouseObject == null)
+        {
+            Debug.LogWarning("UpdateRecordByWarehouse: warehouseObject is null");
+            return;
+        }
+        
+        // Find the target that matches this warehouse
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (targets[i].WareHouseMainObject == warehouseObject)
+            {
+                // Update the target's current load from the warehouse
+                Warehouse warehouse = warehouseObject.GetComponent<Warehouse>();
+                if (warehouse != null)
+                {
+                    targets[i].CurrentLoad = warehouse.currentLoad;
+                }
+                
+                // Update the record
+                UpdateRecord(i);
+                return;
+            }
+        }
+        
+        Debug.LogWarning($"UpdateRecordByWarehouse: No target found for warehouse {warehouseObject.name}");
     }
 
 }

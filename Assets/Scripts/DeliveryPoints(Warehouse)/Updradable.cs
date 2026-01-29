@@ -38,7 +38,19 @@ public abstract class Upgdradable : MonoBehaviour
                 isPurchased = false;
             }
            
-            point.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = warehouses[i].GetComponent<Warehouse>().cost.ToString();
+            // FIXED: Show purchase cost for unpurchased warehouses, upgrade cost for purchased ones
+            if (warehouses[i].GetComponent<Warehouse>().currentUpdate <= 1)
+            {
+                // Unpurchased warehouse - show purchase cost based on how many are already placed
+                int existingCount = WarehouseManager.Instance != null ? WarehouseManager.Instance.placedWarehouses.Count : 0;
+                float purchaseCost = UpgradeCosts.GetPurchaseCost(UpgradeType.Storage, existingCount);
+                point.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = purchaseCost.ToString("F0");
+            }
+            else
+            {
+                // Purchased warehouse - show upgrade cost
+                point.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = warehouses[i].GetComponent<Warehouse>().cost.ToString("F0");
+            }
             point.GetChild(0).gameObject.SetActive(!isPurchased);
             point.GetChild(1).gameObject.SetActive(isPurchased);
             

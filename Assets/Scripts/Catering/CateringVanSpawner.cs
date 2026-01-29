@@ -51,23 +51,36 @@ public class CateringVanSpawner : MonoBehaviour
    
     void SpawnVan()
     {
-        int n=Random.Range(0, vanPrefab.Length);
+        // FIXED: Set catering van capacity based on current catering level
+        int cateringLevel = GetCurrentCateringLevel();
+        float cateringCapacity = UpgradeCosts.GetDeliveryCapacity(CapacityType.Catering, cateringLevel);
+        
+        int n = Random.Range(0, vanPrefab.Length);
         GameObject van = Instantiate(vanPrefab[n], spawnPoint.position, spawnPoint.rotation);
         van.transform.SetParent(transform);
         CateringVan cateringVan = van.GetComponent<CateringVan>();
         cateringVan.exitOffset = Exit_point;
-        //if (WarehouseManager.Instance.placedWarehouses.Count > 0)
-        //{
-        //    int RandomNumber = Random.Range(0, WarehouseManager.Instance.placedWarehouses.Count);
-        //    Debug.Log("" + WarehouseManager.Instance.placedWarehouses.Count);
-
-        //    // deliveryVan.MoveTo(WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.localPosition);
-        //    deliveryPoint.position = WarehouseManager.Instance.placedWarehouses[RandomNumber].transform.GetComponent<Warehouse>().DeliveryPosition.position;
-
-        //}
+        cateringVan.deliveryCapacity = cateringCapacity; // Set capacity based on level
+        
         //Pass Unit To Van To Deduct At Delivery
         cateringVan.MoveTo(deliveryPoint.position);
-
+    }
+    
+    // Helper method to get current catering level
+    private int GetCurrentCateringLevel()
+    {
+        if (CateringManager.Instance != null && CateringManager.Instance.placedCatering.Count > 0)
+        {
+            // Get the highest level catering building
+            int maxLevel = 1;
+            foreach (GameObject catering in CateringManager.Instance.placedCatering)
+            {
+                int level = catering.GetComponent<Catering>().currentUpdate - 1; // currentUpdate starts at 2 for level 1
+                if (level > maxLevel) maxLevel = level;
+            }
+            return maxLevel;
+        }
+        return 1; // Default level if no catering buildings
     }
   
 }

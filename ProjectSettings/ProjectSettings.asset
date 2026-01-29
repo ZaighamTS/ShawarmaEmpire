@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: DefaultCompanyTest1
   productName: Shawarma Inc
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -86,6 +86,7 @@ PlayerSettings:
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
+  audioSpatialExperience: 0
   deferSystemGesturesMode: 0
   hideHomeButton: 0
   submitAnalytics: 1
@@ -132,6 +133,7 @@ PlayerSettings:
   switchNVNMaxPublicSamplerIDCount: 0
   switchMaxWorkerMultiple: 8
   switchNVNGraphicsFirmwareMemory: 32
+  switchGraphicsJobsSyncAfterKick: 1
   vulkanNumSwapchainBuffers: 3
   vulkanEnableSetSRGBWrite: 0
   vulkanEnablePreTransform: 1
@@ -255,11 +257,11 @@ PlayerSettings:
   templateDefaultScene: Assets/Scenes/SampleScene.unity
   useCustomMainManifest: 0
   useCustomLauncherManifest: 0
-  useCustomMainGradleTemplate: 0
+  useCustomMainGradleTemplate: 1
   useCustomLauncherGradleManifest: 0
   useCustomBaseGradleTemplate: 0
-  useCustomGradlePropertiesTemplate: 0
-  useCustomGradleSettingsTemplate: 0
+  useCustomGradlePropertiesTemplate: 1
+  useCustomGradleSettingsTemplate: 1
   useCustomProguardFile: 0
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
@@ -271,6 +273,9 @@ PlayerSettings:
   AndroidBuildApkPerCpuArchitecture: 0
   AndroidTVCompatibility: 0
   AndroidIsGame: 1
+  androidAppCategory: 3
+  useAndroidAppCategory: 1
+  androidAppCategoryOther: 
   AndroidEnableTango: 0
   androidEnableBanner: 1
   androidUseLowAccuracyLocation: 0
@@ -850,12 +855,12 @@ PlayerSettings:
   webGLMemoryLinearGrowthStep: 16
   webGLMemoryGeometricGrowthStep: 0.2
   webGLMemoryGeometricGrowthCap: 96
-  webGLEnableWebGPU: 0
   webGLPowerPreference: 2
   webGLWebAssemblyTable: 0
   webGLWebAssemblyBigInt: 0
   webGLCloseOnQuit: 0
   webWasm2023: 0
+  webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
     Android: UNITY_POST_PROCESSING_STACK_V2;LEVELPLAY_DEPENDENCIES_INSTALLED
     EmbeddedLinux: UNITY_POST_PROCESSING_STACK_V2
@@ -1007,3 +1012,4 @@ PlayerSettings:
   insecureHttpOption: 0
   androidVulkanDenyFilterList: []
   androidVulkanAllowFilterList: []
+  androidVulkanDeviceFilterListAsset: {fileID: 0}

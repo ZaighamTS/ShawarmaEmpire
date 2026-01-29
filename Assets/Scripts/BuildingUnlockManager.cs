@@ -20,6 +20,10 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
     public static event Action<UIUpdateType, float> onBuildingUpgraded;
     [HideInInspector]public int currentUpdate;
     [HideInInspector]public int cost;
+    
+    [Header("Extra Building Configuration")]
+    [Tooltip("Map each building in the 'buildings' list to its ExtraBuildingType. Set size to match buildings list.")]
+    public ExtraBuildingType[] buildingTypes; // Set in Unity Inspector - map to buildings list
     void Start()
     {
         SaveLoadManager.saveLoadManagerInstance.Register(this);
@@ -54,13 +58,49 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             TMP_Text costText = btn.transform.GetChild(0).GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>();
             TMP_Text costTextGold = btn.transform.GetChild(0).GetChild(2).GetChild(1).GetComponent<TextMeshProUGUI>();
             //iconImage.sprite = b.icon;
-            costText.text = b.cost.ToString();
-            costTextGold.text=b.goldCost.ToString();
+            
+            // EXTENDED GAMEPLAY: Calculate dynamic cost for extra buildings
+            if (buildingTypes != null && i < buildingTypes.Length)
+            {
+                int existingCount = GetPurchasedCountOfType(buildingTypes[i]);
+                float dynamicCost = UpgradeCosts.GetExtraBuildingCost(buildingTypes[i], existingCount);
+                int roundedCost = Mathf.RoundToInt(dynamicCost);
+                costText.text = roundedCost.ToString();
+                // Store calculated cost for purchase check
+                buildings[i].cost = roundedCost;
+            }
+            else
+            {
+                // Fallback to inspector value if no type assigned
+                costText.text = b.cost.ToString();
+            }
+            
+            costTextGold.text = b.goldCost.ToString();
             int index = i;
+            btn.GetChild(0).GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
+            btn.GetChild(0).GetChild(2).GetComponent<Button>().onClick.RemoveAllListeners();
             btn.GetChild(0).GetChild(1).GetComponent<Button>().onClick.AddListener(() => TryUnlockBuilding(index));
             btn.GetChild(0).GetChild(2).GetComponent<Button>().onClick.AddListener(() => TryUnlockBuildingGold(index));
             buildingButtons.Add(btn);
         }
+    }
+    
+    /// <summary>
+    /// Helper method to count purchased buildings of a specific type
+    /// </summary>
+    private int GetPurchasedCountOfType(ExtraBuildingType buildingType)
+    {
+        int count = 0;
+        if (buildingTypes == null) return 0;
+        
+        for (int i = 0; i < buildings.Count && i < buildingTypes.Length; i++)
+        {
+            if (buildingTypes[i] == buildingType && buildings[i].isPurchased)
+            {
+                count++;
+            }
+        }
+        return count;
     }
 
     void TryUnlockBuilding(int index)
@@ -70,6 +110,14 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             return;
 
         Building b = buildings[index];
+        
+        // EXTENDED GAMEPLAY: Recalculate dynamic cost before purchase
+        if (buildingTypes != null && index < buildingTypes.Length)
+        {
+            int existingCount = GetPurchasedCountOfType(buildingTypes[index]);
+            float dynamicCost = UpgradeCosts.GetExtraBuildingCost(buildingTypes[index], existingCount);
+            b.cost = Mathf.RoundToInt(dynamicCost);
+        }
 
         if (playerCash >= b.cost)
         {
@@ -83,6 +131,9 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             UIManager.Instance.DisableGameplayPanel();
             CameraSwipeController.instance.LerpCamera(b.BuildingObject.transform.position.x, b.BuildingObject.transform.position.z);
             b.Particle.SetActive(true);
+            
+            // Refresh UI to show updated costs for other buildings of the same type
+            GenerateBuildingUI();
         }
         else
         {

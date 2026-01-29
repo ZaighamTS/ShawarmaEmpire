@@ -29,9 +29,15 @@ public class BaloonPop : MonoBehaviour
 
         // Destroy(gameObject); // Destroy the balloon
         BaloonMesh.SetActive(false);
-        int RandomNumber = Random.Range(3,10);
-        GameManager.gameManagerInstance.AddGold(RandomNumber);
-        UIManager.Instance.UpdateUI(UIUpdateType.Gold);
+        // FIXED: Removed free gold from balloons - premium currency should be premium-only
+        // Gold should only come from: IAP purchases, rewarded ads, or premium features
+        // This maintains premium currency exclusivity per GDD requirements
+        // int RandomNumber = Random.Range(3,10);
+        // GameManager.gameManagerInstance.AddGold(RandomNumber);
+        // UIManager.Instance.UpdateUI(UIUpdateType.Gold);
+        
+        // TODO: Add clear reward explanation or remove balloon mechanic entirely
+        // Option: Show info popup explaining balloon purpose, or make it give soft currency instead
         GetComponent<BoxCollider>().enabled = false;
         Invoke("ResetBaloon",10);
     }

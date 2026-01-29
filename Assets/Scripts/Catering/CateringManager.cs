@@ -13,7 +13,7 @@ public class CateringManager : MonoBehaviour
     int currentCateringCount;
     int currentSelectedObject;
     //[SerializeField] int CurrentCash; // Temporary cash
-    private List<GameObject> placedCatering = new List<GameObject>();
+    public List<GameObject> placedCatering = new List<GameObject>(); // FIXED: Made public so CateringVanSpawner can access it
     [Header("UI References")]
     public Transform buidlNewPointParent;
     public Transform buildDeliveryPointParent;
