@@ -81,8 +81,8 @@ public class DeliveryVan : MonoBehaviour
                     // After: 0.70 (30% tax) - slower income = upgrades take 10-20 minutes
                     var totalRewards = shawarmaValue * n * 0.70f;
                     Debug.Log("totalRewards " + totalRewards);
-                    //   PlayerProgress.Instance.PlayerCash += totalRewards;
                     GameManager.gameManagerInstance.AddCash(totalRewards);
+                    GameProgressEvents.RecordDelivery(n, totalRewards);
                     UIManager.Instance.UpdateUI(UIUpdateType.Cash);
                 }
 

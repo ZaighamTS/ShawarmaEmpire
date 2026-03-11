@@ -81,7 +81,7 @@ public class ShawarmaSpawner : MonoBehaviour
             MultiplierFunctionality();
             //Add TapMultiplier Here,
             GameManager.gameManagerInstance.AddTotalShawarama(1);
-            
+            GameProgressEvents.RecordShawarmaProduced(1);
             // Update automatic earning rate when shawarma is spawned
             // Each shawarma adds 0.01 per second to automatic earning
             if (GameManager.gameManagerInstance != null)

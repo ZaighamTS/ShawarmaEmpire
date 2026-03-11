@@ -120,6 +120,10 @@ public class SaveLoadManager : MonoBehaviour
                 saveable.SetInitialData();
             }
         }
+        // Phase 0: Record this session's login time (for gift calendar and stats)
+        if (PlayerProgress.Instance != null)
+            PlayerProgress.Instance.SetLastLoginUtc(System.DateTime.UtcNow.ToString("o"));
+
         KitchenManager.Instance.DelayOnStart().Forget();
         WarehouseManager.Instance.DelayOnStart().Forget();
         CateringManager.Instance.DelayOnStart().Forget();

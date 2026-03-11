@@ -72,8 +72,8 @@ public class CateringVan : MonoBehaviour
                 // After: 0.70 (30% tax) - slower income = upgrades take 10-20 minutes
                 var totalRewards = shawarmaValue * shawarmasToTake * 0.70f;
                 Debug.Log($"Catering delivery: {shawarmasToTake} shawarmas, ${totalRewards:F0} earned");
-                
                 GameManager.gameManagerInstance.AddCash(totalRewards);
+                GameProgressEvents.RecordCatering(shawarmasToTake, totalRewards);
                 UIManager.Instance.UpdateUI(UIUpdateType.Cash);
                 yield return new WaitForSeconds(waitTimeAtPoint / 2);
             }

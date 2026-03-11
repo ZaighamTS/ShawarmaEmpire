@@ -26,7 +26,15 @@ public class PlayerProgress : ISaveable
     private int shwarmaCount;
     private float totalEarnings;
     private float gold;
-    private bool isDirty=false;
+    private bool isDirty = false;
+
+    // Phase 0: Progress tracking for challenges, achievements, statistics
+    private int totalDeliveriesCompleted;
+    private int totalCateringOrdersCompleted;
+    private int totalUpgradesPurchased;
+    private float totalMoneySpentOnUpgrades;
+    private double totalPlayTimeSeconds;
+    private string lastLoginUtc;
     
     public float TotalEarnings
     {
@@ -75,6 +83,45 @@ public class PlayerProgress : ISaveable
             isDirty = true;
         }
     }
+
+    public int TotalDeliveriesCompleted => totalDeliveriesCompleted;
+    public int TotalCateringOrdersCompleted => totalCateringOrdersCompleted;
+    public int TotalUpgradesPurchased => totalUpgradesPurchased;
+    public float TotalMoneySpentOnUpgrades => totalMoneySpentOnUpgrades;
+    public double TotalPlayTimeSeconds => totalPlayTimeSeconds;
+    public string LastLoginUtc => lastLoginUtc;
+
+    public void IncrementTotalDeliveries()
+    {
+        totalDeliveriesCompleted++;
+        isDirty = true;
+    }
+
+    public void IncrementTotalCateringOrders()
+    {
+        totalCateringOrdersCompleted++;
+        isDirty = true;
+    }
+
+    public void RecordUpgradePurchase(float costSpent)
+    {
+        totalUpgradesPurchased++;
+        totalMoneySpentOnUpgrades += costSpent;
+        isDirty = true;
+    }
+
+    public void AddPlayTimeSeconds(double seconds)
+    {
+        totalPlayTimeSeconds += seconds;
+        isDirty = true;
+    }
+
+    public void SetLastLoginUtc(string utcString)
+    {
+        lastLoginUtc = utcString;
+        isDirty = true;
+    }
+
     public void ResetDataOnPrestigue()
     {
         playerCash = 0;
@@ -94,6 +141,12 @@ public class PlayerProgress : ISaveable
             chefStars = chefStars,
             shwarmaCount = shwarmaCount,
             totalEarnings = totalEarnings,
+            totalDeliveriesCompleted = totalDeliveriesCompleted,
+            totalCateringOrdersCompleted = totalCateringOrdersCompleted,
+            totalUpgradesPurchased = totalUpgradesPurchased,
+            totalMoneySpentOnUpgrades = totalMoneySpentOnUpgrades,
+            totalPlayTimeSeconds = totalPlayTimeSeconds,
+            lastLoginUtc = lastLoginUtc,
         };
     }
    
@@ -106,6 +159,12 @@ public class PlayerProgress : ISaveable
         shwarmaCount = data.shwarmaCount;
         totalEarnings = data.totalEarnings;
         gold = data.gold;
+        totalDeliveriesCompleted = data.totalDeliveriesCompleted;
+        totalCateringOrdersCompleted = data.totalCateringOrdersCompleted;
+        totalUpgradesPurchased = data.totalUpgradesPurchased;
+        totalMoneySpentOnUpgrades = data.totalMoneySpentOnUpgrades;
+        totalPlayTimeSeconds = data.totalPlayTimeSeconds;
+        lastLoginUtc = data.lastLoginUtc ?? "";
         isDirty = false;
     }
 
@@ -116,8 +175,13 @@ public class PlayerProgress : ISaveable
         shwarmaCount = 0;
         gold = 0;
         totalEarnings = 0;
-
-        isDirty=true;
+        totalDeliveriesCompleted = 0;
+        totalCateringOrdersCompleted = 0;
+        totalUpgradesPurchased = 0;
+        totalMoneySpentOnUpgrades = 0f;
+        totalPlayTimeSeconds = 0;
+        lastLoginUtc = "";
+        isDirty = true;
     }
 
     public bool IsDirty => isDirty;
@@ -135,4 +199,10 @@ public class PlayerProgressData
     public int shwarmaCount;
     public float totalEarnings;
     public float gold;
+    public int totalDeliveriesCompleted;
+    public int totalCateringOrdersCompleted;
+    public int totalUpgradesPurchased;
+    public float totalMoneySpentOnUpgrades;
+    public double totalPlayTimeSeconds;
+    public string lastLoginUtc;
 }

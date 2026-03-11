@@ -47,6 +47,7 @@ public class Delivery : MonoBehaviour, ISaveable
         if (cost <= PlayerProgress.Instance.PlayerCash)
         {
             GameManager.gameManagerInstance.SpendCash(cost);
+            GameProgressEvents.RecordUpgrade(UpgradeType.DeliveryVan, cost);
             for (int i = 0; i < updates.Count; i++)
             {
                 transform.GetChild(i).gameObject.SetActive(false);

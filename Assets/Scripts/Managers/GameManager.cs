@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public static GameManager gameManagerInstance;
 
     private float chefStars;
-    [SerializeField] private int maxSubscribersCount = 7;
+    [SerializeField] private int maxSubscribersCount = 10;
     [SerializeField] private int subscribersCount = 0;
     
     // Automatic earning system: Each spawned shawarma adds 0.01 per second
@@ -21,6 +21,9 @@ public class GameManager : MonoBehaviour
     private float automaticEarningAccumulator = 0f; // Accumulated earnings since last update
     private float lastAutomaticEarningUpdate = 0f;
     private const float AUTOMATIC_EARNING_UPDATE_INTERVAL = 1f; // Update every second
+
+    // Phase 0: Play time accumulated this second (flushed every AUTOMATIC_EARNING_UPDATE_INTERVAL)
+    private float playTimeAccumulatorThisInterval = 0f;
 
     private void Awake()
     {
@@ -213,15 +216,15 @@ public class GameManager : MonoBehaviour
     //}
     internal void AddCash(float value)
     {
-
+        float mult = BoostManager.Instance != null ? BoostManager.Instance.GetEarningsMultiplier() : 1f;
+        value *= mult;
         playerProgress.PlayerCash += value;
         if (value > 0)
         {
             playerProgress.TotalEarnings += value;
+            GameProgressEvents.NotifyCashEarned(value);
             UIManager.Instance.UpdateEarningSlider();
         }
-
-
         CheckChefStars(playerProgress.TotalEarnings);
     }
     internal void AddGold(float value)
@@ -267,7 +270,9 @@ public class GameManager : MonoBehaviour
     public void ResetPlayerStats()
     {
         //playerProgress.PlayerCash = 0;
-        playerProgress.ChefStars++;
+        float starMult = BoostManager.Instance != null ? BoostManager.Instance.GetChefStarMultiplier() : 1f;
+        int starsToAdd = Mathf.Max(1, Mathf.RoundToInt(1f * starMult));
+        playerProgress.ChefStars += starsToAdd;
         SaveLoadManager.saveLoadManagerInstance.ResetAllISaveables();
         
         // Update automatic earning multiplier after prestige
@@ -384,6 +389,12 @@ private void OnApplicationFocus(bool focus)
             float deltaTime = currentTime - lastAutomaticEarningUpdate;
             UpdateAutomaticEarningRate();
             ProcessAutomaticEarnings(deltaTime);
+            // Phase 0: Tick earnings-this-second for "Earn $X in one second" achievements
+            GameProgressEvents.TickEarningsThisSecond();
+            // Phase 0: Persist play time (once per second to avoid dirty every frame)
+            playTimeAccumulatorThisInterval += deltaTime;
+            playerProgress.AddPlayTimeSeconds(playTimeAccumulatorThisInterval);
+            playTimeAccumulatorThisInterval = 0f;
             lastAutomaticEarningUpdate = currentTime;
         }
     }
@@ -401,8 +412,11 @@ private void OnApplicationFocus(bool focus)
         // Get multiplier from prestige and upgrades
         automaticEarningMultiplier = UpgradeCosts.GetAutomaticEarningMultiplier();
         
-        // Apply multiplier to base rate
+        // Apply multiplier to base rate (prestige/upgrades)
         automaticEarningRate = baseRate * automaticEarningMultiplier;
+        // Phase 4: production boosts (e.g. Production Prism)
+        float productionBoost = BoostManager.Instance != null ? BoostManager.Instance.GetProductionMultiplier() : 1f;
+        automaticEarningRate *= productionBoost;
         
         // Update UI to show automatic earning rate and multiplier
         if (UIManager.Instance != null)
