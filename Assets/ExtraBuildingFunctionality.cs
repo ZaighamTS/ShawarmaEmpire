@@ -5,81 +5,54 @@ using UnityEngine;
 public class ExtraBuildingFunctionality : MonoBehaviour
 {
     public BuildingType currentBuildingType;
-    private record Parameters(int Reward, int rewardDelay, int expense, int expenseDelay);
-    Dictionary<BuildingType, Parameters> parametersList = new();
-    private bool isPaused = false;
+    [Tooltip("Optional: index in BuildingUnlockManager.buildings list. If set, uses Phase 8 levels.")]
+    public int buildingIndex = -1;
+
+    private bool useLevelSystem;
+    private float netPerSecond;
+    private float accumulator;
 
     void Start()
     {
-        // FIXED: Increased expenses to make cash reduction noticeable
-        // Buildings should have meaningful operating costs
-        // Expenses increased 3-5x to create visible cash drain
-        parametersList = new()
+        useLevelSystem = BuildingUnlockManager.Instance != null && buildingIndex >= 0;
+        if (!useLevelSystem)
         {
-            // Reward, rewardDelay(sec), expense, expenseDelay(sec)
-            {BuildingType.juicePoint,new(2,5,3,10) },        // $2 every 5s, $3 expense every 10s = $720/hr net (was $1,440)
-            {BuildingType.dessertPoint,new(2,5,3,10) },      // $2 every 5s, $3 expense every 10s = $720/hr net (was $1,440)
-            {BuildingType.merchandise,new(3,5,5,10) },        // $3 every 5s, $5 expense every 10s = $780/hr net (was $2,160)
-            {BuildingType.ingrediants,new(3,5,8,10) },       // $3 every 5s, $8 expense every 10s = -$360/hr net (operating cost)
-            {BuildingType.shawarmaLounge,new(5,5,10,10) },    // $5 every 5s, $10 expense every 10s = $0/hr net (break even)
-            {BuildingType.park,new(2,10,5,15) },             // $2 every 10s, $5 expense every 15s = -$600/hr net (decorative cost)
-            {BuildingType.gasStation,new(5,5,12,10) },        // $5 every 5s, $12 expense every 10s = -$1,320/hr net (operating cost)
-            {BuildingType.management,new(10,5,15,10) },       // $10 every 5s, $15 expense every 10s = -$1,800/hr net (premium cost)
-        };
+            // Legacy fallback (no level system wired): do nothing rather than applying outdated reward/expense loops
+            enabled = false;
+            return;
+        }
 
-        StartCoroutine(DoRewardFunctionality(currentBuildingType));
+        RefreshNetRate();
     }
-   
-    IEnumerator DoRewardFunctionality(BuildingType Building_Type)
-    {
-        yield return new WaitForSeconds(2);
-        if (parametersList.TryGetValue(Building_Type, out var CurrenetParam))
-        {
-            while (true)
-            {
-                // Check if building is paused
-                if (isPaused)
-                {
-                    // Check every 5 seconds if player has enough cash to resume
-                    yield return new WaitForSeconds(5f);
-                    if (PlayerProgress.Instance.PlayerCash >= CurrenetParam.expense)
-                    {
-                        isPaused = false;
-                        Debug.Log($"Building {Building_Type} resumed operations");
-                    }
-                    continue;
-                }
 
-                yield return new WaitForSeconds(CurrenetParam.rewardDelay);
-                DoIncreamentinCash(CurrenetParam.Reward);
-                
-                yield return new WaitForSeconds(CurrenetParam.expenseDelay);
-                bool expensePaid = DecreamentCash(CurrenetParam.expense);
-                
-                if (!expensePaid)
-                {
-                    isPaused = true;
-                    Debug.Log($"Building {Building_Type} paused - insufficient funds for expenses");
-                }
-            }
-        }
-        
-        void DoIncreamentinCash(int val)
+    private void Update()
+    {
+        if (!useLevelSystem || BuildingUnlockManager.Instance == null) return;
+
+        // Refresh when level changes (cheap check)
+        // (If you want it event-driven later, we can add an event on level change.)
+        RefreshNetRate();
+
+        accumulator += netPerSecond * Time.deltaTime;
+        if (Mathf.Abs(accumulator) >= 1f)
         {
-            GameManager.gameManagerInstance.AddCash(val);
-            UIManager.Instance.UpdateUI(UIUpdateType.Cash);
+            float whole = Mathf.Floor(Mathf.Abs(accumulator)) * Mathf.Sign(accumulator);
+            accumulator -= whole;
+            GameManager.gameManagerInstance.AddCash(whole);
+            if (UIManager.Instance != null) UIManager.Instance.UpdateUI(UIUpdateType.Cash);
         }
-        
-        bool DecreamentCash(int val)
-        {
-            bool success = GameManager.gameManagerInstance.SpendCash(val);
-            if (!success)
-            {
-                Debug.Log($"Cannot pay ${val} expense for {currentBuildingType} - building paused");
-            }
-            UIManager.Instance.UpdateUI(UIUpdateType.Cash);
-            return success;
-        }
+    }
+
+    private void RefreshNetRate()
+    {
+        if (BuildingUnlockManager.Instance == null) return;
+        if (buildingIndex < 0) return;
+        if (BuildingUnlockManager.Instance.buildingTypes == null || buildingIndex >= BuildingUnlockManager.Instance.buildingTypes.Length) return;
+
+        int level = BuildingUnlockManager.Instance.GetExtraBuildingLevel(buildingIndex);
+        ExtraBuildingType type = BuildingUnlockManager.Instance.buildingTypes[buildingIndex];
+        float netPerHour = ExtraBuildingLevelSystem.GetNetIncomePerHour(type, level);
+        netPerSecond = netPerHour / 3600f;
     }
 }
 public enum BuildingType

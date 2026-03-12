@@ -120,57 +120,57 @@ public class GameManager : MonoBehaviour
             float averageDeliverySize = 0f;
             
             // Calculate based on warehouse capacity and delivery intervals
+            int totalStored = 0;
             if (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0)
             {
-                // Get total storage capacity
+                // Get total storage capacity and actual stored shawarmas (from save)
                 totalCapacity = WarehouseManager.Instance.GetWholeCapacity();
+                totalStored = WarehouseManager.Instance.GetWholeLoad();
                 
-                // Estimate deliveries per minute (conservative estimate)
-                // EXTENDED GAMEPLAY: Reduced delivery frequency and size estimate to extend gameplay
-                // Before: 4 deliveries/min, 7% capacity (capped at 30)
-                // After: 2 deliveries/min, 5% capacity (capped at 20) - slower progression for week-long gameplay
-                float deliveriesPerMinute = 2f; // Reduced from 4 to slow down income further
-                averageDeliverySize = Mathf.Min(totalCapacity * 0.05f, 20f); // Reduced from 7%/30 to 5%/20
+                // Estimate deliveries per minute (conservative)
+                float deliveriesPerMinute = 2f;
+                averageDeliverySize = Mathf.Min(totalCapacity * 0.05f, 20f);
+                // Cap by what we actually had: can't deliver more than totalStored
+                if (totalStored < averageDeliverySize)
+                    averageDeliverySize = Mathf.Max(0, totalStored);
                 
-                // Calculate earnings per minute (EXTENDED GAMEPLAY: Using 30% tax rate to match delivery system)
                 float earningsPerMinute = shawarmaValue * averageDeliverySize * deliveriesPerMinute * 0.70f;
-                
-                // Convert to per second
                 estimatedDeliveryRate = earningsPerMinute / 60f;
             }
             else
             {
-                // Fallback: use a base rate if no warehouses
-                estimatedDeliveryRate = shawarmaValue * 0.5f; // Very conservative
+                estimatedDeliveryRate = shawarmaValue * 0.5f;
                 totalCapacity = 0;
                 averageDeliverySize = 0f;
             }
             
-            // Cap offline time at 24 hours (86400 seconds)
+            // Cap offline time at 24 hours
             double cappedSeconds = Math.Min(secondsElapsed, 86400.0);
+            // Cap "effective" offline at 30 minutes so one return doesn't grant 1hr of theoretical rate
+            const double maxOfflineSecondsCap = 1800.0; // 30 minutes
+            double effectiveSeconds = Math.Min(cappedSeconds, maxOfflineSecondsCap);
             
-            // Calculate total offline earnings
-            double potentialEarnings = estimatedDeliveryRate * cappedSeconds;
+            double potentialEarnings = estimatedDeliveryRate * effectiveSeconds;
+            double amount = potentialEarnings;
             
-            // Cap maximum offline earnings at a reasonable amount (e.g., 1 hour of active play)
-            double maxOfflineEarnings = estimatedDeliveryRate * 3600.0; // 1 hour cap
-            double amount = Math.Min(potentialEarnings, maxOfflineEarnings);
+            // Cap by actual stored shawarmas when we have warehouses: can't earn more than selling all stored once
+            if (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0)
+            {
+                double maxFromInventory = totalStored * shawarmaValue * 0.70;
+                if (amount > maxFromInventory)
+                    amount = maxFromInventory;
+            }
             
-            // Absolute maximum cap to prevent excessive earnings (e.g., $10M max)
-            const double absoluteMaxEarnings = 10000000.0; // $10M absolute maximum
+            const double absoluteMaxEarnings = 10000000.0;
             amount = Math.Min(amount, absoluteMaxEarnings);
             
             // Detailed logging for debugging
             Debug.Log($"=== OFFLINE EARNINGS CALCULATION ===");
             Debug.Log($"Shawarma Value: ${shawarmaValue:F2}");
-            Debug.Log($"Total Capacity: {totalCapacity}");
+            Debug.Log($"Total Capacity: {totalCapacity}, Stored: {totalStored}");
             Debug.Log($"Average Delivery Size: {averageDeliverySize:F1}");
-            Debug.Log($"Estimated Delivery Rate: ${estimatedDeliveryRate:F2}/sec (${estimatedDeliveryRate * 60:F2}/min)");
-            Debug.Log($"Time Offline: {secondsElapsed:F0} seconds ({secondsElapsed / 3600:F2} hours)");
-            Debug.Log($"Capped Time: {cappedSeconds:F0} seconds ({cappedSeconds / 3600:F2} hours)");
-            Debug.Log($"Potential Earnings: ${potentialEarnings:F0}");
-            Debug.Log($"Max Offline Earnings (1hr cap): ${maxOfflineEarnings:F0}");
-            Debug.Log($"Absolute Max Cap: $10,000,000");
+            Debug.Log($"Estimated Rate: ${estimatedDeliveryRate:F2}/sec");
+            Debug.Log($"Time Offline: {secondsElapsed:F0}s, Effective cap: {effectiveSeconds:F0}s (30 min max)");
             Debug.Log($"Final Amount: ${amount:F0}");
             Debug.Log($"=====================================");
             

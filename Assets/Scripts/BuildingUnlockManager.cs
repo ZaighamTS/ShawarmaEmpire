@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 public class BuildingUnlockManager : MonoBehaviour, ISaveable
 {
+    public static BuildingUnlockManager Instance { get; private set; }
   
     public List<Building> buildings;
    
@@ -25,6 +26,10 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
     [Header("Extra Building Configuration")]
     [Tooltip("Map each building in the 'buildings' list to its ExtraBuildingType. Set size to match buildings list.")]
     public ExtraBuildingType[] buildingTypes; // Set in Unity Inspector - map to buildings list
+    [Header("Phase 8: Extra Building Levels")]
+    [Tooltip("Per-building extra upgrade level (0..10). Index matches 'buildings' list.")]
+    [SerializeField] private int[] extraBuildingLevels;
+
     [Header("Upgrade Availability Indicator")]
     public Button buildingsTabButton; // Tab button for building unlocks (optional - for badge display)
     void Start()
@@ -33,9 +38,17 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         GameManager.gameManagerInstance.RecordPersistentRegistrations().Forget();
         Invoke("DelayOnStart", 1.1f);
     } 
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+    }
+
     private void OnDestroy()
     {
         SaveLoadManager.saveLoadManagerInstance?.Unregister(this);
+        if (Instance == this) Instance = null;
     }
     public void DelayOnStart()
     {
@@ -50,6 +63,55 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         {
             buildings[i].isPurchased = IsBuildingPurchased(i);
         }
+        EnsureLevelsArray();
+    }
+
+    private void EnsureLevelsArray()
+    {
+        int count = buildings != null ? buildings.Count : 0;
+        if (count <= 0) return;
+        if (extraBuildingLevels == null || extraBuildingLevels.Length != count)
+        {
+            var newArr = new int[count];
+            if (extraBuildingLevels != null)
+            {
+                int copy = Mathf.Min(extraBuildingLevels.Length, count);
+                Array.Copy(extraBuildingLevels, newArr, copy);
+            }
+            extraBuildingLevels = newArr;
+            isDirty = true;
+        }
+        // Clamp
+        for (int i = 0; i < extraBuildingLevels.Length; i++)
+            extraBuildingLevels[i] = Mathf.Clamp(extraBuildingLevels[i], 0, 10);
+    }
+
+    public int GetExtraBuildingLevel(int index)
+    {
+        EnsureLevelsArray();
+        if (extraBuildingLevels == null || index < 0 || index >= extraBuildingLevels.Length) return 0;
+        return extraBuildingLevels[index];
+    }
+
+    public bool TryUpgradeExtraBuilding(int index)
+    {
+        EnsureLevelsArray();
+        if (index < 0 || buildings == null || index >= buildings.Count) return false;
+        if (!buildings[index].isPurchased) return false;
+        if (buildingTypes == null || index >= buildingTypes.Length) return false;
+
+        int level = GetExtraBuildingLevel(index);
+        if (level >= 10) return false;
+        int nextLevel = level + 1;
+        float cost = ExtraBuildingLevelSystem.GetUpgradeCost(buildingTypes[index], nextLevel);
+        if (cost <= 0) return false;
+        if (!GameManager.gameManagerInstance.SpendCash(cost)) return false;
+
+        extraBuildingLevels[index] = nextLevel;
+        isDirty = true;
+        onBuildingUpgraded?.Invoke(UIUpdateType.Cash, PlayerProgress.Instance.PlayerCash);
+        ExtraBuildingUpgradesPanelUI.Instance?.Refresh();
+        return true;
     }
     void GenerateBuildingUI()
     {
@@ -213,7 +275,7 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
         return new BuildingsData
         {    
             currentUpdate = currentUpdate,
-           // cost = cost
+            extraBuildingLevels = extraBuildingLevels
         };
     }
     public void RestoreState(object state)
@@ -222,7 +284,8 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
             return;
        
         currentUpdate = data.currentUpdate;
-      //  cost = data.cost;
+        extraBuildingLevels = data.extraBuildingLevels;
+        EnsureLevelsArray();
         isDirty = false;
     }
     public void SetInitialData()
@@ -345,7 +408,8 @@ public class BuildingUnlockManager : MonoBehaviour, ISaveable
 public class Building
 {
     public string name;
-   // public Sprite icon;
+    [Tooltip("Sprite used in the Extra Building Upgrades panel row.")]
+    public Sprite icon;
     public int cost;
     public bool isPurchased;
     public GameObject BuildingObject;
@@ -356,7 +420,7 @@ public class BuildingsData
 {
     public int id;
     public int currentUpdate;
-   // public int cost;
+    public int[] extraBuildingLevels;
    
 
 }
