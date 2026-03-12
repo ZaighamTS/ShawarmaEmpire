@@ -256,6 +256,28 @@ public class BoostManager : MonoBehaviour, ISaveable
         OnBoostsChanged?.Invoke();
     }
 
+    /// <summary>
+    /// Activate a boost without charging Gold or requiring an ad (used for calendar rewards).
+    /// Still respects "can't re-activate while active" for timed boosts.
+    /// </summary>
+    public bool ActivateFree(string boostId)
+    {
+        var def = GetDefinition(boostId);
+        if (def == null) return false;
+        if (def.effectType == BoostEffectType.OneTimeCashGrant)
+        {
+            ApplyOneTimeCashGrant(def);
+            OnBoostsChanged?.Invoke();
+            return true;
+        }
+        if (def.durationSeconds > 0f && IsActive(def.id)) return false;
+        var endUtc = DateTime.UtcNow.AddSeconds(def.durationSeconds).ToString("o");
+        activeBoosts.Add(new ActiveBoostState { boostId = def.id, endTimeUtc = endUtc });
+        isDirty = true;
+        OnBoostsChanged?.Invoke();
+        return true;
+    }
+
     public string GetRemainingTime(string boostId)
     {
         var end = GetEndTime(boostId);

@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     public static GameManager gameManagerInstance;
 
     private float chefStars;
-    [SerializeField] private int maxSubscribersCount = 10;
+    [SerializeField] private int maxSubscribersCount = 11;
     [SerializeField] private int subscribersCount = 0;
     
     // Automatic earning system: Each spawned shawarma adds 0.01 per second

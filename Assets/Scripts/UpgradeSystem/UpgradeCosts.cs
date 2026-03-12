@@ -105,10 +105,15 @@ public static class UpgradeCosts
     };
     public static readonly PrestigeConfig prestigeConfig = new(5f, 2f, -1f, 1f);
 
-    // EXTENDED GAMEPLAY: Reduced base value by 50% to extend gameplay to 1+ week
-    // Before: $100 (upgrades unlocked too quickly for week-long gameplay)
-    // After: $50 (slower income = upgrades take 10-20 minutes, extending to 1+ week)
+    // EXTENDED GAMEPLAY: Base value from selected shawarma type (Phase 6). Fallback for legacy/tests.
     public static float shwarmaBaseValue = 50;
+
+    /// <summary>Phase 6: Base value from current shawarma type (Classic $50, Spicy $60, etc.).</summary>
+    public static float GetCurrentShawarmaBaseValue()
+    {
+        if (PlayerProgress.Instance == null) return shwarmaBaseValue;
+        return ShawarmaTypes.GetBaseValue(PlayerProgress.Instance.CurrentShawarmaTypeId);
+    }
     public static float cookRateBaseValue = 200;
 
     /// <summary>
@@ -230,9 +235,16 @@ public static class UpgradeCosts
 
     public static float GetShawarmaValue(int qualityBonus)
     {
+        return GetShawarmaValueForBase(GetCurrentShawarmaBaseValue(), qualityBonus);
+    }
+
+    /// <summary>
+    /// Phase 6: Compute final income per shawarma for an arbitrary base value (used for previewing other types in UI).
+    /// </summary>
+    public static float GetShawarmaValueForBase(float baseValue, int qualityBonus)
+    {
         float extraValue = GetPerstigeExtraIncome(PlayerProgress.Instance.ChefStars);
 
-        // FIXED: Read actual upgrade levels from PlayerPrefs instead of hardcoded level 1
         int breadLevel = PlayerPrefs.GetInt("Bread", 0);
         int chickenLevel = PlayerPrefs.GetInt("Chicken", 0);
         int sauceLevel = PlayerPrefs.GetInt("Sause", 0); // Note: typo in PlayerPrefs key
@@ -242,7 +254,7 @@ public static class UpgradeCosts
         float sauceValue = GetSauceUpgradeValue(sauceLevel);
 
         float sum = breadValue + chickenValue + sauceValue + extraValue;
-        return (shwarmaBaseValue + sum) * (1 + qualityBonus);
+        return (baseValue + sum) * (1 + qualityBonus);
     }
     public static float GetCookRate(float tapRate, float tapPower, float auoChefBonus)
     {
@@ -292,21 +304,18 @@ public static class UpgradeCosts
     }
 
 
-    // FIXED: Prestige bonuses now provide significant value
-    // Before: 5% income, 0.1% cost reduction per star
-    // After: 10% income, 2.5% cost reduction per star
+    // FIXED: Prestige bonuses scale with current shawarma type base (Phase 6)
     static float GetPerstigeExtraIncome(int level)
     {
-        return level * 0.1f * shwarmaBaseValue;  // 10% of base per star (was 5%)
+        return level * 0.1f * GetCurrentShawarmaBaseValue();
     }
     static float GetPerstigeCostReduction(int level)
     {
-        return level * 0.025f * shwarmaBaseValue;  // 2.5% of base per star (was 0.1%)
+        return level * 0.025f * GetCurrentShawarmaBaseValue();
     }
     static float GetPrestigeExtraCookRate(int level)
     {
-        return level * 0.04f * shwarmaBaseValue;  // 4% of base per star (was 2%)
-
+        return level * 0.04f * GetCurrentShawarmaBaseValue();
     }
 
     #region Raw Material Upgrades

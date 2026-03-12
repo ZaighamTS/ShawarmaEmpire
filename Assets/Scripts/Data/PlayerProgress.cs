@@ -35,6 +35,9 @@ public class PlayerProgress : ISaveable
     private float totalMoneySpentOnUpgrades;
     private double totalPlayTimeSeconds;
     private string lastLoginUtc;
+
+    // Phase 6: Current shawarma type (classic, spicy, premium, gourmet, signature)
+    private string currentShawarmaTypeId = ShawarmaTypes.IdClassic;
     
     public float TotalEarnings
     {
@@ -90,6 +93,7 @@ public class PlayerProgress : ISaveable
     public float TotalMoneySpentOnUpgrades => totalMoneySpentOnUpgrades;
     public double TotalPlayTimeSeconds => totalPlayTimeSeconds;
     public string LastLoginUtc => lastLoginUtc;
+    public string CurrentShawarmaTypeId { get => string.IsNullOrEmpty(currentShawarmaTypeId) ? ShawarmaTypes.IdClassic : currentShawarmaTypeId; set { currentShawarmaTypeId = value ?? ShawarmaTypes.IdClassic; isDirty = true; } }
 
     public void IncrementTotalDeliveries()
     {
@@ -147,6 +151,7 @@ public class PlayerProgress : ISaveable
             totalMoneySpentOnUpgrades = totalMoneySpentOnUpgrades,
             totalPlayTimeSeconds = totalPlayTimeSeconds,
             lastLoginUtc = lastLoginUtc,
+            currentShawarmaTypeId = currentShawarmaTypeId ?? ShawarmaTypes.IdClassic,
         };
     }
    
@@ -165,6 +170,7 @@ public class PlayerProgress : ISaveable
         totalMoneySpentOnUpgrades = data.totalMoneySpentOnUpgrades;
         totalPlayTimeSeconds = data.totalPlayTimeSeconds;
         lastLoginUtc = data.lastLoginUtc ?? "";
+        currentShawarmaTypeId = !string.IsNullOrEmpty(data.currentShawarmaTypeId) ? data.currentShawarmaTypeId : ShawarmaTypes.IdClassic;
         isDirty = false;
     }
 
@@ -181,6 +187,7 @@ public class PlayerProgress : ISaveable
         totalMoneySpentOnUpgrades = 0f;
         totalPlayTimeSeconds = 0;
         lastLoginUtc = "";
+        currentShawarmaTypeId = ShawarmaTypes.IdClassic;
         isDirty = true;
     }
 
@@ -205,4 +212,5 @@ public class PlayerProgressData
     public float totalMoneySpentOnUpgrades;
     public double totalPlayTimeSeconds;
     public string lastLoginUtc;
+    public string currentShawarmaTypeId;
 }
