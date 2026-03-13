@@ -239,6 +239,21 @@ public class ChallengeManager : MonoBehaviour, ISaveable
         isDirty = true;
         OnChallengesChanged?.Invoke();
     }
+    
+    /// <summary>
+    /// Returns how many active challenges are completed and not yet claimed.
+    /// Used by UI badges (e.g., Challenges panel button).
+    /// </summary>
+    public int GetClaimableCount()
+    {
+        int count = 0;
+        foreach (var c in activeChallenges)
+        {
+            if (c.completed && !c.claimed)
+                count++;
+        }
+        return count;
+    }
 
     /// <summary>Ensure we have up to 3 challenges, refreshing daily/weekly if needed.</summary>
     public void EnsureChallenges()

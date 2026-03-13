@@ -209,6 +209,23 @@ public class AchievementManager : MonoBehaviour, ISaveable
         }
     }
 
+    /// <summary>
+    /// Returns how many achievements are unlocked but not yet claimed.
+    /// Used by UI badges (e.g., Achievements panel button).
+    /// </summary>
+    public int GetClaimableCount()
+    {
+        int count = 0;
+        foreach (var def in definitions)
+        {
+            if (def == null) continue;
+            if (claimedIds.Contains(def.id)) continue;
+            if (GetCurrentValue(def) >= def.targetValue)
+                count++;
+        }
+        return count;
+    }
+
     public string GetProgressText(AchievementDefinition def)
     {
         float current = GetCurrentValue(def);

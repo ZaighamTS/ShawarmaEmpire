@@ -70,29 +70,30 @@ public class WarehouseManager : Upgdradable
     
     /// <summary>
     /// Checks if all warehouses are at full capacity
-    /// Returns true if all placed warehouses have currentLoad >= currentCapacity
+    /// Returns true only when at least one warehouse has capacity and all such warehouses are full.
+    /// Warehouses with 0 capacity (unpurchased) are not considered "full".
     /// </summary>
     public bool AreAllWarehousesFull()
     {
         if (placedWarehouses == null || placedWarehouses.Count == 0)
             return false; // No warehouses placed yet
         
+        bool hasAnyWithCapacity = false;
         foreach (var warehouse in placedWarehouses)
         {
-            if (warehouse != null)
-            {
-                var warehouseComponent = warehouse.GetComponent<Warehouse>();
-                if (warehouseComponent != null && warehouseComponent.currentLoad < warehouseComponent.currentCapacity)
-                {
-                    return false; // At least one warehouse has space
-                }
-            }
+            if (warehouse == null) continue;
+            var warehouseComponent = warehouse.GetComponent<Warehouse>();
+            if (warehouseComponent == null) continue;
+            if (warehouseComponent.currentCapacity <= 0) continue; // Unpurchased, don't count as full
+            hasAnyWithCapacity = true;
+            if (warehouseComponent.currentLoad < warehouseComponent.currentCapacity)
+                return false; // At least one warehouse with capacity has space
         }
-        return true; // All warehouses are full
+        return hasAnyWithCapacity; // All warehouses with capacity are full (or none have capacity)
     }
     
     /// <summary>
-    /// Gets the number of warehouses that are currently full
+    /// Gets the number of warehouses that are currently full (capacity > 0 and load >= capacity).
     /// </summary>
     public int GetFullWarehouseCount()
     {
@@ -102,14 +103,10 @@ public class WarehouseManager : Upgdradable
         int fullCount = 0;
         foreach (var warehouse in placedWarehouses)
         {
-            if (warehouse != null)
-            {
-                var warehouseComponent = warehouse.GetComponent<Warehouse>();
-                if (warehouseComponent != null && warehouseComponent.currentLoad >= warehouseComponent.currentCapacity)
-                {
-                    fullCount++;
-                }
-            }
+            if (warehouse == null) continue;
+            var warehouseComponent = warehouse.GetComponent<Warehouse>();
+            if (warehouseComponent != null && warehouseComponent.currentCapacity > 0 && warehouseComponent.currentLoad >= warehouseComponent.currentCapacity)
+                fullCount++;
         }
         return fullCount;
     }

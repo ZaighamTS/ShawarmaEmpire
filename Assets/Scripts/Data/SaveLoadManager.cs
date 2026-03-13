@@ -132,8 +132,9 @@ public class SaveLoadManager : MonoBehaviour
         // Check for offline earnings after game loads
         if (GameManager.gameManagerInstance != null)
         {
-            // Delay offline earnings check to ensure all managers are initialized
-            await UniTask.Delay(500); // Wait 500ms for managers to initialize
+            // Delay offline earnings check so managers (e.g. WarehouseManager.DelayOnStart) can initialize
+            // and so we run before GameManager's periodic CurrentDateTime refresh (grace period ~20s)
+            await UniTask.Delay(1500);
             GameManager.gameManagerInstance.CheckOfflineEarning();
         }
     }

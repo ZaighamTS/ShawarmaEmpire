@@ -35,6 +35,11 @@ public class UIManager : MonoBehaviour
     [Header("Upgrade Availability Badges")]
     public GameObject upgradeBadgePrefab; // Simple badge prefab with Image and Text (optional)
     public Button managersPanelButton; // Button that opens the panel with Warehouse/Delivery/Kitchen/Catering managers
+    public Button challengesPanelButton; // Button that opens the Challenges panel
+    public Button achievementsPanelButton; // Button that opens the Achievements panel
+    [Header("Optional overlay panels (block warehouse/world clicks when active)")]
+    [Tooltip("Assign any panel that can appear over the main game (e.g. Challenges, Achievements, Boost Shop, Gift Calendar, Statistics) so world clicks are blocked when they're open.")]
+    public GameObject[] optionalOverlayPanels;
     private Dictionary<Button, GameObject> upgradeBadges = new Dictionary<Button, GameObject>();
     private void Awake()
     {
@@ -273,6 +278,32 @@ public class UIManager : MonoBehaviour
         Application.Quit();
     }
 
+    /// <summary>
+    /// True when only the main gameplay screen is visible (no popup, overlay, or other screen).
+    /// Use this to block world clicks (e.g. warehouses) when any UI is in front.
+    /// </summary>
+    public bool IsMainScreenOnlyVisible()
+    {
+        if (Instance == null || GameplayPanel == null) return false;
+        if (!GameplayPanel.activeInHierarchy) return false;
+        if (InfoPopUp != null && InfoPopUp.activeInHierarchy) return false;
+        if (PrestigeWarning != null && PrestigeWarning.activeInHierarchy) return false;
+        if (PrestigePop != null && PrestigePop.activeInHierarchy) return false;
+        if (PrestigeTramsitioneffect != null && PrestigeTramsitioneffect.activeInHierarchy) return false;
+        if (RewardedAdPopUp != null && RewardedAdPopUp.activeInHierarchy) return false;
+        if (InappPopup != null && InappPopup.activeInHierarchy) return false;
+        if (lowCashPromt != null && lowCashPromt.activeInHierarchy) return false;
+        if (optionalOverlayPanels != null)
+        {
+            for (int i = 0; i < optionalOverlayPanels.Length; i++)
+            {
+                if (optionalOverlayPanels[i] != null && optionalOverlayPanels[i].activeInHierarchy)
+                    return false;
+            }
+        }
+        return true;
+    }
+
     public void DisableGameplayPanel()
     { 
         GameplayPanel.SetActive(false);
@@ -400,6 +431,28 @@ public class UIManager : MonoBehaviour
             int count = materials.GetAvailableUpgradeCount();
             UpdateBadgeOnButton(materials.materialsTabButton, count, () => {
                 materials.NavigateToFirstAffordableUpgrade();
+            });
+        }
+        
+        // Update badge for Challenges panel button (number of claimable challenges)
+        if (challengesPanelButton != null && ChallengeManager.Instance != null)
+        {
+            int count = ChallengeManager.Instance.GetClaimableCount();
+            UpdateBadgeOnButton(challengesPanelButton, count, () => {
+                var panel = FindObjectOfType<ChallengesPanelUI>();
+                if (panel != null)
+                    panel.SetPanelVisible(true);
+            });
+        }
+        
+        // Update badge for Achievements panel button (number of claimable achievements)
+        if (achievementsPanelButton != null && AchievementManager.Instance != null)
+        {
+            int count = AchievementManager.Instance.GetClaimableCount();
+            UpdateBadgeOnButton(achievementsPanelButton, count, () => {
+                var panel = FindObjectOfType<AchievementsPanelUI>();
+                if (panel != null)
+                    panel.SetPanelVisible(true);
             });
         }
     }

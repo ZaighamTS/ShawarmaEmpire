@@ -25,6 +25,12 @@ public class GameManager : MonoBehaviour
     // Phase 0: Play time accumulated this second (flushed every AUTOMATIC_EARNING_UPDATE_INTERVAL)
     private float playTimeAccumulatorThisInterval = 0f;
 
+    // Offline timer: refresh CurrentDateTime periodically so force-close doesn't leave a stale timestamp.
+    // Grace period ensures we don't overwrite before CheckOfflineEarning has run (it runs after load + 500ms).
+    private float lastOfflineTimestampSave = 0f;
+    private const float OFFLINE_TIMESTAMP_SAVE_INTERVAL = 8f;
+    private const float OFFLINE_TIMESTAMP_GRACE_PERIOD = 20f; // Don't refresh in Update() for this many seconds after start
+
     private void Awake()
     {
         if (gameManagerInstance == null)
@@ -48,6 +54,7 @@ public class GameManager : MonoBehaviour
         
         // Initialize automatic earning system
         lastAutomaticEarningUpdate = Time.time;
+        lastOfflineTimestampSave = Time.time;
         UpdateAutomaticEarningRate();
     }
     public void DelayOnStart()
@@ -78,15 +85,22 @@ public class GameManager : MonoBehaviour
         string currentDateTimeStr = PlayerPrefs.GetString("CurrentDateTime", "");
         if (string.IsNullOrEmpty(currentDateTimeStr))
         {
-            Debug.Log("No saved CurrentDateTime found - skipping offline earnings (first launch)");
+            Debug.Log("[Offline] No saved CurrentDateTime found - skipping (first launch)");
             return; // First time playing, no offline earnings
         }
         
-        if (!DateTime.TryParse(currentDateTimeStr, null, DateTimeStyles.RoundtripKind, out DateTime savedTime))
+        // Parse saved time: prefer exact "o" (round-trip) format, then legacy formats
+        DateTime savedTime;
+        bool parsed = DateTime.TryParseExact(currentDateTimeStr, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out savedTime)
+            || DateTime.TryParse(currentDateTimeStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out savedTime)
+            || DateTime.TryParse(currentDateTimeStr, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out savedTime);
+        if (!parsed)
         {
-            Debug.Log("Invalid CurrentDateTime format - skipping offline earnings");
-            return; // Invalid date format
+            Debug.Log($"[Offline] Invalid CurrentDateTime format: '{currentDateTimeStr}' - skipping");
+            return;
         }
+        if (savedTime.Kind == DateTimeKind.Unspecified)
+            savedTime = DateTime.SpecifyKind(savedTime, DateTimeKind.Utc);
         
         TimeSpan elapsed = DateTime.UtcNow - savedTime;
         double secondsElapsed = elapsed.TotalSeconds;
@@ -95,7 +109,8 @@ public class GameManager : MonoBehaviour
         const double minimumOfflineSeconds = 30.0;
         if (secondsElapsed < minimumOfflineSeconds)
         {
-            Debug.Log($"Offline time too short ({secondsElapsed:F0}s < {minimumOfflineSeconds}s) - skipping offline earnings");
+            Debug.Log($"[Offline] Time too short: {secondsElapsed:F0}s (min {minimumOfflineSeconds}s) - skipping");
+            SaveCurrentDateTimeIfNeeded(); // Refresh so next time we have accurate "last active"
             return; // Too soon, probably same session
         }
         
@@ -106,7 +121,8 @@ public class GameManager : MonoBehaviour
         
         if (!hasProgress)
         {
-            Debug.Log("No meaningful progress detected - skipping offline earnings (first time player)");
+            Debug.Log("[Offline] No progress (TotalEarnings=0, no warehouses) - skipping");
+            SaveCurrentDateTimeIfNeeded();
             return; // First time player, no offline earnings
         }
             
@@ -127,63 +143,112 @@ public class GameManager : MonoBehaviour
                 totalCapacity = WarehouseManager.Instance.GetWholeCapacity();
                 totalStored = WarehouseManager.Instance.GetWholeLoad();
                 
-                // Estimate deliveries per minute (conservative)
-                float deliveriesPerMinute = 2f;
-                averageDeliverySize = Mathf.Min(totalCapacity * 0.05f, 20f);
-                // Cap by what we actually had: can't deliver more than totalStored
-                if (totalStored < averageDeliverySize)
-                    averageDeliverySize = Mathf.Max(0, totalStored);
-                
-                float earningsPerMinute = shawarmaValue * averageDeliverySize * deliveriesPerMinute * 0.70f;
-                estimatedDeliveryRate = earningsPerMinute / 60f;
+                // Offline earnings are based on stored shawarmas only; no stored = minimum possible
+                if (totalStored > 0)
+                {
+                    float deliveriesPerMinute = 1.2f;
+                    float capacityBasedSize = Mathf.Min(totalCapacity * 0.05f, 20f);
+                    averageDeliverySize = Mathf.Min(capacityBasedSize, totalStored);
+                    float earningsPerMinute = shawarmaValue * averageDeliverySize * deliveriesPerMinute * 0.70f;
+                    estimatedDeliveryRate = earningsPerMinute / 60f;
+                }
+                else
+                {
+                    // No shawarmas stored in any warehouse: minimum possible (zero rate)
+                    estimatedDeliveryRate = 0f;
+                    averageDeliverySize = 0f;
+                }
             }
             else
             {
-                estimatedDeliveryRate = shawarmaValue * 0.5f;
+                // No warehouses: minimum possible
+                estimatedDeliveryRate = 0f;
                 totalCapacity = 0;
                 averageDeliverySize = 0f;
             }
             
-            // Cap offline time at 24 hours
+            // Cap offline time at 24 hours; effective earning time capped at 30 minutes
             double cappedSeconds = Math.Min(secondsElapsed, 86400.0);
-            // Cap "effective" offline at 30 minutes so one return doesn't grant 1hr of theoretical rate
             const double maxOfflineSecondsCap = 1800.0; // 30 minutes
             double effectiveSeconds = Math.Min(cappedSeconds, maxOfflineSecondsCap);
             
-            double potentialEarnings = estimatedDeliveryRate * effectiveSeconds;
-            double amount = potentialEarnings;
-            
-            // Cap by actual stored shawarmas when we have warehouses: can't earn more than selling all stored once
-            if (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0)
+            // 1) Delivery-based: from stored shawarmas (capped by inventory)
+            double deliveryEarnings = estimatedDeliveryRate * effectiveSeconds;
+            if (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0 && totalStored > 0)
             {
                 double maxFromInventory = totalStored * shawarmaValue * 0.70;
-                if (amount > maxFromInventory)
-                    amount = maxFromInventory;
+                if (deliveryEarnings > maxFromInventory)
+                    deliveryEarnings = maxFromInventory;
             }
             
+            // 2) Automatic earning: from spawned shawarmas (same formula as in-game, for up to 30 min)
+            float automaticRate = playerProgress.ShwarmaCount * 0.01f * UpgradeCosts.GetAutomaticEarningMultiplier();
+            if (BoostManager.Instance != null)
+                automaticRate *= BoostManager.Instance.GetProductionMultiplier();
+            double automaticEarnings = automaticRate * effectiveSeconds;
+            
+            double amount = deliveryEarnings + automaticEarnings;
             const double absoluteMaxEarnings = 10000000.0;
             amount = Math.Min(amount, absoluteMaxEarnings);
             
-            // Detailed logging for debugging
+            // Detailed logging for debugging (single block + per-line)
+            double logMaxFromInventory = totalStored > 0 ? totalStored * shawarmaValue * 0.70 : 0;
+            Debug.Log($"[Offline] === DETAIL ===\n" +
+                $"  Time away: {secondsElapsed:F0}s ({FormatOfflineTimeAway(secondsElapsed)}), effective: {effectiveSeconds:F0}s (30 min max)\n" +
+                $"  Shawarma value: ${shawarmaValue:F2} | Capacity: {totalCapacity} | Stored: {totalStored}\n" +
+                $"  Delivery: size {averageDeliverySize:F1}, rate ${estimatedDeliveryRate:F2}/s → ${deliveryEarnings:F0}\n" +
+                $"  Automatic: rate ${automaticRate:F2}/s (from {playerProgress.ShwarmaCount} spawned) → ${automaticEarnings:F0}\n" +
+                $"  Max from inventory cap: ${logMaxFromInventory:F0} | Total amount: ${amount:F0}");
             Debug.Log($"=== OFFLINE EARNINGS CALCULATION ===");
-            Debug.Log($"Shawarma Value: ${shawarmaValue:F2}");
-            Debug.Log($"Total Capacity: {totalCapacity}, Stored: {totalStored}");
-            Debug.Log($"Average Delivery Size: {averageDeliverySize:F1}");
-            Debug.Log($"Estimated Rate: ${estimatedDeliveryRate:F2}/sec");
-            Debug.Log($"Time Offline: {secondsElapsed:F0}s, Effective cap: {effectiveSeconds:F0}s (30 min max)");
-            Debug.Log($"Final Amount: ${amount:F0}");
+            Debug.Log($"Time: {secondsElapsed:F0}s away, effective: {effectiveSeconds:F0}s (30 min max)");
+            Debug.Log($"Shawarma Value: ${shawarmaValue:F2} | Capacity: {totalCapacity}, Stored: {totalStored}");
+            Debug.Log($"Delivery: avg size {averageDeliverySize:F1}, rate ${estimatedDeliveryRate:F2}/s → ${deliveryEarnings:F0}");
+            Debug.Log($"Automatic: rate ${automaticRate:F2}/s (ShwarmaCount={playerProgress.ShwarmaCount}) → ${automaticEarnings:F0}");
+            Debug.Log($"Final Amount (delivery + automatic): ${amount:F0}");
             Debug.Log($"=====================================");
             
             if (amount > 0)
             {
                 AddCash((float)amount);
                 UIManager.Instance.UpdateUI(UIUpdateType.Cash);
-                UIManager.Instance.ShowInfoPopup($"Offline earnings: ${(int)amount:N0} ({(int)(cappedSeconds / 60)} minutes)");
+                string timeAwayText = FormatOfflineTimeAway(secondsElapsed);
+                UIManager.Instance.ShowInfoPopup($"Offline earnings: ${(int)amount:N0} ({timeAwayText})");
             }
+            else
+            {
+                // Still show time away so player knows offline check ran (e.g. no stored shawarmas to earn from)
+                string timeAwayText = FormatOfflineTimeAway(secondsElapsed);
+                UIManager.Instance.ShowInfoPopup($"Welcome back! You were away for {timeAwayText}.");
+            }
+        // Always refresh timestamp after check so next session uses accurate "last active" time
+        SaveCurrentDateTimeIfNeeded();
     }
 
+    private static string FormatOfflineTimeAway(double totalSeconds)
+    {
+        if (totalSeconds < 60)
+            return $"{(int)totalSeconds} seconds";
+        int minutes = (int)(totalSeconds / 60);
+        int secs = (int)Math.Floor(totalSeconds % 60);
+        if (secs == 0)
+            return $"{minutes} minute{(minutes == 1 ? "" : "s")}";
+        return $"{minutes} min {secs} sec";
+    }
 
-
+    /// <summary>
+    /// Writes current UTC time to PlayerPrefs for offline-earnings calculation.
+    /// Call periodically during gameplay so force-close doesn't leave a stale timestamp.
+    /// </summary>
+    private void SaveCurrentDateTimeIfNeeded()
+    {
+        if (playerProgress == null) return;
+        bool hasProgress = playerProgress.TotalEarnings > 0 ||
+            (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses != null && WarehouseManager.Instance.placedWarehouses.Count > 0);
+        if (hasProgress)
+            PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString("o"));
+        else
+            PlayerPrefs.DeleteKey("CurrentDateTime");
+    }
 
     private void OnDestroy()
     {
@@ -296,7 +361,7 @@ public class GameManager : MonoBehaviour
             if (gameManagerInstance.playerProgress.TotalEarnings > 0 || 
                 (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0))
             {
-                PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString());
+                PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString("o"));
             }
             else
             {
@@ -318,7 +383,7 @@ public class GameManager : MonoBehaviour
                 if (gameManagerInstance.playerProgress.TotalEarnings > 0 || 
                     (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0))
                 {
-                    PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString());
+                    PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString("o"));
                 }
                 else
                 {
@@ -338,7 +403,7 @@ private void OnApplicationQuit()
     if (playerProgress != null && (playerProgress.TotalEarnings > 0 || 
         (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0)))
     {
-        PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString());
+        PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString("o"));
         Debug.Log("Saved CurrentDateTime for offline earnings");
     }
     else
@@ -360,7 +425,7 @@ void OnApplicationPause(bool pauseStatus)
         if (playerProgress != null && (playerProgress.TotalEarnings > 0 || 
             (WarehouseManager.Instance != null && WarehouseManager.Instance.placedWarehouses.Count > 0)))
         {
-            PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString());
+            PlayerPrefs.SetString("CurrentDateTime", DateTime.UtcNow.ToString("o"));
             Debug.Log($"Pause - Saved CurrentDateTime for offline earnings (pause count: {i})");
         }
         else
@@ -396,6 +461,13 @@ private void OnApplicationFocus(bool focus)
             playerProgress.AddPlayTimeSeconds(playTimeAccumulatorThisInterval);
             playTimeAccumulatorThisInterval = 0f;
             lastAutomaticEarningUpdate = currentTime;
+        }
+        // Refresh offline timestamp periodically so force-close doesn't leave a stale time.
+        // Only after grace period so we don't overwrite before CheckOfflineEarning has run on cold start.
+        if (currentTime >= OFFLINE_TIMESTAMP_GRACE_PERIOD && currentTime - lastOfflineTimestampSave >= OFFLINE_TIMESTAMP_SAVE_INTERVAL)
+        {
+            lastOfflineTimestampSave = currentTime;
+            SaveCurrentDateTimeIfNeeded();
         }
     }
     

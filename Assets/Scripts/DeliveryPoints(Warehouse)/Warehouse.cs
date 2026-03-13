@@ -102,7 +102,8 @@ public class Warehouse : MonoBehaviour, ISaveable
     /// </summary>
     public void CheckWaring()
     {
-        bool isNowFull = currentLoad >= currentCapacity;
+        // Capacity 0 means unpurchased/inactive - don't treat as "full" or show production-stop alert
+        bool isNowFull = currentCapacity > 0 && currentLoad >= currentCapacity;
         
         // Update warning image visibility
         if (WarningImage)
@@ -148,7 +149,9 @@ public class Warehouse : MonoBehaviour, ISaveable
     }
     private void OnMouseDown()
     {
-        // FIXED: Enabled building click handler - buildings are now clickable and show info
+        // Only clickable when no screen or popup is in front of the main gameplay
+        if (UIManager.Instance == null || !UIManager.Instance.IsMainScreenOnlyVisible())
+            return;
         // Block interaction if a UI element is under the pointer
         if (UnityEngine.EventSystems.EventSystem.current != null && 
             UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
@@ -177,16 +180,20 @@ public class Warehouse : MonoBehaviour, ISaveable
             currentCapacity = actualCapacity;
         }
         
-        // Show warehouse information using existing info popup system
+        // Show warehouse information (avoid 0/0 "full" and division by zero)
         string infoText = $"{displayName}\n\n" +
                          $"Capacity: {currentLoad}/{currentCapacity}\n" +
                          $"Level: {currentUpdate - 1}\n" +
-                         $"Upgrade Cost: ${cost:N0}\n\n" +
-                         $"Storage: {((float)currentLoad / currentCapacity * 100):F0}% full";
-        
-        if (currentLoad >= currentCapacity)
+                         $"Upgrade Cost: ${cost:N0}\n\n";
+        if (currentCapacity > 0)
         {
-            infoText += "\n\n⚠️ STORAGE FULL - Production will stop!";
+            infoText += $"Storage: {((float)currentLoad / currentCapacity * 100):F0}% full";
+            if (currentLoad >= currentCapacity)
+                infoText += "\n\n⚠️ STORAGE FULL - Production will stop!";
+        }
+        else
+        {
+            infoText += "Purchase this warehouse to unlock storage.";
         }
         
         UIManager.Instance.ShowInfoPopup(infoText);
